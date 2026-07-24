@@ -212,6 +212,33 @@ public sealed class PersistentPersonalDictionary
         }
     }
 
+    /// <summary>
+    /// Applies an import plan's entries (adds and updates) through the same
+    /// validated, gated, persisted upsert path. Returns how many were applied.
+    /// </summary>
+    public async Task<int> ApplyImportAsync(
+        IReadOnlyList<PersonalDictionaryEntry> entries,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(entries);
+
+        int applied = 0;
+        foreach (PersonalDictionaryEntry entry in entries)
+        {
+            DictionaryMutationResult result = await AddOrUpdateAsync(
+                    entry.SpokenForm,
+                    entry.Replacement,
+                    cancellationToken)
+                .ConfigureAwait(false);
+            if (result.Succeeded)
+            {
+                applied++;
+            }
+        }
+
+        return applied;
+    }
+
     private static SessionDictionary HydrateValidatedDictionary(
         IReadOnlyList<PersonalDictionaryStorageEntry>? storedEntries)
     {

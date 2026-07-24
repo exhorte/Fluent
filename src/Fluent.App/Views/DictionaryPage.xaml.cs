@@ -1,6 +1,8 @@
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Microsoft.Win32;
 using Fluent.Rewrite.Dictionary;
 
 namespace Fluent.App.Views;
@@ -145,6 +147,130 @@ public partial class DictionaryPage : UserControl
         ApplySearchFilter();
     }
 
+    private void ExportButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_dictionary is null)
+        {
+            SetImportExportStatus("Le dictionnaire local n’est pas disponible.", succeeded: false);
+            return;
+        }
+
+        IReadOnlyList<PersonalDictionaryEntry> snapshot = _dictionary.CreateSnapshot();
+        if (snapshot.Count == 0)
+        {
+            SetImportExportStatus("Aucune correction à exporter.", succeeded: false);
+            return;
+        }
+
+        SaveFileDialog dialog = new()
+        {
+            Title = "Exporter le dictionnaire",
+            Filter = "Dictionnaire Fluent (*.json)|*.json",
+            FileName = "fluent-dictionnaire.json",
+            AddExtension = true,
+            OverwritePrompt = true
+        };
+
+        if (dialog.ShowDialog(Window.GetWindow(this)) != true)
+        {
+            return;
+        }
+
+        try
+        {
+            File.WriteAllText(dialog.FileName, DictionaryExchange.Export(snapshot));
+            SetImportExportStatus(
+                snapshot.Count == 1
+                    ? "1 correction exportée."
+                    : $"{snapshot.Count} corrections exportées.",
+                succeeded: true);
+        }
+        catch (Exception)
+        {
+            SetImportExportStatus(
+                "Export impossible : vérifiez le dossier de destination et réessayez.",
+                succeeded: false);
+        }
+    }
+
+    private async void ImportButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (_dictionary is null)
+        {
+            SetImportExportStatus("Le dictionnaire local n’est pas disponible.", succeeded: false);
+            return;
+        }
+
+        OpenFileDialog dialog = new()
+        {
+            Title = "Importer un dictionnaire",
+            Filter = "Dictionnaire Fluent (*.json)|*.json|Tous les fichiers (*.*)|*.*",
+            CheckFileExists = true
+        };
+
+        if (dialog.ShowDialog(Window.GetWindow(this)) != true)
+        {
+            return;
+        }
+
+        string content;
+        try
+        {
+            content = File.ReadAllText(dialog.FileName);
+        }
+        catch (Exception)
+        {
+            SetImportExportStatus("Lecture du fichier impossible.", succeeded: false);
+            return;
+        }
+
+        DictionaryConflictPolicy policy = OverwriteConflictsCheckBox.IsChecked == true
+            ? DictionaryConflictPolicy.OverwriteExisting
+            : DictionaryConflictPolicy.SkipExisting;
+
+        DictionaryImportPlan plan = DictionaryExchange.Plan(
+            content,
+            _dictionary.CreateSnapshot(),
+            policy);
+
+        if (!plan.Parsed)
+        {
+            SetImportExportStatus(
+                plan.ParseError ?? "Le fichier d’import est invalide.",
+                succeeded: false);
+            return;
+        }
+
+        SetMutationPending(true);
+        try
+        {
+            int applied = await _dictionary.ApplyImportAsync(plan.EntriesToUpsert, _shutdownToken);
+            RefreshStorageState();
+            RefreshEntries();
+            SetImportExportStatus(
+                $"Import : {plan.AddedCount} ajout(s), {plan.UpdatedCount} mise(s) à jour, " +
+                $"{plan.SkippedConflictCount} conflit(s) ignoré(s), {plan.RejectedCount} rejeté(s), " +
+                $"{plan.SkippedDuplicateCount} doublon(s), {plan.SkippedCapacityCount} au-delà de la capacité.",
+                succeeded: applied == plan.EntriesToUpsert.Count);
+        }
+        catch (OperationCanceledException) when (_shutdownToken.IsCancellationRequested)
+        {
+        }
+        finally
+        {
+            SetMutationPending(false);
+        }
+    }
+
+    private void SetImportExportStatus(string message, bool succeeded)
+    {
+        ImportExportStatusText.Text = message;
+        ImportExportStatusText.Foreground = succeeded
+            ? (Brush)FindResource("Nyx.SuccessBrush")
+            : (Brush)FindResource("Nyx.ErrorBrush");
+        ImportExportStatusText.Visibility = Visibility.Visible;
+    }
+
     private void RefreshEntries()
     {
         if (_dictionary is null)
@@ -279,6 +405,7 @@ public partial class DictionaryPage : UserControl
             !_isMutationPending;
         EditorPanel.IsEnabled = isEnabled;
         SearchTextBox.IsEnabled = isEnabled;
+        ImportExportPanel.IsEnabled = isEnabled;
     }
 
     private void ClearEditor()
