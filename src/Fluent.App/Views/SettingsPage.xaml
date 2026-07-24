@@ -1,0 +1,235 @@
+<UserControl x:Class="Fluent.App.Views.SettingsPage"
+             x:Name="Root"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="720"
+             d:DesignWidth="840"
+             mc:Ignorable="d"
+             Background="{StaticResource Nyx.WindowBrush}"
+             Foreground="{StaticResource Nyx.PrimaryTextBrush}"
+             FontFamily="Segoe UI Variable Text"
+             UseLayoutRounding="True"
+             TextOptions.TextFormattingMode="Display">
+    <UserControl.Resources>
+        <Style x:Key="Settings.PrimaryButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="13,7" />
+            <Setter Property="Background" Value="{StaticResource Nyx.CyanBrush}" />
+            <Setter Property="Foreground" Value="#06100F" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="ButtonBorder"
+                                Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="7">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.88" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.72" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.42" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Settings.SecondaryButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="MinHeight" Value="32" />
+            <Setter Property="Padding" Value="13,7" />
+            <Setter Property="Background" Value="{StaticResource Nyx.SelectedBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource Nyx.SecondaryTextBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource Nyx.BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="ButtonBorder"
+                                Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="7">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder"
+                                        Property="BorderBrush"
+                                        Value="{StaticResource Nyx.CyanBrush}" />
+                                <Setter Property="Foreground" Value="{StaticResource Nyx.PrimaryTextBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.72" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.42" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="28,26,28,30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="18" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="18" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel>
+                <TextBlock Text="Paramètres"
+                           Style="{StaticResource Nyx.PageTitleTextStyle}" />
+                <TextBlock Text="Préférences locales, versionnées et réversibles. Aucun secret ni consentement Cloud n’est enregistré ici."
+                           Margin="0,6,0,0"
+                           Style="{StaticResource Nyx.BodyTextStyle}" />
+            </StackPanel>
+
+            <Border Grid.Row="2" Style="{StaticResource Nyx.DashboardCardStyle}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Profil par défaut"
+                                   Style="{StaticResource Nyx.SectionTitleTextStyle}" />
+                        <Border Grid.Column="1"
+                                Background="{StaticResource Nyx.SelectedBrush}"
+                                CornerRadius="7"
+                                Padding="9,5">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Actuel : "
+                                           Foreground="{StaticResource Nyx.MutedTextBrush}"
+                                           FontSize="10" />
+                                <TextBlock x:Name="CurrentProfileText"
+                                           Text="—"
+                                           Foreground="{StaticResource Nyx.CyanBrush}"
+                                           FontSize="10"
+                                           FontWeight="SemiBold" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    <TextBlock Text="Le profil appliqué à la réécriture au démarrage. Ce choix est enregistré localement et restauré au prochain lancement."
+                               Margin="0,6,0,0"
+                               TextWrapping="Wrap"
+                               LineHeight="18"
+                               Style="{StaticResource Nyx.BodyTextStyle}"
+                               FontSize="11" />
+
+                    <ItemsControl x:Name="DefaultProfileItemsControl" Margin="0,14,0,0">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Margin="0,0,0,8"
+                                        Padding="13,10"
+                                        Background="{StaticResource Nyx.SelectedBrush}"
+                                        BorderBrush="{StaticResource Nyx.BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="9">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="14" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding DisplayName}"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="{StaticResource Nyx.PrimaryTextBrush}"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold" />
+                                        <Button Grid.Column="2"
+                                                VerticalAlignment="Center"
+                                                Content="{Binding ActionText}"
+                                                IsEnabled="{Binding IsActionEnabled}"
+                                                Tag="{Binding Id}"
+                                                Click="ProfileButton_Click"
+                                                Style="{StaticResource Settings.SecondaryButtonStyle}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Row="4" Style="{StaticResource Nyx.DashboardCardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="18" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Historique · "
+                                       Style="{StaticResource Nyx.SectionTitleTextStyle}" />
+                            <TextBlock x:Name="HistoryStateText"
+                                       Text="Désactivé"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource Nyx.MutedTextBrush}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold" />
+                        </StackPanel>
+                        <TextBlock x:Name="HistoryDetailText"
+                                   Text="L’historique local est désactivé. Aucune dictée n’est enregistrée."
+                                   Margin="0,6,0,0"
+                                   TextWrapping="Wrap"
+                                   LineHeight="18"
+                                   Style="{StaticResource Nyx.BodyTextStyle}"
+                                   FontSize="11" />
+                    </StackPanel>
+                    <Button Grid.Column="2"
+                            VerticalAlignment="Top"
+                            Content="Gérer l’historique"
+                            Click="OpenHistoryButton_Click"
+                            Style="{StaticResource Settings.PrimaryButtonStyle}" />
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="6" Style="{StaticResource Nyx.DashboardCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="Stockage local et confidentialité"
+                               Style="{StaticResource Nyx.SectionTitleTextStyle}" />
+                    <TextBlock Text="Toutes les données restent sur cet appareil, dans le dossier local de l’application (LocalAppData\Fluent) : dictionnaire, historique et préférences, chacun dans sa propre base SQLite."
+                               Margin="0,8,0,0"
+                               TextWrapping="Wrap"
+                               LineHeight="18"
+                               Style="{StaticResource Nyx.BodyTextStyle}"
+                               FontSize="11" />
+                    <TextBlock Text="Aucun fichier audio n’est jamais enregistré. Aucune télémétrie. L’authentification et les options Cloud restent limitées à la session et ne sont pas persistées."
+                               Margin="0,8,0,0"
+                               TextWrapping="Wrap"
+                               LineHeight="18"
+                               Style="{StaticResource Nyx.BodyTextStyle}"
+                               FontSize="11" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

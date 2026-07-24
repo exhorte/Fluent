@@ -100,6 +100,9 @@
                                 Foreground="{StaticResource Nyx.PrimaryTextBrush}"
                                 HorizontalContentAlignment="Stretch"
                                 Cursor="Hand"
+                                AutomationProperties.Name="Vue d'ensemble"
+                                AutomationProperties.HelpText="Afficher la vue d'ensemble locale"
+                                TabIndex="0"
                                 Click="OnOverviewNavigationClick">
                             <Border x:Name="OverviewNavigationSurface"
                                     Background="{StaticResource Nyx.SelectedBrush}"
@@ -125,16 +128,46 @@
                             </Border>
                         </Button>
 
-                        <Grid Margin="10,14,8,0" Opacity="0.52">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="22" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="◷" FontSize="13" />
-                            <TextBlock Grid.Column="1" Text="Historique" FontSize="12" />
-                            <TextBlock Grid.Column="2" Text="À venir" FontSize="9" />
-                        </Grid>
+                        <Button Margin="0,14,0,0"
+                                Padding="0"
+                                BorderThickness="0"
+                                Background="Transparent"
+                                Foreground="{StaticResource Nyx.PrimaryTextBrush}"
+                                HorizontalContentAlignment="Stretch"
+                                Cursor="Hand"
+                                AutomationProperties.Name="Historique"
+                                AutomationProperties.HelpText="Ouvrir l'historique local des dictées"
+                                TabIndex="1"
+                                Click="OnHistoryNavigationClick">
+                            <Border x:Name="HistoryNavigationSurface"
+                                    Background="Transparent"
+                                    BorderBrush="{StaticResource Nyx.BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="10,9">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="22" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="◷"
+                                               Foreground="{StaticResource Nyx.CyanBrush}"
+                                               FontSize="13"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="Historique"
+                                               VerticalAlignment="Center"
+                                               FontSize="12"
+                                               FontWeight="SemiBold" />
+                                    <TextBlock x:Name="HistoryNavigationStatusText"
+                                               Grid.Column="2"
+                                               Text="OFF"
+                                               Foreground="{StaticResource Nyx.MutedTextBrush}"
+                                               FontSize="8" />
+                                </Grid>
+                            </Border>
+                        </Button>
 
                         <Button Margin="0,5,0,0"
                                 Padding="0"
@@ -143,6 +176,9 @@
                                 Foreground="{StaticResource Nyx.PrimaryTextBrush}"
                                 HorizontalContentAlignment="Stretch"
                                 Cursor="Hand"
+                                AutomationProperties.Name="Dictionnaire"
+                                AutomationProperties.HelpText="Gérer le dictionnaire personnel local"
+                                TabIndex="2"
                                 Click="OnDictionaryNavigationClick">
                             <Border x:Name="DictionaryNavigationSurface"
                                     Background="Transparent"
@@ -180,6 +216,9 @@
                                 Foreground="{StaticResource Nyx.PrimaryTextBrush}"
                                 HorizontalContentAlignment="Stretch"
                                 Cursor="Hand"
+                                AutomationProperties.Name="Profils"
+                                AutomationProperties.HelpText="Choisir le profil de réécriture et les options Cloud"
+                                TabIndex="3"
                                 Click="OnProfilesNavigationClick">
                             <Border x:Name="ProfilesNavigationSurface"
                                     Background="Transparent"
@@ -209,16 +248,40 @@
                             </Border>
                         </Button>
 
-                        <Grid Margin="10,14,8,0" Opacity="0.52">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="22" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="⚙" FontSize="12" />
-                            <TextBlock Grid.Column="1" Text="Paramètres" FontSize="12" />
-                            <TextBlock Grid.Column="2" Text="À venir" FontSize="9" />
-                        </Grid>
+                        <Button Margin="0,14,0,0"
+                                Padding="0"
+                                BorderThickness="0"
+                                Background="Transparent"
+                                Foreground="{StaticResource Nyx.PrimaryTextBrush}"
+                                HorizontalContentAlignment="Stretch"
+                                Cursor="Hand"
+                                AutomationProperties.Name="Paramètres"
+                                AutomationProperties.HelpText="Ouvrir les paramètres locaux"
+                                TabIndex="4"
+                                Click="OnSettingsNavigationClick">
+                            <Border x:Name="SettingsNavigationSurface"
+                                    Background="Transparent"
+                                    BorderBrush="{StaticResource Nyx.BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="10,9">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="22" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="⚙"
+                                               Foreground="{StaticResource Nyx.CyanBrush}"
+                                               FontSize="12"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="Paramètres"
+                                               VerticalAlignment="Center"
+                                               FontSize="12"
+                                               FontWeight="SemiBold" />
+                                </Grid>
+                            </Border>
+                        </Button>
                     </StackPanel>
 
                     <Border Grid.Row="2"
@@ -243,6 +306,7 @@
 
             <ScrollViewer x:Name="OverviewPage"
                           Grid.Column="1"
+                          AutomationProperties.Name="Page Vue d'ensemble"
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
                 <Grid Margin="28,26,28,30">
@@ -377,7 +441,7 @@
                                                Foreground="{StaticResource Nyx.PrimaryTextBrush}" />
                                 </Border>
 
-                                <TextBlock Text="Insertion seulement si la cible initiale reste valide ; sinon, copie explicite dans le presse-papiers. Aucun historique n'est enregistré."
+                                <TextBlock Text="Insertion seulement si la cible initiale reste valide ; sinon, copie explicite dans le presse-papiers. L'historique local est désactivé par défaut (opt-in)."
                                            Margin="0,12,0,0"
                                            TextWrapping="Wrap"
                                            Style="{StaticResource Nyx.BodyTextStyle}"
@@ -451,7 +515,7 @@
                                                Foreground="{StaticResource Nyx.SecondaryTextBrush}" />
                                 </Border>
                                 <Border Background="{StaticResource Nyx.SelectedBrush}" CornerRadius="7" Padding="9,5">
-                                    <TextBlock Text="Historique · à venir" FontSize="9" Foreground="{StaticResource Nyx.SecondaryTextBrush}" />
+                                    <TextBlock Text="Historique · local opt-in" FontSize="9" Foreground="{StaticResource Nyx.SecondaryTextBrush}" />
                                 </Border>
                             </WrapPanel>
                         </Grid>
@@ -461,10 +525,22 @@
 
             <views:DictionaryPage x:Name="DictionaryPage"
                                   Grid.Column="1"
+                                  AutomationProperties.Name="Page Dictionnaire"
                                   Visibility="Collapsed" />
 
             <views:ProfilesPage x:Name="ProfilesPage"
                                 Grid.Column="1"
+                                AutomationProperties.Name="Page Profils"
+                                Visibility="Collapsed" />
+
+            <views:HistoryPage x:Name="HistoryPage"
+                               Grid.Column="1"
+                               AutomationProperties.Name="Page Historique"
+                               Visibility="Collapsed" />
+
+            <views:SettingsPage x:Name="SettingsPage"
+                                Grid.Column="1"
+                                AutomationProperties.Name="Page Paramètres"
                                 Visibility="Collapsed" />
         </Grid>
     </Grid>

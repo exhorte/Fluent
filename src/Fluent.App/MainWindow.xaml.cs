@@ -8,8 +8,13 @@ using Fluent.App.Cloud;
 using Fluent.App.Dashboard;
 using Fluent.App.Phase01;
 using Fluent.Audio.Capture;
+using Fluent.Core.Diagnostics;
+using Fluent.Core.History;
 using Fluent.Core.Interaction;
+using Fluent.Core.Settings;
 using Fluent.Persistence.Dictionary;
+using Fluent.Persistence.History;
+using Fluent.Persistence.Settings;
 using Fluent.Rewrite;
 using Fluent.Rewrite.Dictionary;
 using Fluent.Rewrite.Observability;
@@ -47,7 +52,12 @@ public partial class MainWindow : Window
     private readonly RewriteOrchestrator _rewriteOrchestrator;
     private readonly PersistentPersonalDictionary _personalDictionary = new(
         new SqlitePersonalDictionaryStore());
+    private readonly IDictationHistoryStore _dictationHistoryStore =
+        new SqliteDictationHistoryStore();
+    private readonly IAppSettingsStore _appSettingsStore =
+        new SqliteAppSettingsStore();
     private readonly PersonalDictionaryProcessor _dictionaryProcessor = new();
+    private int _historyEntryCount;
     private readonly CancellationTokenSource _shutdown = new();
     private GlobalHotKey? _hotKey;
     private HwndSource? _source;
@@ -55,6 +65,7 @@ public partial class MainWindow : Window
     private TargetSnapshot? _lockedTarget;
     private RewriteProfile? _activeDictationProfile;
     private DictationState _state;
+    private DictationFailureStage _dictationStage = DictationFailureStage.Unknown;
     private bool _isBusy;
     private bool _isClosing;
 
@@ -82,6 +93,12 @@ public partial class MainWindow : Window
         DictionaryPage.EntryCountChanged += OnDictionaryEntryCountChanged;
         DictionaryPage.StorageModeChanged += OnDictionaryStorageModeChanged;
         DictionaryPage.Initialize(_personalDictionary, _shutdown.Token);
+        HistoryPage.EntryCountChanged += OnHistoryEntryCountChanged;
+        HistoryPage.EnabledChanged += OnHistoryEnabledChanged;
+        HistoryPage.Initialize(_dictationHistoryStore, _shutdown.Token);
+        SettingsPage.DefaultProfileChangeRequested += OnSettingsDefaultProfileChangeRequested;
+        SettingsPage.OpenHistoryRequested += OnSettingsOpenHistoryRequested;
+        SettingsPage.SetProfiles(RewriteProfiles.All, _profileSelection.Current);
         ProfilesPage.SelectionChanged += OnProfileSelectionChanged;
         ProfilesPage.CloudStateChanged += OnCloudStateChanged;
         _authenticationState.Changed += OnAuthenticationStateChanged;
@@ -105,6 +122,8 @@ public partial class MainWindow : Window
         try
         {
             await DictionaryPage.LoadAsync();
+            await HistoryPage.LoadAsync();
+            await RestorePreferredProfileAsync();
         }
         catch (OperationCanceledException) when (_shutdown.IsCancellationRequested)
         {
@@ -152,6 +171,10 @@ public partial class MainWindow : Window
         _source?.RemoveHook(WndProc);
         DictionaryPage.EntryCountChanged -= OnDictionaryEntryCountChanged;
         DictionaryPage.StorageModeChanged -= OnDictionaryStorageModeChanged;
+        HistoryPage.EntryCountChanged -= OnHistoryEntryCountChanged;
+        HistoryPage.EnabledChanged -= OnHistoryEnabledChanged;
+        SettingsPage.DefaultProfileChangeRequested -= OnSettingsDefaultProfileChangeRequested;
+        SettingsPage.OpenHistoryRequested -= OnSettingsOpenHistoryRequested;
         ProfilesPage.SelectionChanged -= OnProfileSelectionChanged;
         ProfilesPage.CloudStateChanged -= OnCloudStateChanged;
         _authenticationState.Changed -= OnAuthenticationStateChanged;
@@ -201,14 +224,18 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
+            DictationFailureStage stage = _dictationStage;
             ResetToIdle();
             if (_isClosing)
             {
                 return;
             }
 
-            DictationStateText.Text = "Failed";
-            LastResultText.Text = $"Dictation failed: {ex.GetBaseException().Message}";
+            UserFacingMessage message = DictationErrorPresenter.Describe(stage);
+            DictationStateText.Text = "Échec";
+            LastResultText.Text = message.Combined;
+            // Technical detail stays in the debug log only, never in the UI.
+            Debug.WriteLine($"Dictation failure ({stage}): {ex}");
         }
     }
 
@@ -242,6 +269,7 @@ public partial class MainWindow : Window
         }
 
         _activeDictationProfile = _profileSelection.Current;
+        _dictationStage = DictationFailureStage.Microphone;
         _audioRecorder.Start();
         _state = DictationState.Recording;
         DictationStateText.Text = "Recording";
@@ -261,6 +289,7 @@ public partial class MainWindow : Window
         try
         {
             Stopwatch stopToTextTimer = Stopwatch.StartNew();
+            _dictationStage = DictationFailureStage.Microphone;
             RecordedAudio audio = await _audioRecorder.StopAsync(_shutdown.Token);
             if (_isClosing || _shutdown.IsCancellationRequested)
             {
@@ -275,6 +304,7 @@ public partial class MainWindow : Window
                 return;
             }
 
+            _dictationStage = DictationFailureStage.Transcription;
             Progress<SpeechTranscriptionStage> progress = new(UpdateTranscriptionStage);
             string transcript = await _speechTranscriber.TranscribeFrenchAsync(
                 audio.Samples,
@@ -316,6 +346,7 @@ public partial class MainWindow : Window
             };
             _capsule?.ShowProcessingState("Réécriture…");
 
+            _dictationStage = DictationFailureStage.Rewriting;
             OrchestrationRewriteResult rewriteResult = await _rewriteOrchestrator.RewriteAsync(
                 new OrchestrationRewriteRequest(
                     dictionaryResult.Text,
@@ -327,12 +358,20 @@ public partial class MainWindow : Window
                 return;
             }
 
-            InsertTranscript(
+            _dictationStage = DictationFailureStage.Insertion;
+            bool delivered = InsertTranscript(
                 rewriteResult,
                 dictationProfile,
                 dictionaryResult.ReplacementCount,
                 audio.Duration,
                 stopToTextTimer);
+
+            if (delivered)
+            {
+                // Opt-in local history: records only when the user enabled it.
+                // The page never throws back into the dictation flow.
+                await HistoryPage.CaptureAsync(rewriteResult.Text, dictationProfile.Id);
+            }
         }
         finally
         {
@@ -344,7 +383,7 @@ public partial class MainWindow : Window
         }
     }
 
-    private void InsertTranscript(
+    private bool InsertTranscript(
         OrchestrationRewriteResult rewriteResult,
         RewriteProfile dictationProfile,
         int dictionaryReplacementCount,
@@ -372,9 +411,12 @@ public partial class MainWindow : Window
             _ => $" {dictionaryReplacementCount} {dictionaryScope} corrections applied."
         };
 
+        bool delivered = false;
+
         switch (decision.Kind)
         {
             case InsertionDecisionKind.PasteIntoOriginalTarget:
+                delivered = true;
                 Clipboard.SetText(rewriteResult.Text);
                 KeyboardInputSendResult sendResult = _keyboardInputSender.SendCtrlV();
                 if (sendResult.Succeeded)
@@ -402,6 +444,7 @@ public partial class MainWindow : Window
 
                 break;
             case InsertionDecisionKind.ClipboardFallbackTargetChanged:
+                delivered = true;
                 Clipboard.SetText(rewriteResult.Text);
                 string changedTargetTiming = FinishTiming(stopToTextTimer, audioDuration);
                 DictationStateText.Text = "Clipboard fallback";
@@ -432,6 +475,7 @@ public partial class MainWindow : Window
         }
 
         TargetStatusText.Text = currentTarget is null ? "No current target" : DescribeTarget(currentTarget);
+        return delivered;
     }
 
     private static string FinishTiming(Stopwatch stopToTextTimer, TimeSpan audioDuration)
@@ -455,21 +499,119 @@ public partial class MainWindow : Window
         ShowDashboardPage(DashboardPage.Profiles);
     }
 
+    private void OnHistoryNavigationClick(object sender, RoutedEventArgs e)
+    {
+        ShowDashboardPage(DashboardPage.History);
+    }
+
+    private void OnSettingsNavigationClick(object sender, RoutedEventArgs e)
+    {
+        ShowDashboardPage(DashboardPage.Settings);
+    }
+
     private void ShowDashboardPage(DashboardPage page)
     {
         OverviewPage.Visibility = page == DashboardPage.Overview ? Visibility.Visible : Visibility.Collapsed;
         DictionaryPage.Visibility = page == DashboardPage.Dictionary ? Visibility.Visible : Visibility.Collapsed;
         ProfilesPage.Visibility = page == DashboardPage.Profiles ? Visibility.Visible : Visibility.Collapsed;
+        HistoryPage.Visibility = page == DashboardPage.History ? Visibility.Visible : Visibility.Collapsed;
+        SettingsPage.Visibility = page == DashboardPage.Settings ? Visibility.Visible : Visibility.Collapsed;
 
         Brush selected = (Brush)FindResource("Nyx.SelectedBrush");
         OverviewNavigationSurface.Background = page == DashboardPage.Overview ? selected : Brushes.Transparent;
         DictionaryNavigationSurface.Background = page == DashboardPage.Dictionary ? selected : Brushes.Transparent;
         ProfilesNavigationSurface.Background = page == DashboardPage.Profiles ? selected : Brushes.Transparent;
+        HistoryNavigationSurface.Background = page == DashboardPage.History ? selected : Brushes.Transparent;
+        SettingsNavigationSurface.Background = page == DashboardPage.Settings ? selected : Brushes.Transparent;
+    }
+
+    private void OnHistoryEntryCountChanged(object? sender, int count)
+    {
+        _historyEntryCount = count;
+        UpdateHistoryNavStatus();
+    }
+
+    private void OnHistoryEnabledChanged(object? sender, bool enabled)
+    {
+        UpdateHistoryNavStatus();
+    }
+
+    private void UpdateHistoryNavStatus()
+    {
+        HistoryNavigationStatusText.Text = HistoryPage.HistoryEnabled
+            ? _historyEntryCount.ToString()
+            : "OFF";
+        SettingsPage.SetHistorySummary(HistoryPage.HistoryEnabled, _historyEntryCount);
     }
 
     private void OnProfileSelectionChanged(object? sender, RewriteProfile profile)
     {
         UpdateProfilePresentation(profile);
+        PersistPreferredProfile(profile.Id);
+        SettingsPage.SetProfiles(RewriteProfiles.All, profile);
+    }
+
+    private void OnSettingsDefaultProfileChangeRequested(object? sender, string profileId)
+    {
+        ProfileSelectionResult result = _profileSelection.TrySelect(profileId);
+        if (!result.Succeeded)
+        {
+            return;
+        }
+
+        UpdateProfilePresentation(result.Selected);
+        PersistPreferredProfile(result.Selected.Id);
+        ProfilesPage.Initialize(_profileSelection);
+        SettingsPage.SetProfiles(RewriteProfiles.All, _profileSelection.Current);
+    }
+
+    private void OnSettingsOpenHistoryRequested(object? sender, EventArgs e)
+    {
+        ShowDashboardPage(DashboardPage.History);
+    }
+
+    /// <summary>
+    /// Restores the user's persisted preferred rewrite profile on launch. Absent
+    /// or unknown values leave the canonical default in place.
+    /// </summary>
+    private async Task RestorePreferredProfileAsync()
+    {
+        AppPreferences preferences =
+            await _appSettingsStore.InitializeAndLoadAsync(_shutdown.Token);
+        if (preferences.PreferredProfileId is null)
+        {
+            return;
+        }
+
+        ProfileSelectionResult result =
+            _profileSelection.TrySelect(preferences.PreferredProfileId);
+        if (!result.Succeeded)
+        {
+            return;
+        }
+
+        ProfilesPage.Initialize(_profileSelection);
+        SettingsPage.SetProfiles(RewriteProfiles.All, _profileSelection.Current);
+        UpdateProfilePresentation(_profileSelection.Current);
+    }
+
+    /// <summary>
+    /// Best-effort local persistence of the preferred profile. A failure here
+    /// never disrupts the dictation experience.
+    /// </summary>
+    private async void PersistPreferredProfile(string profileId)
+    {
+        try
+        {
+            await _appSettingsStore.SetPreferredProfileAsync(profileId, _shutdown.Token);
+        }
+        catch (OperationCanceledException) when (_shutdown.IsCancellationRequested)
+        {
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Preferred-profile persistence failed: {ex.GetBaseException().Message}");
+        }
     }
 
     /// <summary>
@@ -724,6 +866,8 @@ public partial class MainWindow : Window
     {
         Overview,
         Dictionary,
-        Profiles
+        Profiles,
+        History,
+        Settings
     }
 }

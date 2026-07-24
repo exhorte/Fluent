@@ -346,7 +346,7 @@ public partial class ProfilesPage : UserControl
                 profile.Id,
                 profile.DisplayName,
                 profile.Description,
-                BadgeText: "ACTIF · SESSION",
+                BadgeText: "ACTIF · ENREGISTRÉ",
                 BadgeForeground: cyan,
                 BadgeBackground: new SolidColorBrush(Color.FromArgb(0x14, 0x30, 0xD1, 0xCB)),
                 BadgeBorder: new SolidColorBrush(Color.FromArgb(0x40, 0x30, 0xD1, 0xCB)),
