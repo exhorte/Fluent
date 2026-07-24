@@ -1,8 +1,70 @@
 # Project State
 
-Status: `GOVERNANCE_ADR_0007_ADOPTED` · `PHASE_07E_CLOSED` · active task `FV-P07-T018` (publication) inchangée
+Status: `GOVERNANCE_ADR_0007_ADOPTED` · `07E/07F/07G/07H/08B CLOSED` · `08A DIFFÉRÉE` · `CONSOLIDATION VÉRIFIÉE` · dépôt en phase avec `origin/main`
 
 Date: 2026-07-23
+
+## Consolidation vérifiée (2026-07-23)
+
+Sur décision utilisateur (consolider plutôt qu'ouvrir 08C), le PROJECT_DIRECTOR a produit un instantané de readiness. **Santé vérifiée** : build Release 0/0, suite .NET **399/399**, suite gouvernance/hooks **45/45** (plancher intact), branche `main` en phase avec `origin/main`, **aucun résidu NyxVoice** dans les sources suivies. Preuve : `docs/project/evidence/consolidation-2026-07-23/readiness-snapshot.md`.
+
+- **07C résolu** : renommage complet dans les sources, arbre aplati propre ; l'ancien statut « BLOQUÉ/À RÉCONCILIER » est caduc.
+- **06B/06C** restent `IMPLEMENTED_AWAITING_USER_REVIEW` (hors ligne, aucune activation live).
+- **Point d'attention** : 34 fichiers non commités = tout le travail de session ; à commiter sur une branche puis PR **avec l'accord de l'utilisateur** (push direct sur `main` = R3).
+- Chemin vers v1 : commit/PR → décisions 06B/06C → revalidation phase 01 → 09 fournisseurs → 10 perf → 11 packaging → 12 readiness. Cloud live (07D/09B) = infra + secret + autorisation distincte.
+
+## Prochaine phase — décision utilisateur (2026-07-23)
+
+Après consolidation : 08C (apprentissage, sensible, cadrage E-001), ou packaging (10–12), ou décisions 06B/06C — au choix de l'utilisateur.
+
+## Phase 08B — Dictionnaire / glossaire étendu (active) — 2026-07-23
+
+Le PROJECT_DIRECTOR a clôturé 07H (smoke visuel PASS utilisateur « 07H OK »). Après cadrage E-001, l'utilisateur a décidé de **différer 08A (contexte de réécriture)** — son consommateur principal est le prompt Cloud non live — et de faire **08B — dictionnaire/glossaire étendu** d'abord : 100 % local, immédiatement utile, faible risque sur le chemin de réécriture. Garde-fou : gestion des conflits, import/export sûr, suppression.
+
+**Slice 1 (import/export + conflits) — implémenté et testé.** Composant pur `DictionaryExchange` (`Fluent.Rewrite.Dictionary`) : export JSON déterministe + plan d'import (validation via `PersonalDictionaryValidation` existante, politique de conflits explicite ignorer/écraser, bornage capacité, doublons de fichier, JSON invalide géré, contenu importé traité comme donnée jamais exécuté). Preuve : `docs/project/evidence/phase-08b-dictionary-glossary/slice-1-exchange-component.md`.
+
+**Slice 2 (câblage + UI) — implémenté et testé.** `PersistentPersonalDictionary.ApplyImportAsync` (upsert en lot via le chemin gated/validé/persisté existant) ; carte **Importer / Exporter** dans la page Dictionnaire (SaveFileDialog/OpenFileDialog locaux, case « écraser en cas de conflit » décochée par défaut, résumé du résultat). Fichiers locaux uniquement, contenu validé jamais exécuté. Preuve : `docs/project/evidence/phase-08b-dictionary-glossary/slice-2-wiring-ui.md`.
+
+Build Release **0/0**, suite complète **399/399** (Rewrite.Tests 164 → 172). **Reste avant clôture 08B** : smoke visuel import/export (E-011).
+
+## Phase 08A — Contexte de réécriture (DIFFÉRÉE 2026-07-23, décision utilisateur)
+
+Différée sur décision E-001 de l'utilisateur : le contexte de réécriture ne sert vraiment qu'au chemin Cloud, non live. À reprendre quand le Cloud sera live. Aucune implémentation démarrée.
+
+## Phase 07H — UX & résilience (CLÔTURÉE 2026-07-23)
+
+## Phase 07H — UX & résilience (CLÔTURÉE 2026-07-23)
+
+Le PROJECT_DIRECTOR a clôturé 07G (smoke visuel PASS utilisateur « 07G OK », CG-001..CG-008 ; preuve `docs/project/evidence/phase-07g-settings/closure.md`) et démarre **07H — UX et résilience** : accessibilité, navigation clavier, offline, erreurs et recovery.
+
+**Slice 1 (accessibilité navigation/pages) — implémenté et testé.** `AutomationProperties.Name`/`HelpText` sur les 5 entrées de navigation et les 5 pages ; ordre clavier `TabIndex` 0–4. Test markup déterministe (`AccessibilityMarkupTests`). Preuve : `docs/project/evidence/phase-07h-ux-resilience/slice-1-accessibility.md`.
+
+**Slice 2 (erreurs & récupération) — implémenté et testé.** Composant Core pur `DictationErrorPresenter` (étape d'échec → message français sûr + récupération, sans fuite technique), câblé dans `MainWindow` (suivi d'étape ; le catch fatal ne dumpe plus l'exception brute). Preuve : `docs/project/evidence/phase-07h-ux-resilience/slice-2-error-recovery.md`.
+
+Build Release **0/0**, suite complète **391/391** (Core.Tests 20 → 24, IntegrationTests 77 → 88). **Bilan 07H** : accessibilité + clavier + erreurs/récupération couverts ; offline déjà intrinsèque (local-first, statut Offline auth, repli local exact). Reste avant clôture : smoke visuel UX (E-011) ; polish offline optionnel.
+
+## Phase 07G — Paramètres locaux (CLÔTURÉE 2026-07-23)
+
+Le PROJECT_DIRECTOR a clôturé 07F (smoke visuel PASS rapporté par l'utilisateur, CG-001..CG-008 satisfaits ; preuve `docs/project/evidence/phase-07f-history/closure.md`) et démarre **07G — Paramètres** : préférences locales versionnées et réversibles, aucun secret ni consentement Cloud persistant.
+
+**Slice 1 (store + profil préféré) — implémenté et testé.** Store SQLite `fluent-settings.db` dédié (versionné, mono-ligne) + domaine Core ; le **profil de réécriture préféré**, jusque-là session-only, est désormais persisté localement, restauré au démarrage et sauvegardé au changement (badge « ACTIF · ENREGISTRÉ »). Consentement/paramètres Cloud restent session-only. Preuve : `docs/project/evidence/phase-07g-settings/slice-1-preferred-profile.md`.
+
+**Slice 2 (page Paramètres) — implémenté et testé.** Page **Paramètres** WPF (remplace « À venir ») : profil par défaut (sélecteur persistant, synchronisé avec Profils), résumé Historique + bouton « Gérer l'historique », carte stockage local & confidentialité (aucun audio, aucune télémétrie, Cloud session-only). Navigation latérale réelle. Preuve : `docs/project/evidence/phase-07g-settings/slice-2-settings-page.md`.
+
+Build Release **0/0**, suite complète **376/376** (persistance 31 → 40). **Reste avant clôture 07G** : smoke visuel des pages Paramètres + persistance du profil au redémarrage (vérification humaine E-011).
+
+## Phase 07F — Historique local (CLÔTURÉE 2026-07-23)
+
+Le PROJECT_DIRECTOR a démarré et implémenté 07F (prochaine phase produit automatisable selon la roadmap ; 07D exige une infra externe R2/R3, 07E est clôturée).
+
+- **Slice 1 (persistance)** : domaine Core + politique de capture opt-in + store SQLite `fluent-history.db` dédié (rétention, suppression, effacement, préférence opt-in **OFF par défaut**). Base séparée du dictionnaire `fluent.db`.
+- **Slice 2 (UI + capture)** : page Historique WPF (interrupteur opt-in, liste, suppression unitaire, tout effacer, recherche), navigation latérale réelle, capture dans `MainWindow` après dictée délivrée (pas de capture sur cible mot de passe/bloquée), textes du dashboard corrigés pour l'honnêteté.
+
+Aucun audio, secret ou donnée externe (P-003/P-004). Vérification : build Release **0/0**, suite complète **367/367** (0 échec). Une régression de test attendue (libellé Overview) corrigée honnêtement. Preuves : `docs/project/evidence/phase-07f-history/slice-1-implementation.md` et `slice-2-ui-capture.md`.
+
+**Reste avant clôture 07F** : smoke visuel de la page Historique (vérification humaine E-011, non automatisable) — voir étapes ci-dessous / dans la conversation.
+
+> Note dépôt : entre deux tours, l'arbre de travail (renommage Fluent + migration de gouvernance) a été aplati dans un unique commit initial `66034b1` sur `main`, en phase avec `origin/main`. Les fils publication (`FV-P07-T018`) et renommage (07C) sont ainsi résolus.
 
 ## Migration de gouvernance ADR-0007 (2026-07-23)
 
