@@ -1,0 +1,29 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T002",
+  "action": "Activate the Phase 07B Supabase Google-auth contract for offline implementation only",
+  "toolName": "development-judge",
+  "riskLevel": "high",
+  "reason": "Repair cycle 1 resolves the prior high-risk ambiguities. The plan pins the sole direct dependency and target project, defines mandatory trusted backend configuration without token-derived discovery, constrains issuer/audience and OIDC/JWKS origins, specifies fail-closed caching and algorithm policy, bounds the loopback listener and callback lifecycle, maps the affected route authentication/authorization/rate-limit ordering, and requires an adversarial verification matrix. External Supabase/Google configuration, login, live smoke, deployment and Git mutation remain excluded.",
+  "rules": [
+    ".claude/judge/constitution.md: the contract provides bounded scope, paths, commands, exclusions, verification and fail-closed behavior.",
+    ".claude/judge/risk-classification.md: high-risk dependency, multi-project and networked authentication work requires the listed security and adversarial evidence.",
+    ".claude/judge/escalation-policy.md: external Supabase/Google configuration, login, live-provider smoke and deployment require separate user authority.",
+    ".claude/judge/protected-assets.md: .env/.env.*, credentials, keys, certificates and governance assets remain prohibited."
+  ],
+  "evidence": [
+    "docs/project/evidence/phase-07b-supabase-auth/execution-contract.draft.json",
+    "docs/project/evidence/phase-07b-supabase-auth/plan-judge-initial-deny.md",
+    "docs/project/phases/phase-07b-supabase-auth.md",
+    "Directory.Packages.props",
+    "src/Fluent.Backend/Fluent.Backend.csproj",
+    ".claude/judge/constitution.md",
+    ".claude/judge/escalation-policy.md",
+    ".claude/judge/risk-classification.md",
+    ".claude/judge/protected-assets.md",
+    "docs/engineering/quality-gates.md"
+  ],
+  "saferAlternative": "Implement and verify with local deterministic doubles and default-deny behavior. Keep browser, listener, code exchange, refresh and backend Cloud access unavailable whenever public configuration is absent or invalid; defer redirect registration and live sign-in to separately authorized work.",
+  "requiredNextStep": "Mark the amended contract active and implement only its allowed paths and offline tests. Do not create or modify .env files, credentials, external accounts, Supabase/Google configuration, deployment or Git state. Complete all focused/adversarial reviews and final Judge evidence before user presentation.",
+  "timestamp": "2026-07-21T00:00:00+02:00"
+}

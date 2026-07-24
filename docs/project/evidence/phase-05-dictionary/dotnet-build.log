@@ -1,0 +1,7 @@
+Command: dotnet build Fluent.sln -c Release --no-restore -m:1 --disable-build-servers
+Date: 2026-07-15T15:31:00+02:00
+Configuration: Release
+Result: PASS
+Warnings: 0
+Errors: 0
+Elapsed: 00:00:32.31

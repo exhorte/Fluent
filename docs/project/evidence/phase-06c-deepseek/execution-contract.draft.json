@@ -1,0 +1,188 @@
+{
+  "taskId": "FV-P06-T003",
+  "phaseId": "FV-P06C",
+  "title": "DeepSeek V4 Pro optional Cloud provider",
+  "objective": "Enable the already-prepared DeepSeek provider only behind the existing authenticated, enabled and consented Cloud gate, using a backend-only configurable transport and an explicit session-only provider selection, while preserving the local default, exact-local fallback and the Desktop no-secret boundary.",
+  "status": "implemented_awaiting_user_review",
+  "createdAt": "2026-07-21T00:45:00+02:00",
+  "expiresAt": "2026-08-21T00:00:00Z",
+  "approvedByJudge": true,
+  "scope": {
+    "included": [
+      "Enable DeepSeek as a provider only when its backend configuration is complete and valid; otherwise it remains unavailable and Cloud falls back to Local.",
+      "Implement a backend-only DeepSeek HTTP seam and a deterministic fake-transport test seam. The request uses the existing bounded rewrite prompt and the response is routed through the existing Cloud output validation.",
+      "Read only DEEPSEEK_MODEL, DEEPSEEK_API_KEY and DEEPSEEK_BASE_URL from backend process configuration. No default model, key, endpoint, or secret is embedded in Desktop code or tests.",
+      "Constrain DEEPSEEK_BASE_URL, when configured, to the HTTPS origin https://api.deepseek.com with no userinfo, query, fragment, non-standard port or path. Derive the provider route locally rather than accepting a request-controlled endpoint.",
+      "Return 503 when the explicitly requested provider is unavailable after request validation, preserving the established backend unavailable-provider response semantics.",
+      "Add a session-only explicit Gemini/DeepSeek provider selection to the existing Cloud settings and Profiles presentation. The selection starts at Gemini, is not persisted, is never logged, and cannot enable Cloud or grant consent.",
+      "Keep all existing authentication, consent, Cloud enablement, backend availability, output validation, observability redaction, exact-local fallback and target-safe insertion behavior unchanged.",
+      "Add unit, integration and source-security tests covering provider selection, unavailable configuration, request construction without secret exposure, failure fallback, cancellation, DeepSeek non-selection by default, and Gemini regression.",
+      "Document the trust boundary, operational prerequisite and a manual server-only configuration checklist without copying any credential."
+    ],
+    "excluded": [
+      "Reading, modifying, printing, committing or automatically loading .env, .env.*, secrets, credentials, API keys, tokens, certificates or account data.",
+      "Supabase, Google, DeepSeek, GitHub or hosting-account configuration; account login; API call; live smoke; billing; deployment; publication; or Git mutation.",
+      "Any provider key, endpoint, model identifier, or OAuth material in the WPF Desktop, repository configuration, test fixture, logs or UI.",
+      "Automatic Gemini-to-DeepSeek or DeepSeek-to-Gemini fallback, background retry, automatic Cloud enablement, automatic consent, provider selection persistence, telemetry expansion or user-content logging.",
+      "Changes to local transcription, local rewriting behavior, dictionary persistence, insertion, hotkey, capsule, password protection, Supabase PKCE, refresh-token storage or existing Fluent local data.",
+      "New NuGet packages, registry changes, administrator installation or command-line secret tooling."
+    ]
+  },
+  "allowedPaths": [
+    "src/Fluent.Rewrite/Providers/DeepSeekRewriteProvider.cs",
+    "src/Fluent.Rewrite/Providers/GeminiRewriteProvider.cs",
+    "src/Fluent.Rewrite/Orchestration/RewriteContext.cs",
+    "src/Fluent.App/Cloud/CloudRewriteSettings.cs",
+    "src/Fluent.App/MainWindow.xaml.cs",
+    "src/Fluent.App/Views/ProfilesPage.xaml",
+    "src/Fluent.App/Views/ProfilesPage.xaml.cs",
+    "src/Fluent.Backend/Program.cs",
+    "src/Fluent.Backend/Rewriting/DeepSeekServerProvider.cs",
+    "src/Fluent.Backend/Rewriting/IDeepSeekApi.cs",
+    "src/Fluent.Backend/Rewriting/HttpDeepSeekApi.cs",
+    "src/Fluent.Backend/Rewriting/RewriteProviderDispatcher.cs",
+    "tests/Fluent.Rewrite.Tests/CloudProviderOrchestratorTests.cs",
+    "tests/Fluent.Backend.Tests/BackendRewriteTests.cs",
+    "tests/Fluent.Backend.Tests/DeepSeekServerProviderTests.cs",
+    "tests/Fluent.IntegrationTests/CloudRewriteIntegrationTests.cs",
+    "tests/Fluent.IntegrationTests/DeepSeekSecurityScanTests.cs",
+    "docs/architecture/decisions/ADR-0005-optional-cloud-rewrite.md",
+    "docs/architecture/component-boundaries.md",
+    "docs/product/privacy-principles.md",
+    "docs/product/user-flows.md",
+    "docs/project/phases/phase-06c-deepseek-activation.md",
+    "docs/project/evidence/phase-06c-deepseek/**",
+    "docs/project/project-state.md",
+    "docs/project/roadmap.md",
+    "docs/project/risk-register.md",
+    ".claude/runtime/active-task.json"
+  ],
+  "readOnlyPaths": [
+    "CLAUDE.md",
+    ".claude/judge/**",
+    ".claude/hooks/**",
+    ".claude/schemas/**",
+    "src/Fluent.Core/**",
+    "src/Fluent.Windows/**",
+    "src/Fluent.Audio/**",
+    "src/Fluent.Speech/**",
+    "src/Fluent.Persistence/**",
+    "src/Fluent.App/Auth/**",
+    "src/Fluent.Backend/Auth/**",
+    "docs/project/evidence/phase-07a-fluent-rebrand/**",
+    "docs/project/evidence/phase-07b-supabase-auth/**"
+  ],
+  "forbiddenPaths": [
+    ".git/**",
+    ".env",
+    ".env.*",
+    "secrets/**",
+    "credentials/**",
+    "*.key",
+    "*.pem",
+    "*.pfx",
+    "*.p12",
+    "C:/Users/exhorte/AppData/Local/Fluent/**",
+    "%LOCALAPPDATA%/Fluent/**"
+  ],
+  "allowedCommandFamilies": [
+    "rg",
+    "powershell read-only inspection",
+    "dotnet restore",
+    "dotnet build",
+    "dotnet test",
+    "git status",
+    "git diff",
+    "git rev-parse",
+    "pwsh -File .claude/hooks/tests/Invoke-AllHookTests.ps1"
+  ],
+  "forbiddenCommandFamilies": [
+    "git add",
+    "git commit",
+    "git push",
+    "git pull",
+    "git reset",
+    "git clean",
+    "git checkout",
+    "git switch",
+    "curl",
+    "Invoke-WebRequest",
+    "supabase login",
+    "supabase link",
+    "deepseek login",
+    "winget",
+    "choco",
+    "reg add",
+    "reg delete"
+  ],
+  "acceptanceCriteria": [
+    "DeepSeek is unavailable unless valid backend-only process configuration is present; a missing, malformed or rejected configuration cannot send a network request and reports a controlled unavailable result.",
+    "The Desktop defaults to Gemini and requires an explicit session-only user selection before it can request DeepSeek. Authentication, Cloud enablement and consent remain independently required.",
+    "The backend provider never returns a secret, logs a secret or emits user text. HTTP authorization is a request header, never a query string. HTTP client logging is disabled for the provider client.",
+    "A provider error, invalid response, cancellation, disabled state or output-validation failure retains the exact local result; no cross-provider automatic fallback exists.",
+    "DeepSeek receives the same bounded prompt and equivalent output-validation protection as Gemini, with source tests for protected tokens and no secret/config loader in Desktop code.",
+    "Focused tests, full restore/build/test, required architecture/security/privacy/test reviews and final Development Judge evidence pass. The result remains IMPLEMENTED_AWAITING_USER_REVIEW.",
+    "No live DeepSeek call, account configuration, secret entry, deployment, Git change or external mutation is performed in this task."
+  ],
+  "requiredTests": [
+    "Desktop provider selection defaults, rejects unavailable selection, remains session-only and never enables Cloud or grants consent",
+    "DeepSeek Desktop transport routing only after explicit selection and full Cloud gate; Gemini/default and Local fallback regression",
+    "Backend DeepSeek configuration, exact origin validation, unavailable behavior, request shape/header redaction, HTTP failure, cancellation and empty/invalid response",
+    "Cloud output validation and exact-local fallback parity for DeepSeek",
+    "Source scans for .env loading, provider secret/model/endpoint leakage to Desktop, authorization query parameters, provider logging and automatic cross-provider fallback",
+    "dotnet restore Fluent.sln --disable-build-servers",
+    "dotnet build Fluent.sln -c Release -m:1 --disable-build-servers",
+    "dotnet test Fluent.sln -c Release --no-build -m:1 --disable-build-servers"
+  ],
+  "requiredReviews": [
+    "Development Judge plan verdict",
+    "Architecture and Cloud-gate review",
+    "Backend HTTP/secret-boundary review",
+    "Desktop provider-selection and consent review",
+    "Security/privacy and adversarial fallback review",
+    "Test review",
+    "Development Judge final evidence verdict"
+  ],
+  "requiredEvidence": [
+    "docs/project/evidence/phase-06c-deepseek/plan-judge-verdict.json",
+    "docs/project/evidence/phase-06c-deepseek/implementation-summary.md",
+    "docs/project/evidence/phase-06c-deepseek/dotnet-restore.log",
+    "docs/project/evidence/phase-06c-deepseek/dotnet-build.log",
+    "docs/project/evidence/phase-06c-deepseek/dotnet-test.log",
+    "docs/project/evidence/phase-06c-deepseek/security-review.md",
+    "docs/project/evidence/phase-06c-deepseek/adversarial-review.md",
+    "docs/project/evidence/phase-06c-deepseek/manual-server-configuration-checklist.md",
+    "docs/project/evidence/phase-06c-deepseek/development-judge-verdict.json"
+  ],
+  "risks": [
+    "A provider credential, endpoint or model could leak into the Desktop, repository, test output or logs.",
+    "A malformed backend base URL could become server-side request forgery.",
+    "A provider selection could bypass authentication, consent or the local-first fallback.",
+    "A DeepSeek response could be unsafe or a failure could replace the local result.",
+    "A real configuration, live call, billing event or deployment could be inferred without user authority."
+  ],
+  "rollbackPlan": [
+    "Set DeepSeek capabilities and server availability back to disabled, leaving Gemini and Local behavior untouched.",
+    "Remove only the session-only selection UI and its local code; do not alter authentication, persisted dictionary or existing user data.",
+    "Keep the backend configuration absent to retain default-deny behavior without touching secrets."
+  ],
+  "dependencies": [
+    "User message on 2026-07-21 validating continuation, interpreted as approval for this bounded offline DeepSeek preparation and prior Phase 06B review; no external operation is implied.",
+    "ADR-0005 optional Cloud rewrite and Phase 07B authentication boundaries.",
+    "A later separate user-authorized server configuration, backend deployment and controlled live smoke are required to exercise DeepSeek."
+  ],
+  "humanApprovals": [
+    "The user explicitly validated continuation on 2026-07-21 after being informed that DeepSeek is the next optional Cloud phase and that server-only key/cost authorization is required.",
+    "No authorization exists for reading .env, entering a key, account setup, billing, live provider invocation, deployment or Git publication."
+  ],
+  "maxRepairCycles": 2,
+  "verification": {
+    "baseline": "Phase 07B full Release suite passed 271/271, DeepSeek is disabled/unselected/uninvoked, the backend is undeployed, and no provider configuration is read from .env.",
+    "planJudge": "ALLOW on 2026-07-21 for bounded offline preparation only; no live provider activation, credential use, account operation, cost-bearing action or Phase 06B closure is implied.",
+    "providerDocumentation": "Official DeepSeek documentation verified on 2026-07-21: OpenAI-compatible API, base URL https://api.deepseek.com, POST /chat/completions, Bearer authorization, and deepseek-v4-pro/deepseek-v4-flash model identifiers.",
+    "finalJudge": "ALLOW on 2026-07-21 to present the offline implementation as IMPLEMENTED_AWAITING_USER_REVIEW only; no live activation, external authority or phase closure is inferred."
+  },
+  "openFindings": [
+    "No external backend deployment or Supabase/Google live smoke exists, so the Cloud path remains default-deny/local-first in normal use."
+  ]
+}

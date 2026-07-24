@@ -1,0 +1,3 @@
+Commande : `dotnet restore Fluent.sln`
+
+Résultat : PASS — tous les projets étaient à jour pour la restauration.

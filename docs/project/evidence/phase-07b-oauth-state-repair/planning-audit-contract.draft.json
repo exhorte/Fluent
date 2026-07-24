@@ -1,0 +1,147 @@
+{
+  "taskId": "FV-P07-T007",
+  "phaseId": "FV-P07",
+  "title": "Audit factuel, clôture préparatoire 07B et feuille de route Fluent",
+  "objective": "Établir l'état vérifié de Fluent après le smoke OAuth principal réussi, réconcilier la documentation de pilotage, préparer sans implémentation le contrat de clôture 07B et les brouillons des prochaines phases, sans déclarer 07B clôturée ni démarrer une fonctionnalité.",
+  "status": "approved",
+  "createdAt": "2026-07-22T00:00:00+02:00",
+  "updatedAt": "2026-07-22T00:00:00+02:00",
+  "expiresAt": "2026-08-22T00:00:00Z",
+  "approvedByJudge": true,
+  "scope": {
+    "included": [
+      "Documenter l'audit Git, solution, sources, pages, tests, dette et preuves existantes.",
+      "Mettre à jour les statuts documentaires uniquement avec des faits vérifiés, dont le smoke OAuth principal PASS et les trois contrôles manuels 07B restants.",
+      "Produire une matrice page/fonction, une carte des dépendances et une feuille de route restante cohérente avec les identifiants de phase existants.",
+      "Préparer un contrat de clôture 07B sans fermer la phase, ainsi que des brouillons de phases futures sans les activer.",
+      "Conserver une trace des tests de régression exécutés pendant cet audit."
+    ],
+    "excluded": [
+      "Toute implémentation produit, changement de source, package, test fonctionnel, migration ou base de données réelle.",
+      "Toute tentative OAuth réelle, automatisation navigateur, mutation Supabase, Google, GitHub, déploiement ou appel fournisseur.",
+      "Toute lecture, écriture, affichage ou chargement de .env, secrets, jetons, codes, clés, certificats ou données locales utilisateur.",
+      "Toute opération Git mutante, commit, push, réécriture d'historique, nettoyage ou renommage de fichiers/dossiers."
+    ]
+  },
+  "allowedPaths": [
+    "README.md",
+    "docs/history_session.md",
+    "docs/architecture/decisions/ADR-0006-native-supabase-auth.md",
+    "docs/project/project-state.md",
+    "docs/project/roadmap.md",
+    "docs/project/risk-register.md",
+    "docs/project/phases/phase-07b-supabase-auth.md",
+    "docs/project/phases/phase-07b-oauth-state-repair.md",
+    "docs/project/phases/phase-07d-authenticated-gemini.md",
+    "docs/project/phases/phase-07e-dynamic-dashboard.md",
+    "docs/project/phases/phase-07f-functional-history.md",
+    "docs/project/phases/phase-07g-functional-settings.md",
+    "docs/project/evidence/phase-07b-supabase-auth/**",
+    "docs/project/evidence/phase-07b-oauth-state-repair/**",
+    "docs/project/evidence/phase-07-planning-audit/**",
+    ".claude/runtime/active-task.json"
+  ],
+  "readOnlyPaths": [
+    "CLAUDE.md",
+    ".claude/judge/**",
+    ".claude/hooks/**",
+    ".claude/schemas/**",
+    ".env",
+    ".env.*",
+    "src/**",
+    "tests/**",
+    "tools/**",
+    ".git/**"
+  ],
+  "forbiddenPaths": [
+    ".git/**",
+    ".env",
+    ".env.*",
+    "secrets/**",
+    "credentials/**",
+    "*.key",
+    "*.pem",
+    "*.pfx",
+    "*.p12",
+    "C:/Users/exhorte/AppData/Local/Fluent/**"
+  ],
+  "allowedCommandFamilies": [
+    "rg",
+    "powershell read-only inspection",
+    "git status",
+    "git diff",
+    "git log",
+    "git remote",
+    "dotnet restore",
+    "dotnet build",
+    "dotnet test",
+    "pwsh -File .claude/hooks/tests/Invoke-AllHookTests.ps1"
+  ],
+  "forbiddenCommandFamilies": [
+    "git add",
+    "git commit",
+    "git push",
+    "git pull",
+    "git reset",
+    "git clean",
+    "git checkout",
+    "git switch",
+    "curl",
+    "Invoke-WebRequest",
+    "supabase login",
+    "supabase link",
+    "supabase db",
+    "reg add",
+    "reg delete",
+    "Remove-Item"
+  ],
+  "acceptanceCriteria": [
+    "L'état actif, le smoke OAuth et les contrôles manuels restants sont distingués sans déclaration de clôture prématurée.",
+    "Les pages réelles, statiques, indisponibles ou non câblées sont classées avec leur source de vérité et leurs limites.",
+    "La feuille de route n'écrase pas la phase 07C de renommage technique existante et explique la numérotation retenue pour les nouvelles phases.",
+    "Les prérequis de toute activation Cloud identifient le backend, l'authentification, le consentement, les secrets serveur et l'autorité humaine nécessaires.",
+    "Aucune donnée sensible, URL locale avec code OAuth, jeton, clé ou contenu .env n'est reproduit.",
+    "Les commandes de vérification documentées passent : restore, build Release, suite complète et tests de garde."
+  ],
+  "requiredTests": [
+    "dotnet restore Fluent.sln --disable-parallel",
+    "dotnet build Fluent.sln -c Release --no-restore -m:1 --disable-build-servers",
+    "dotnet test Fluent.sln -c Release --no-build -m:1 --disable-build-servers",
+    "pwsh -NoProfile -File .claude/hooks/tests/Invoke-AllHookTests.ps1"
+  ],
+  "requiredReviews": [
+    "Development Judge plan review before documentation mutation",
+    "Lead self-review of the resulting documentation diff and factual evidence"
+  ],
+  "requiredEvidence": [
+    "planning-audit-contract.draft.json",
+    "planning-audit-plan-judge-verdict.json",
+    "repository-audit.md",
+    "page-function-matrix.md",
+    "dependency-roadmap.md",
+    "phase-07b-closure-contract.draft.json",
+    "verification-summary.md"
+  ],
+  "risks": [
+    "The worktree has 301 existing changes from the technical rename and is not safe to treat as a clean atomic documentation diff.",
+    "The root .env is outside scope; no conclusion may depend on its contents.",
+    "OAuth core smoke success does not prove refresh-after-restart, offline behavior or effective sign-out.",
+    "Cloud rewrite cannot be live while the Desktop backend BaseAddress is null and the backend is undeployed."
+  ],
+  "rollbackPlan": [
+    "Revert only newly created or edited planning documentation after an explicit user decision, without touching product sources, existing evidence, secrets, local data or Git internals.",
+    "Keep Phase 07B active and local-first behavior unchanged if a planning document is rejected."
+  ],
+  "dependencies": [
+    "Existing Phase 07B OAuth evidence and the user-reported successful core smoke.",
+    "Current source audit and deterministic build/test evidence.",
+    "Development Judge ALLOW before changing project-state, roadmap or active-task.",
+    "User-controlled manual session checks before Phase 07B closure."
+  ],
+  "humanApprovals": [
+    "The user requested this repository audit, remaining roadmap, closure preparation and phase drafts.",
+    "The user reported the real OAuth core smoke as successful, while the remaining manual session checks are not reported as passed.",
+    "No external account action, secret access, deployment, live provider invocation or Git publication is authorized by this task."
+  ],
+  "maxRepairCycles": 1
+}

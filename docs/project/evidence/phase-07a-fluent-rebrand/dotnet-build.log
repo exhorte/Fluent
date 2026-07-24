@@ -1,0 +1,24 @@
+Command: dotnet build Fluent.sln -c Release --no-restore -m:1 --disable-build-servers -v:minimal
+Date: 2026-07-21
+
+Fluent.Core -> src\Fluent.Core\bin\Release\net10.0\Fluent.Core.dll
+Fluent.Windows -> src\Fluent.Windows\bin\Release\net10.0-windows\Fluent.Windows.dll
+Fluent.Audio -> src\Fluent.Audio\bin\Release\net10.0\Fluent.Audio.dll
+Fluent.Speech -> src\Fluent.Speech\bin\Release\net10.0\Fluent.Speech.dll
+Fluent.Rewrite -> src\Fluent.Rewrite\bin\Release\net10.0\Fluent.Rewrite.dll
+Fluent.Cloud -> src\Fluent.Cloud\bin\Release\net10.0\Fluent.Cloud.dll
+Fluent.Persistence -> src\Fluent.Persistence\bin\Release\net10.0\Fluent.Persistence.dll
+Fluent.App -> src\Fluent.App\bin\Release\net10.0-windows\Fluent.dll
+Fluent.Backend -> src\Fluent.Backend\bin\Release\net10.0\Fluent.Backend.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+Time Elapsed 00:00:07.43
+
+Revalidation after the approved scope amendment:
+Command: dotnet build Fluent.sln -c Release --no-restore -m:1 --disable-build-servers -v:minimal
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+Time Elapsed 00:00:08.36

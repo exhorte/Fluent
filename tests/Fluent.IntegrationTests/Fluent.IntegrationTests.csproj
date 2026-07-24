@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Fluent.Core\Fluent.Core.csproj" />
+    <ProjectReference Include="..\..\src\Fluent.Windows\Fluent.Windows.csproj" />
+    <ProjectReference Include="..\..\src\Fluent.Audio\Fluent.Audio.csproj" />
+    <ProjectReference Include="..\..\src\Fluent.Speech\Fluent.Speech.csproj" />
+    <ProjectReference Include="..\..\src\Fluent.Rewrite\Fluent.Rewrite.csproj" />
+    <ProjectReference Include="..\..\src\Fluent.Persistence\Fluent.Persistence.csproj" />
+    <ProjectReference Include="..\..\src\Fluent.App\Fluent.App.csproj" />
+  </ItemGroup>
+
+</Project>

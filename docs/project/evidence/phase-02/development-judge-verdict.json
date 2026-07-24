@@ -1,0 +1,29 @@
+{
+  "verdict": "DENY",
+  "taskId": "FV-P02-T001",
+  "action": "Close Phase FV-P02 as complete after the repair cycle",
+  "toolName": "development-judge",
+  "riskLevel": "high",
+  "reason": "The reviewed repairs are coherent: Audio now completes StopAsync when capture cleanup fails; Speech defers factory disposal until active transcription and processor cleanup finish; App cancellation state remains readable during asynchronous shutdown; and Core/Windows/App fail closed for unknown password state or missing focused-element identity. The Release build passes with 0 warnings and 0 errors, and all 30 deterministic tests pass. Closure is nevertheless denied because the only real-device smoke test remains PENDING with Result: NOT RUN. The automated suite explicitly does not access a microphone, download a model, or exercise the native Whisper runtime. Therefore the core acceptance path still lacks real-device evidence. No additional blocking static defect was identified in the reviewed repairs.",
+  "rules": [
+    ".claude/judge/constitution.md: missing evidence is failure",
+    ".claude/judge/constitution.md: the Judge cannot declare success without evidence",
+    "docs/engineering/definition-of-done.md: acceptance criteria must be satisfied with evidence",
+    ".claude/runtime/active-task.json: real microphone capture and local French transcription are acceptance criteria",
+    "docs/project/phases/phase-02-local-french-dictation.md: real-device smoke test is remaining acceptance",
+    "docs/project/evidence/phase-02/plan-judge-verdict.json: final review requires real local microphone/transcription evidence"
+  ],
+  "evidence": [
+    "docs/project/evidence/phase-02/dotnet-build.log: Release build passed with 0 warnings and 0 errors",
+    "docs/project/evidence/phase-02/dotnet-test.log: 30 passed, 0 failed",
+    "src/Fluent.Audio/Capture/InMemoryMicrophoneRecorder.cs",
+    "src/Fluent.Speech/Transcription/WhisperFrenchTranscriber.cs",
+    "src/Fluent.Core/Interaction/TargetSnapshot.cs",
+    "src/Fluent.Core/Interaction/TextInsertionPolicy.cs",
+    "src/Fluent.Windows/ActiveTarget/ActiveTargetDetector.cs",
+    "docs/project/evidence/phase-02/real-device-smoke-test.md: Status PENDING and Result NOT RUN"
+  ],
+  "saferAlternative": "Keep FV-P02 in verifying status and perform only the single scoped Notepad smoke test; no additional implementation or broader Phase 01 checklist is required before resubmitting this closure decision.",
+  "requiredNextStep": "Run the documented Release smoke test in Notepad, record the actual inserted French text or exact failure message, confirm that no audio file was created, and request the final closure verdict again.",
+  "timestamp": "2026-07-14T18:30:00+02:00"
+}

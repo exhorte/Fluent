@@ -1,0 +1,14 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T006",
+  "action": "Activate Phase 07B-R3 for the bounded JWKS refresh-concurrency repair",
+  "riskLevel": "high",
+  "reason": "A monotonic atomic refresh generation lets queued callers reuse a completed forced refresh instead of creating another network cycle while preserving the existing lock, pinned manager and fail-closed validation.",
+  "constraints": [
+    "No trust, endpoint, cache, retry, package, logging or external-state change.",
+    "A coalesced caller validates once against the current manager with refreshOnKeyMiss=false.",
+    "A fresh manager is published only after initialization produces a non-Unavailable result.",
+    "Concurrent invalid, rotated-valid, refresh-failure and cancellation regressions are required."
+  ],
+  "timestamp": "2026-07-22T00:00:00+02:00"
+}

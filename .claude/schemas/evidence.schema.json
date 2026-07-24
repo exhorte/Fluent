@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NyxVoice Evidence",
+  "type": "object",
+  "required": ["type", "taskId", "method", "startedAt", "finishedAt", "exitCode", "status", "summary", "logPath"],
+  "properties": {
+    "type": { "type": "string" },
+    "taskId": { "type": "string" },
+    "method": { "type": "string" },
+    "startedAt": { "type": "string" },
+    "finishedAt": { "type": "string" },
+    "exitCode": { "type": "integer" },
+    "status": { "type": "string", "enum": ["PASS", "FAIL", "PARTIAL", "SKIPPED"] },
+    "summary": { "type": "string" },
+    "logPath": { "type": "string" },
+    "hash": { "type": "string" }
+  },
+  "additionalProperties": true
+}

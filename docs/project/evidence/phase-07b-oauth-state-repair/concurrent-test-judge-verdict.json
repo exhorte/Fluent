@@ -1,0 +1,12 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T005-A01",
+  "action": "Add a deterministic test-only concurrent unknown-kid regression",
+  "riskLevel": "medium",
+  "constraints": [
+    "Use one shared validator and deterministic async gates.",
+    "Require aggregate metadata=2 and JWKS=2.",
+    "Do not modify production code without a new contract if the regression fails."
+  ],
+  "timestamp": "2026-07-22T00:00:00+02:00"
+}

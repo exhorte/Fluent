@@ -1,0 +1,135 @@
+{
+  "taskId": "FV-P07-T004",
+  "phaseId": "FV-P07B-R1",
+  "title": "Repair Supabase social OAuth state handling and terminal UI state",
+  "objective": "Remove the Fluent-owned state parameter that overrides Supabase social-provider state, preserve exact PKCE/loopback behavior, terminate every local sign-in attempt safely, and add deterministic regression coverage without performing another live OAuth smoke.",
+  "status": "core_oauth_smoke_passed_checklist_pending",
+  "createdAt": "2026-07-22T00:00:00+02:00",
+  "expiresAt": "2026-08-22T00:00:00Z",
+  "approvedByJudge": true,
+  "scope": {
+    "included": [
+      "Remove application-owned OAuth state generation, authorize-query emission and callback comparison from the Supabase social-provider flow",
+      "Preserve an in-memory one-time PKCE verifier/challenge and construct the exact Supabase /auth/v1/authorize URL with provider, exact loopback redirect_to, flow_type=pkce, code_challenge and code_challenge_method=s256 only",
+      "Normalize callback errors including bad_oauth_state to a non-sensitive Failed status without exposing raw provider fields",
+      "Guarantee terminal cleanup order for listener disposal, cancellation source cleanup, status transition, UI re-enable, idempotent cancel, bounded timeout and immediate retry after local completion",
+      "Focused deterministic tests, documentation, root-cause evidence, full offline restore/build/test, diff review and final Judge review"
+    ],
+    "excluded": [
+      "Live OAuth retry, browser automation, Google or Supabase account/configuration mutation, deployment, backend provider call or manual smoke success claim",
+      "Reading, printing, modifying or loading .env, .env.*, publishable values, OAuth secrets, tokens, authorization codes, verifiers, credentials, certificates or provider keys",
+      "Changing the Google callback, Supabase redirect allow-list, Site URL, project, users, GitHub, Git history, local user data, dictionary, transcription, rewriting, insertion or Cloud consent behavior",
+      "Adding a WebView, fixed callback port, localhost listener, LAN/IPv6 listener, logging, telemetry, secret storage, SDK or NuGet dependency",
+      "Attempting to intercept or observe a browser page sent to an unexpected destination; only the bounded local timeout may terminate a callback that never reaches Fluent"
+    ]
+  },
+  "allowedPaths": [
+    "src/Fluent.App/Auth/AuthenticationState.cs",
+    "src/Fluent.App/Auth/PkceAuthorization.cs",
+    "src/Fluent.App/Auth/LoopbackCallbackListener.cs",
+    "src/Fluent.App/Views/ProfilesPage.xaml.cs",
+    "tests/Fluent.IntegrationTests/SupabaseAuthenticationIntegrationTests.cs",
+    "tests/Fluent.IntegrationTests/AuthenticationSecurityScanTests.cs",
+    "tests/Fluent.Rewrite.Tests/PersonalDictionaryTests.cs",
+    "tests/Fluent.Backend.Tests/SupabaseJwtValidatorTests.cs",
+    "src/Fluent.Backend/Auth/SupabaseJwtValidator.cs",
+    "docs/architecture/decisions/ADR-0006-native-supabase-auth.md",
+    "docs/project/phases/phase-07b-supabase-auth.md",
+    "docs/project/phases/phase-07b-oauth-state-repair.md",
+    "docs/project/evidence/phase-07b-supabase-auth/manual-supabase-google-smoke-checklist.md",
+    "docs/project/evidence/phase-07b-oauth-state-repair/**",
+    "docs/project/project-state.md",
+    "docs/project/risk-register.md",
+    "docs/history_session.md",
+    ".claude/runtime/active-task.json"
+  ],
+  "readOnlyPaths": [
+    "CLAUDE.md",
+    ".claude/judge/**",
+    ".claude/hooks/**",
+    ".claude/schemas/**",
+    "src/Fluent.Cloud/**",
+    "src/Fluent.Core/**",
+    "src/Fluent.Windows/**",
+    "src/Fluent.Audio/**",
+    "src/Fluent.Speech/**",
+    "src/Fluent.Persistence/**",
+    "src/Fluent.Rewrite/**"
+  ],
+  "forbiddenPaths": [
+    ".git/**", ".env", ".env.*", "secrets/**", "credentials/**", "*.key", "*.pem", "*.pfx", "*.p12", "C:/Users/exhorte/AppData/Local/Fluent/**"
+  ],
+  "allowedCommandFamilies": [
+    "rg", "powershell read-only inspection", "dotnet restore", "dotnet build", "dotnet test", "git status", "git diff", "git rev-parse", "pwsh -File .claude/hooks/tests/Invoke-AllHookTests.ps1"
+  ],
+  "forbiddenCommandFamilies": [
+    "git add", "git commit", "git push", "git pull", "git reset", "git clean", "git checkout", "git switch", "curl", "Invoke-WebRequest", "supabase login", "supabase link", "supabase db", "reg add", "reg delete", "Remove-Item"
+  ],
+  "acceptanceCriteria": [
+    "The social-provider authorize URL contains no Fluent-owned state parameter and never navigates directly to Google; it targets the configured Supabase HTTPS origin and /auth/v1/authorize path.",
+    "The authorize query has one exact single-encoded 127.0.0.1 ephemeral /callback redirect_to plus provider=google, flow_type=pkce, a correct SHA-256 Base64URL challenge and code_challenge_method=s256, with no extra state.",
+    "PKCE verifier remains random, in memory and single-attempt; callback codes remain single-use and are exchanged only after a successful local callback.",
+    "Callback error fields are normalized without exposing raw values; bad_oauth_state, invalid callbacks, transport errors and timeouts never exchange a code and end in a non-sensitive terminal state.",
+    "Every attempt disposes/stops its loopback listener, clears its cancellation source before notifying terminal UI state, leaves IsOperationInProgress false, permits an immediate retry and keeps CancelSignIn idempotent.",
+    "No token, code, verifier, raw state, provider error description or user content is logged, persisted, displayed or added to configuration.",
+    "Focused tests and full Release verification pass; evidence records the initial smoke failure and the successful corrected core OAuth retest without retaining authorization material. Remaining session checklist items stay open."
+  ],
+  "requiredTests": [
+    "PKCE verifier/challenge correctness and randomness without application state",
+    "Exact authorize endpoint/query and single-decoded loopback redirect_to, no state and no direct Google host",
+    "Normalized bad_oauth_state callback with zero code exchange",
+    "Error, exception, user cancellation and timeout terminal states with listener disposal and IsOperationInProgress false",
+    "Immediate second attempt succeeds after a first callback failure; repeated CancelSignIn is harmless",
+    "Authentication security scan for no token/code/verifier/state/error logging",
+    "dotnet restore Fluent.sln --disable-build-servers",
+    "dotnet build Fluent.sln -c Release -m:1 --disable-build-servers",
+    "dotnet test Fluent.sln -c Release --no-build -m:1 --disable-build-servers",
+    "git diff --check"
+  ],
+  "requiredReviews": [
+    "Development Judge plan verdict", "OAuth/PKCE architecture and Supabase-contract review", "UI state and listener-lifecycle review", "Security/privacy review", "Test review", "Development Judge final evidence verdict"
+  ],
+  "requiredEvidence": [
+    "docs/project/evidence/phase-07b-oauth-state-repair/plan-judge-verdict.json",
+    "docs/project/evidence/phase-07b-oauth-state-repair/root-cause.md",
+    "docs/project/evidence/phase-07b-oauth-state-repair/implementation-summary.md",
+    "docs/project/evidence/phase-07b-oauth-state-repair/dotnet-restore.log",
+    "docs/project/evidence/phase-07b-oauth-state-repair/dotnet-build.log",
+    "docs/project/evidence/phase-07b-oauth-state-repair/dotnet-test.log",
+    "docs/project/evidence/phase-07b-oauth-state-repair/review-summary.md",
+    "docs/project/evidence/phase-07b-oauth-state-repair/development-judge-verdict.json"
+  ],
+  "risks": [
+    "Removing an application state check without preserving PKCE and loopback exactness could weaken callback correlation.",
+    "A cleanup/status ordering race could leave UI disabled or reject an immediate retry.",
+    "Provider error fields could leak raw diagnostic content into UI or logs.",
+    "A failed browser redirect cannot be observed directly when it never reaches the loopback listener; timeout behavior must remain bounded and honest."
+  ],
+  "rollbackPlan": [
+    "Revert only the approved source/test/document changes before any Git mutation.",
+    "If a regression is found, keep authentication in a non-authenticated terminal state so local behavior remains available; do not restore the known-conflicting custom state parameter.",
+    "Do not alter external Supabase/Google configuration or local credential/data stores during rollback."
+  ],
+  "dependencies": [
+    "User-reported failed live smoke on 2026-07-22 with Supabase error_code=bad_oauth_state and fallback to http://localhost:3000.",
+    "User requires a root-cause diagnosis, diff and automated regressions before another manual smoke.",
+    "Official Supabase Google login, PKCE, redirect URL and error-code documentation verified on 2026-07-22."
+  ],
+  "humanApprovals": [
+    "The user explicitly authorized correction of the OAuth failure and UI blocking behavior plus regression tests.",
+    "No authority is granted for another live login, external configuration mutation, secret access, deployment or Git publication."
+  ],
+  "maxRepairCycles": 2,
+  "verification": {
+    "baseline": "Previous offline Phase 07B verification passed, but the first authorized live OAuth smoke failed before the loopback callback because Fluent supplied its own state parameter to Supabase social authorize. The UI remained SigningIn while waiting for a callback that was redirected elsewhere.",
+    "planJudge": "ALLOW on 2026-07-22 for the bounded custom-state removal, preserved PKCE/loopback behavior, normalized terminal errors and deterministic cleanup; no live smoke or external mutation is authorized.",
+    "amendmentJudge": "ALLOW FV-P07-T004-A01 on 2026-07-22 for the isolated dictionary test-data correction and backend-test per-path request instrumentation.",
+    "backendRefreshJudge": "ALLOW FV-P07-T005 and FV-P07-T006 for removal of the redundant discarded-manager refresh and bounded concurrent single-flight repair.",
+    "verification": "Restore PASS; Release build 0 warnings / 0 errors; OAuth 12/12; JWT 13/13; Backend 54/54; complete suite 301/301; git diff --check PASS.",
+    "finalJudge": "ALLOW to present the diff and request a user-controlled live retest; no phase closure or live-success claim.",
+    "manualCoreOAuthSmoke": "PASS reported by the user on 2026-07-22: Google confirmation, loopback callback, terminal connected UI, Cloud inactive and sign-out action available. No authorization code retained; refresh, offline and effective sign-out checks remain pending."
+  },
+  "openFindings": [
+    "An unexpected browser destination is not observable by a loopback-only Desktop process; the bounded timeout is the safe terminal mechanism when no callback reaches Fluent."
+  ]
+}

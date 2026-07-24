@@ -1,0 +1,3 @@
+Command: `dotnet build Fluent.sln -c Release --no-restore -m:1 --disable-build-servers`
+
+Result: PASS — Release build completed with 0 warning and 0 error.

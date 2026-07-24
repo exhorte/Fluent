@@ -1,0 +1,104 @@
+[
+  {
+    "name": "benchmark-stt",
+    "path": ".claude/skills/benchmark-stt/SKILL.md",
+    "allowedTools": "Read Glob Grep Write",
+    "manualOnly": "yes"
+  },
+  {
+    "name": "close-phase",
+    "path": ".claude/skills/close-phase/SKILL.md",
+    "allowedTools": "Read Glob Grep Write Agent",
+    "manualOnly": "yes"
+  },
+  {
+    "name": "close-task",
+    "path": ".claude/skills/close-task/SKILL.md",
+    "allowedTools": "Read Glob Grep Agent Write",
+    "manualOnly": "no"
+  },
+  {
+    "name": "create-execution-contract",
+    "path": ".claude/skills/create-execution-contract/SKILL.md",
+    "allowedTools": "Read Glob Grep Write Edit Agent",
+    "manualOnly": "no"
+  },
+  {
+    "name": "development-loop",
+    "path": ".claude/skills/development-loop/SKILL.md",
+    "allowedTools": "Read Glob Grep Write Edit Bash PowerShell Agent",
+    "manualOnly": "no"
+  },
+  {
+    "name": "escalate-human",
+    "path": ".claude/skills/escalate-human/SKILL.md",
+    "allowedTools": "Read Glob Grep Write",
+    "manualOnly": "yes"
+  },
+  {
+    "name": "evaluate-profiles",
+    "path": ".claude/skills/evaluate-profiles/SKILL.md",
+    "allowedTools": "Read Glob Grep Write Edit",
+    "manualOnly": "no"
+  },
+  {
+    "name": "implement-slice",
+    "path": ".claude/skills/implement-slice/SKILL.md",
+    "allowedTools": "Read Glob Grep Write Edit Bash PowerShell Agent",
+    "manualOnly": "no"
+  },
+  {
+    "name": "judge-plan",
+    "path": ".claude/skills/judge-plan/SKILL.md",
+    "allowedTools": "Read Glob Grep Agent",
+    "manualOnly": "no"
+  },
+  {
+    "name": "repair-loop",
+    "path": ".claude/skills/repair-loop/SKILL.md",
+    "allowedTools": "Read Glob Grep Write Edit Bash PowerShell Agent",
+    "manualOnly": "no"
+  },
+  {
+    "name": "research-decision",
+    "path": ".claude/skills/research-decision/SKILL.md",
+    "allowedTools": "Read Glob Grep WebSearch WebFetch Write Agent",
+    "manualOnly": "no"
+  },
+  {
+    "name": "review-slice",
+    "path": ".claude/skills/review-slice/SKILL.md",
+    "allowedTools": "Read Glob Grep Agent Write",
+    "manualOnly": "no"
+  },
+  {
+    "name": "security-review",
+    "path": ".claude/skills/security-review/SKILL.md",
+    "allowedTools": "Read Glob Grep Agent Write",
+    "manualOnly": "no"
+  },
+  {
+    "name": "start-phase",
+    "path": ".claude/skills/start-phase/SKILL.md",
+    "allowedTools": "Read Glob Grep Write Edit Agent",
+    "manualOnly": "yes"
+  },
+  {
+    "name": "update-project-state",
+    "path": ".claude/skills/update-project-state/SKILL.md",
+    "allowedTools": "Read Glob Grep Write Edit",
+    "manualOnly": "no"
+  },
+  {
+    "name": "verify-slice",
+    "path": ".claude/skills/verify-slice/SKILL.md",
+    "allowedTools": "Read Glob Grep Bash PowerShell Write",
+    "manualOnly": "no"
+  },
+  {
+    "name": "write-adr",
+    "path": ".claude/skills/write-adr/SKILL.md",
+    "allowedTools": "Read Glob Grep Write Edit",
+    "manualOnly": "no"
+  }
+]

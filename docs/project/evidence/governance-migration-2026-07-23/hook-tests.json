@@ -1,0 +1,289 @@
+{
+  "type": "hook-test-report",
+  "taskId": "FV-P00-T001",
+  "command": ".claude/hooks/tests/Invoke-AllHookTests.ps1",
+  "startedAt": "2026-07-23T15:00:34.3989182Z",
+  "finishedAt": "2026-07-23T15:00:46.3914359Z",
+  "exitCode": 0,
+  "status": "PASS",
+  "total": 45,
+  "passed": 45,
+  "failed": 0,
+  "anomalies": [],
+  "results": [
+    {
+      "name": "T-001 git status is allowed",
+      "status": "PASS",
+      "durationMs": 3144,
+      "error": ""
+    },
+    {
+      "name": "T-002 git diff is allowed",
+      "status": "PASS",
+      "durationMs": 709,
+      "error": ""
+    },
+    {
+      "name": "T-003 dotnet build in active contract is allowed",
+      "status": "PASS",
+      "durationMs": 294,
+      "error": ""
+    },
+    {
+      "name": "T-007 .env read is denied",
+      "status": "PASS",
+      "durationMs": 248,
+      "error": ""
+    },
+    {
+      "name": "T-008 certificate read is denied",
+      "status": "PASS",
+      "durationMs": 198,
+      "error": ""
+    },
+    {
+      "name": "T-009 git reset hard is denied",
+      "status": "PASS",
+      "durationMs": 188,
+      "error": ""
+    },
+    {
+      "name": "T-010 destructive git clean is denied",
+      "status": "PASS",
+      "durationMs": 188,
+      "error": ""
+    },
+    {
+      "name": "T-011 git push force is denied",
+      "status": "PASS",
+      "durationMs": 140,
+      "error": ""
+    },
+    {
+      "name": "T-012 recursive project delete is denied",
+      "status": "PASS",
+      "durationMs": 131,
+      "error": ""
+    },
+    {
+      "name": "T-013 dangerous command after semicolon is detected",
+      "status": "PASS",
+      "durationMs": 131,
+      "error": ""
+    },
+    {
+      "name": "T-014 dangerous command after && is detected",
+      "status": "PASS",
+      "durationMs": 114,
+      "error": ""
+    },
+    {
+      "name": "T-015 dangerous command in pipe is detected",
+      "status": "PASS",
+      "durationMs": 116,
+      "error": ""
+    },
+    {
+      "name": "T-017 malformed JSON fails safely",
+      "status": "PASS",
+      "durationMs": 1478,
+      "error": ""
+    },
+    {
+      "name": "T-022 non-force git push is allowed (R1, ADR-0007)",
+      "status": "PASS",
+      "durationMs": 709,
+      "error": ""
+    },
+    {
+      "name": "T-030 deployment without a recorded contract family is denied",
+      "status": "PASS",
+      "durationMs": 278,
+      "error": ""
+    },
+    {
+      "name": "T-031 deployment recorded in the contract family is allowed (R1/R2)",
+      "status": "PASS",
+      "durationMs": 178,
+      "error": ""
+    },
+    {
+      "name": "T-023 registry modification asks user",
+      "status": "PASS",
+      "durationMs": 123,
+      "error": ""
+    },
+    {
+      "name": "T-024 administrator install asks user",
+      "status": "PASS",
+      "durationMs": 132,
+      "error": ""
+    },
+    {
+      "name": "T-025 ordinary technical choice does not ask user",
+      "status": "PASS",
+      "durationMs": 153,
+      "error": ""
+    },
+    {
+      "name": "T-026 decisions write valid redacted JSONL audit entries",
+      "status": "PASS",
+      "durationMs": 158,
+      "error": ""
+    },
+    {
+      "name": "T-004 write in allowedPaths is allowed",
+      "status": "PASS",
+      "durationMs": 167,
+      "error": ""
+    },
+    {
+      "name": "T-005 write outside allowedPaths is denied",
+      "status": "PASS",
+      "durationMs": 163,
+      "error": ""
+    },
+    {
+      "name": "T-006 write in judge governance path is denied after lock",
+      "status": "PASS",
+      "durationMs": 117,
+      "error": ""
+    },
+    {
+      "name": "T-016 path traversal is denied",
+      "status": "PASS",
+      "durationMs": 178,
+      "error": ""
+    },
+    {
+      "name": "T-018 task without contract cannot write",
+      "status": "PASS",
+      "durationMs": 168,
+      "error": ""
+    },
+    {
+      "name": "T-019 expired contract cannot write",
+      "status": "PASS",
+      "durationMs": 303,
+      "error": ""
+    },
+    {
+      "name": "T-031 Windows path containing spaces is handled",
+      "status": "PASS",
+      "durationMs": 334,
+      "error": ""
+    },
+    {
+      "name": "Command classifier normalizes chained destructive command",
+      "status": "PASS",
+      "durationMs": 13,
+      "error": ""
+    },
+    {
+      "name": "Command classifier allows non-force git push as R1 (ADR-0007)",
+      "status": "PASS",
+      "durationMs": 24,
+      "error": ""
+    },
+    {
+      "name": "Command classifier denies force git push",
+      "status": "PASS",
+      "durationMs": 29,
+      "error": ""
+    },
+    {
+      "name": "Command classifier gates deployment behind the active contract (R1/R2)",
+      "status": "PASS",
+      "durationMs": 8,
+      "error": ""
+    },
+    {
+      "name": "Command classifier still asks user for registry and admin install",
+      "status": "PASS",
+      "durationMs": 20,
+      "error": ""
+    },
+    {
+      "name": "Command classifier treats git status as low risk allow",
+      "status": "PASS",
+      "durationMs": 5,
+      "error": ""
+    },
+    {
+      "name": "T-020 untested task cannot be completed",
+      "status": "PASS",
+      "durationMs": 200,
+      "error": ""
+    },
+    {
+      "name": "T-021 task with critical finding cannot be completed",
+      "status": "PASS",
+      "durationMs": 267,
+      "error": ""
+    },
+    {
+      "name": "T-028 compaction context contains phase and task",
+      "status": "PASS",
+      "durationMs": 349,
+      "error": ""
+    },
+    {
+      "name": "T-029 Development Judge has no write tools",
+      "status": "PASS",
+      "durationMs": 72,
+      "error": ""
+    },
+    {
+      "name": "T-030 Development Judge cannot modify constitution",
+      "status": "PASS",
+      "durationMs": 396,
+      "error": ""
+    },
+    {
+      "name": "G-001 risk-authorization model and secrets policy are installed",
+      "status": "PASS",
+      "durationMs": 4,
+      "error": ""
+    },
+    {
+      "name": "G-002 PROJECT_DIRECTOR agent exists and ADR-0007 is present",
+      "status": "PASS",
+      "durationMs": 7,
+      "error": ""
+    },
+    {
+      "name": "G-003 Judge is an auditor: verdict enum is ALLOW/ALLOW_WITH_DEBT/BLOCK_CRITICAL",
+      "status": "PASS",
+      "durationMs": 20,
+      "error": ""
+    },
+    {
+      "name": "G-004 development-judge agent describes the auditor role",
+      "status": "PASS",
+      "durationMs": 11,
+      "error": ""
+    },
+    {
+      "name": "G-005 non-force git push is standing-authorized in settings, force stays denied",
+      "status": "PASS",
+      "durationMs": 18,
+      "error": ""
+    },
+    {
+      "name": "G-006 command policy no longer human-gates git push and protects project-director",
+      "status": "PASS",
+      "durationMs": 25,
+      "error": ""
+    },
+    {
+      "name": "G-007 safety floor is intact: constitution forbids self-expansion of authority",
+      "status": "PASS",
+      "durationMs": 8,
+      "error": ""
+    }
+  ],
+  "evidencePaths": [
+    "docs/project/evidence/governance-migration-2026-07-23/hook-tests.json",
+    "C:\\SECOND_BRAIN\\PROJECTS\\Fluent\\Fluent\\docs\\project\\evidence\\phase-00\\hook-audit-ledger.jsonl"
+  ]
+}

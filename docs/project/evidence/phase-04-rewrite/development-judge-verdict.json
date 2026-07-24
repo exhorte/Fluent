@@ -1,0 +1,35 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P04-T001",
+  "action": "Close FV-P04-T001 and declare the bounded Phase 04A Professional French Safe Rewriting Foundation technically complete.",
+  "toolName": "development-judge",
+  "riskLevel": "high",
+  "reason": "The approved slice is complete, scoped and fail-closed. The deterministic rewriter changes only spacing and punctuation; lexical and sensitive-token validation rejects content mutation; empty, invalid and failed outputs return the exact source transcript; cancellation propagates; existing target recapture and insertion protections remain intact. Focused tests pass 37/37, the Release build reports zero warnings and errors, the complete suite passes 71/71, and both bounded reviews report no blocker after repairs. This verdict closes Phase 04A only and does not claim completion of deferred Ollama-backed rewriting or additional profiles.",
+  "rules": [
+    "CLAUDE.md P-009: changed targets must use explicit clipboard fallback",
+    "CLAUDE.md P-010 and P-011: rewriting must not invent information and must preserve sensitive content",
+    "CLAUDE.md P-014: completion requires more than successful compilation",
+    ".claude/judge/constitution.md: closure must be scoped, permitted and evidenced",
+    ".claude/rules/ai-rewriting.md: preserve content and provide deterministic fallback",
+    ".claude/rules/dotnet-csharp.md: propagate cancellation and test business rules",
+    ".claude/rules/testing.md: tests must remain deterministic and offline",
+    "docs/engineering/definition-of-done.md: contract, acceptance, tests, reviews, documentation and residual-risk conditions are satisfied"
+  ],
+  "evidence": [
+    ".claude/runtime/active-task.json records an approved reviewing contract, complete verification and no open findings",
+    "src/Fluent.Rewrite/SafeProfileRewriteService.cs preserves the exact transcript on empty, invalid or failed rewriting and rethrows cancellation",
+    "src/Fluent.Rewrite/Validation/RewriteOutputValidator.cs validates ordinal lexical order and protected technical tokens with bounded regex execution",
+    "src/Fluent.Rewrite/Rewriting/ProfessionalFrenchRuleBasedRewriter.cs performs deterministic spacing and punctuation normalization only",
+    "src/Fluent.App/MainWindow.xaml.cs integrates rewriting before immediate target recapture and the unchanged insertion policy while measuring through delivery",
+    "tests/Fluent.Rewrite.Tests/ProfessionalFrenchRewriteTests.cs covers formatting, mutation rejection, exact fallback, sensitive tokens and cancellation",
+    "docs/project/evidence/phase-04-rewrite/dotnet-build.log records a successful Release build with 0 warnings and 0 errors",
+    "docs/project/evidence/phase-04-rewrite/dotnet-test.log records 37/37 focused tests and 71/71 complete tests passing",
+    "docs/project/evidence/phase-04-rewrite/focused-review.md records no blocking integration or rewrite-safety finding after two repair cycles",
+    "docs/project/project-state.md, docs/project/roadmap.md and docs/project/risk-register.md consistently describe verified Phase 04A reality and deferred scope",
+    "docs/project/evidence/phase-04-rewrite/phase-03-baseline-manifest.md and matching hashes show the accepted Phase 03 capsule baseline was preserved"
+  ],
+  "saferAlternative": "If a later runtime regression is observed, remove only the SafeProfileRewriteService call from MainWindow and restore direct insertion of the original transcript, then rebuild and rerun the complete suite.",
+  "requiredNextStep": "Persist this verdict, mark FV-P04-T001 and Phase 04A complete with no open finding, retain Ollama and additional profiles as deferred, and begin any subsequent slice only under a new approved execution contract.",
+  "timestamp": "2026-07-15T14:47:00+02:00"
+}
+

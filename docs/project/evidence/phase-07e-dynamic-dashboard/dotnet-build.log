@@ -1,0 +1,3 @@
+Commande : `dotnet build Fluent.sln -c Release --no-restore`
+
+Résultat : PASS — build Release avec 0 avertissement et 0 erreur.

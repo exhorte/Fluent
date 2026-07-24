@@ -1,0 +1,37 @@
+{
+  "taskId": "FV-P07-T003",
+  "state": "S3-verified",
+  "timestamp": "2026-07-22T00:00:00+02:00",
+  "source": "legacy-local-application-data",
+  "destination": "C:/Users/exhorte/AppData/Local/Fluent",
+  "destinationExistedBefore": false,
+  "sameVolume": true,
+  "runningApplicationProcesses": [],
+  "manifestBefore": [
+    { "relativePath": "Models", "kind": "directory", "lastWriteUtc": "2026-07-14T15:49:50.3406567Z" },
+    { "relativePath": "Models/ggml-base-q5_0.bin", "kind": "file", "length": 55295433, "lastWriteUtc": "2026-07-14T15:21:23.3017723Z" },
+    { "relativePath": "Models/ggml-base-q8_0.bin", "kind": "file", "length": 81768585, "lastWriteUtc": "2026-07-14T15:49:50.2806564Z" },
+    { "relativePath": "legacy-database", "kind": "file", "length": 8192, "lastWriteUtc": "2026-07-18T23:34:45.5475387Z" }
+  ],
+  "sqliteHashesBefore": [
+    { "database": "legacy-database", "sha256": "BDA726CD0DDD536329670D729661884D6DE36182435BB6D43B6ED7B7A17F64F6", "length": 8192 }
+  ],
+  "manifestAfter": [
+    { "relativePath": "fluent.db", "kind": "file", "length": 8192, "lastWriteUtc": "2026-07-18T23:34:45.5475387Z" },
+    { "relativePath": "Models", "kind": "directory", "lastWriteUtc": "2026-07-14T15:49:50.3406567Z" },
+    { "relativePath": "Models/ggml-base-q5_0.bin", "kind": "file", "length": 55295433, "lastWriteUtc": "2026-07-14T15:21:23.3017723Z" },
+    { "relativePath": "Models/ggml-base-q8_0.bin", "kind": "file", "length": 81768585, "lastWriteUtc": "2026-07-14T15:49:50.2806564Z" }
+  ],
+  "sqliteHashesAfter": [
+    { "database": "fluent.db", "sha256": "BDA726CD0DDD536329670D729661884D6DE36182435BB6D43B6ED7B7A17F64F6", "length": 8192 }
+  ],
+  "sourceExistsAfter": false,
+  "destinationExistsAfter": true,
+  "rollback": "not-needed",
+  "notes": [
+    "No SQLite sidecar was present during preflight.",
+    "The source-to-destination directory and database filename Rename-Item steps completed on C: with no pre-existing destination.",
+    "The before/after database SHA-256 values are identical; the Models directory and both model files retain their manifest metadata.",
+    "No data content was opened, queried, modified, copied or deleted."
+  ]
+}

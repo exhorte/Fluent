@@ -1,0 +1,29 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P06-T003",
+  "action": "Present the offline Phase 06C DeepSeek optional-provider implementation to the user for review; do not close or live-activate the phase",
+  "riskLevel": "high",
+  "reason": "Desktop selection is session-only and cannot independently enable Cloud or grant consent. Routing remains behind authentication, enablement, consent and backend-availability gates. Backend configuration is mandatory and bounded, the endpoint is fixed, the key is confined to the Authorization header, invalid configuration cannot cause egress, failures preserve the exact local result, and cross-provider fallback is absent. All required offline verification passed; no real key, .env access, external configuration, live request, billing action, deployment or Git mutation occurred.",
+  "rules": [
+    ".claude/judge/constitution.md: technical approval permits presentation only after approved scope and evidence are satisfied; it does not constitute user acceptance or phase closure.",
+    "docs/project/evidence/phase-06c-deepseek/execution-contract.draft.json: server-only bounded configuration, fixed-origin transport, safety gates, fallback, fake-only testing and external-operation exclusions are satisfied.",
+    ".claude/judge/risk-classification.md: provider, network, credential and potential-cost work remains high risk.",
+    ".claude/judge/escalation-policy.md: live DeepSeek configuration, API use, account/billing action and deployment require separate explicit user authority.",
+    ".claude/judge/protected-assets.md: no .env, secret, credential, certificate or governance asset was modified."
+  ],
+  "evidence": [
+    "docs/project/evidence/phase-06c-deepseek/dotnet-restore.log: PASS.",
+    "docs/project/evidence/phase-06c-deepseek/dotnet-build.log: Release build completed with 0 warnings and 0 errors.",
+    "docs/project/evidence/phase-06c-deepseek/dotnet-test.log: 294 passed, 0 failed, 0 skipped.",
+    "docs/project/evidence/phase-06c-deepseek/implementation-summary.md",
+    "docs/project/evidence/phase-06c-deepseek/security-review.md",
+    "docs/project/evidence/phase-06c-deepseek/adversarial-review.md",
+    "docs/project/evidence/phase-06c-deepseek/review-summary.md",
+    "docs/project/evidence/phase-06c-deepseek/manual-server-configuration-checklist.md",
+    "docs/project/evidence/phase-06c-deepseek/execution-contract.draft.json",
+    "docs/project/phases/phase-06c-deepseek-activation.md"
+  ],
+  "saferAlternative": "Keep DeepSeek unavailable and retain the verified local fallback until the user separately authorizes a controlled live configuration and smoke-test task.",
+  "requiredNextStep": "Present Phase 06C as IMPLEMENTED_AWAITING_USER_REVIEW only. Before any real DEEPSEEK_API_KEY/configuration, account or billing action, live API request, deployment or production enablement, obtain explicit user authority in a separate task and conduct a controlled live smoke review with no secret disclosure.",
+  "timestamp": "2026-07-21T00:00:00+02:00"
+}

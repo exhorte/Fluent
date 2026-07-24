@@ -1,0 +1,144 @@
+{
+  "taskId": "FV-P07-T001",
+  "phaseId": "FV-P07",
+  "title": "Fluent product rebrand",
+  "objective": "Rename the visible desktop product and its executable from Fluent to Fluent while preserving all existing local behavior, compatibility paths, internal namespaces, security controls, and undeployed Cloud posture.",
+  "status": "approved_ready_for_activation",
+  "createdAt": "2026-07-21T00:00:00+02:00",
+  "updatedAt": "2026-07-21T00:00:00+02:00",
+  "expiresAt": "2026-08-21T00:00:00Z",
+  "approvedByJudge": true,
+  "scope": {
+    "included": [
+      "Visible Fluent branding in the main WPF window and recording capsule",
+      "The single public already-processing status message in MainWindow.xaml.cs",
+      "Fluent executable and product metadata in Fluent.App.csproj",
+      "Current product documentation and README branding updates",
+      "Release build, complete test suite, focused documentation and compatibility review"
+    ],
+    "excluded": [
+      "Any namespace, folder, project-file, solution-file, repository, GitHub remote, or package rename",
+      "Any change to %LOCALAPPDATA%\\Fluent or migration of existing user data",
+      "Any change to dictation, transcription, rewriting, insertion, authentication, Cloud providers, security controls, or user consent",
+      "DeepSeek activation, provider keys, deployment, live Cloud calls, new dependencies, publication, or Git push"
+    ]
+  },
+  "allowedPaths": [
+    "README.md",
+    "src/Fluent.App/Fluent.App.csproj",
+    "src/Fluent.App/MainWindow.xaml",
+    "src/Fluent.App/MainWindow.xaml.cs",
+    "src/Fluent.App/Phase01/RecordingCapsuleWindow.xaml",
+    "docs/product/vision.md",
+    "docs/product/privacy-principles.md",
+    "docs/product/user-flows.md",
+    "docs/design/visual-language.md",
+    "docs/project/phases/phase-07a-fluent-rebrand.md",
+    "docs/project/evidence/phase-07a-fluent-rebrand/**",
+    "docs/project/project-state.md",
+    "docs/project/roadmap.md",
+    "docs/project/risk-register.md",
+    ".claude/runtime/active-task.json"
+  ],
+  "readOnlyPaths": [
+    "CLAUDE.md",
+    ".claude/judge/**",
+    ".claude/hooks/**",
+    ".claude/schemas/**",
+    "Fluent.sln",
+    "src/Fluent.Core/**",
+    "src/Fluent.Windows/**",
+    "src/Fluent.Audio/**",
+    "src/Fluent.Speech/**",
+    "src/Fluent.Rewrite/**",
+    "src/Fluent.Persistence/**",
+    "src/Fluent.Cloud/**",
+    "src/Fluent.Backend/**",
+    "tests/**"
+  ],
+  "forbiddenPaths": [
+    ".git/**",
+    ".env",
+    ".env.*",
+    "secrets/**",
+    "credentials/**",
+    "*.key",
+    "*.pem",
+    "*.pfx",
+    "*.p12",
+    "C:/Users/exhorte/AppData/Local/Fluent/**",
+    "%LOCALAPPDATA%/Fluent/**"
+  ],
+  "allowedCommandFamilies": [
+    "rg",
+    "powershell",
+    "dotnet build",
+    "dotnet test",
+    "git status",
+    "git diff",
+    "git rev-parse"
+  ],
+  "forbiddenCommandFamilies": [
+    "git add",
+    "git commit",
+    "git push",
+    "git pull",
+    "git reset",
+    "git clean",
+    "git checkout",
+    "git switch",
+    "curl",
+    "Invoke-WebRequest",
+    "ollama",
+    "winget",
+    "choco",
+    "reg add"
+  ],
+  "acceptanceCriteria": [
+    "The visible main window title, dashboard header, floating capsule, and already-processing status message display Fluent and no longer display Fluent.",
+    "The Release app output is Fluent.exe with Product metadata Fluent.",
+    "All Fluent.* namespaces, project paths, the solution, and %LOCALAPPDATA%\\Fluent remain unchanged, so no existing local dictionary migration occurs.",
+    "The Release solution build has zero warnings and zero errors, and the complete existing test suite passes.",
+    "No source in the transcript, rewrite, insertion, authentication, provider, or security paths changes."
+  ],
+  "requiredTests": [
+    "rg -n 'Title=\"Fluent\"|Text=\"Fluent\"|Fluent  ·' src/Fluent.App",
+    "dotnet build Fluent.sln -c Release -m:1 --disable-build-servers",
+    "dotnet test Fluent.sln -c Release --no-build -m:1 --disable-build-servers"
+  ],
+  "requiredReviews": [
+    "Development Judge plan verdict",
+    "Focused branding and compatibility review",
+    "Focused documentation review",
+    "Development Judge final evidence verdict"
+  ],
+  "requiredEvidence": [
+    "docs/project/evidence/phase-07a-fluent-rebrand/plan-judge-verdict.json",
+    "docs/project/evidence/phase-07a-fluent-rebrand/implementation-summary.md",
+    "docs/project/evidence/phase-07a-fluent-rebrand/dotnet-build.log",
+    "docs/project/evidence/phase-07a-fluent-rebrand/dotnet-test.log",
+    "docs/project/evidence/phase-07a-fluent-rebrand/focused-review.md",
+    "docs/project/evidence/phase-07a-fluent-rebrand/development-judge-verdict.json"
+  ],
+  "risks": [
+    "A broad text replacement could unintentionally rename technical namespaces or compatibility data paths.",
+    "An executable-name change could leave the prior binary on disk and create launch ambiguity until the next clean build.",
+    "Current and historical documentation could be mixed, making the project status misleading."
+  ],
+  "rollbackPlan": [
+    "Restore the four public branding files and app project metadata to Fluent.",
+    "Rebuild Release and rerun the complete test suite.",
+    "Do not alter local user data, source namespaces, project paths, or Git history."
+  ],
+  "dependencies": [
+    "Explicit user direction on 2026-07-21 to rename the application or project Fluent.",
+    "Phase 06B remains implemented awaiting a separate user review; no Cloud or DeepSeek change is included."
+  ],
+  "humanApprovals": [
+    "On 2026-07-21, the user explicitly requested that the application or project be renamed Fluent and asked to continue the project."
+  ],
+  "maxRepairCycles": 1,
+  "verification": {
+    "planJudge": "ALLOW on 2026-07-21 for public Fluent branding only; internal namespaces, repository, solution, data path, providers, and DeepSeek remain excluded."
+  }
+}

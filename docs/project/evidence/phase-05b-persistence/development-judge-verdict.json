@@ -1,0 +1,32 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P05-T002",
+  "action": "Permit the implemented Phase 05B persistent local dictionary to proceed to the user-run Windows restart smoke without closing the task or product phase.",
+  "toolName": "development-judge",
+  "riskLevel": "high",
+  "reason": "FV-P05-T002 remains active, approved, scoped, reversible, and technically ready for the bounded user smoke. Release build evidence reports zero warnings and errors; focused persistence, dictionary, and integration tests pass 19/19, 55/55, and 3/3; the complete suite passes 147/147. Two bounded review cycles resolved LocalAppData startup fallback, read-only existing-database inspection, Unicode key identity, bounded loading, structural schema validation, truthful WPF state, and test coverage findings. The implementation persists only dictionary entries, keeps SQLite work off the WPF dispatcher, preserves target and insertion protections, and retains incompatible databases unchanged. This verdict authorizes smoke testing only; it does not authorize phase closure, destructive database repair, publication, or any excluded operation.",
+  "rules": [
+    "The user explicitly authorized continuation into the bounded Phase 05B persistent local dictionary scope.",
+    "The smoke must be performed by the user through the application; automated tests and development commands must not create, migrate, or mutate the real LocalAppData database.",
+    "An incompatible, corrupt, locked, invalid, over-capacity, negative-version, or newer database must remain untouched and produce the disclosed session-only fallback.",
+    "No audio, transcript, rewrite output, history, target metadata, telemetry, account data, or secret may be persisted.",
+    "Git publication, deployment, installation, registry changes, destructive migration, repair, downgrade, quarantine, and database deletion remain forbidden.",
+    "FV-P05-T002 and Phase 05B must remain open until the restart, reload, update, delete, dictation-correction, and explicit user-acceptance smoke gates pass."
+  ],
+  "evidence": [
+    ".claude/runtime/active-task.json records status reviewing, approved plan and dependency amendment, no open findings, Release build PASS, focused tests PASS, complete tests 147/147, and manual smoke pending.",
+    "docs/project/evidence/phase-05b-persistence/dotnet-build.log records a successful Release solution build with 0 warnings and 0 errors.",
+    "docs/project/evidence/phase-05b-persistence/dotnet-test.log records persistence 19/19, rewrite dictionary 55/55, integration 3/3, and complete solution 147/147.",
+    "docs/project/evidence/phase-05b-persistence/focused-review.md records PASS after 2/2 repair cycles with no remaining architecture, migration, security, privacy, WPF, or test blocker.",
+    "src/Fluent.Persistence/Dictionary/SqlitePersonalDictionaryStore.cs:365-501 validates the real WITHOUT ROWID table and primary-key collation through pragma_table_list, pragma_index_list, and pragma_index_xinfo rather than marker text.",
+    "src/Fluent.Persistence/Dictionary/SqlitePersonalDictionaryStore.cs:127-220 resolves the production path inside caught initialization, inspects existing databases read-only, and migrates only an empty supported version-zero database.",
+    "src/Fluent.Persistence/Dictionary/SqlitePersonalDictionaryStore.cs:504-558 bounds loaded rows and stored values and validates timestamps before exposing entries.",
+    "src/Fluent.App/MainWindow.xaml.cs:56-89 completes dictionary initialization or fallback before registering the global hotkey, while lines 279-360 retain target recapture, password blocking, changed-target clipboard fallback, and no automatic Enter behavior.",
+    "Directory.Packages.props and src/Fluent.Persistence/Fluent.Persistence.csproj isolate Microsoft.Data.Sqlite.Core 10.0.10, Dapper 2.1.79, and SQLitePCLRaw.bundle_e_sqlite3 3.0.3 to Fluent.Persistence; dependency evidence resolves SourceGear.sqlite3 3.50.4.5 and excludes SQLitePCLRaw.lib.e_sqlite3 2.1.11.",
+    "docs/project/evidence/phase-05b-persistence/windows-restart-smoke.md defines the still-pending user checks and makes no closure claim."
+  ],
+  "saferAlternative": "If the Windows smoke shows fallback unexpectedly, persistence loss, incorrect reload, or any database error, stop the smoke, preserve the database unchanged, continue with the disclosed session-only dictionary, and diagnose through read-only inspection and isolated temporary-database reproduction.",
+  "requiredNextStep": "Provide the documented Windows restart smoke to the user. Record persistence, update, deletion, and dictation results plus explicit user acceptance; do not close FV-P05-T002 or Phase 05B before every user smoke item passes.",
+  "timestamp": "2026-07-16T20:05:00+02:00"
+}
+

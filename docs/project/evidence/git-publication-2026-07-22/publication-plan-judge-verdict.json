@@ -1,0 +1,30 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T018",
+  "action": "Publish the user-confirmed Fluent snapshot through a dedicated branch, one commit, a non-forced push, and a draft GitHub pull request",
+  "toolName": "development-judge",
+  "riskLevel": "critical",
+  "reason": "The user has explicitly authorized public publication of the complete snapshot, including the protected governance changes. The repaired contract removes the stale fixed-count assumption and instead requires a deterministic NUL-safe manifest frozen after all pre-commit artifacts exist, exact staged-index equality, remote-main SHA equality, staged path/content secret scanning, rename reconciliation, a dedicated branch, one commit, non-forced push, and a draft PR. The publication is now sufficiently bounded and fail-closed.",
+  "rules": [
+    "Store this verdict before freezing the manifest; after the freeze, perform no working-tree write before staging and commit.",
+    "Resolve the remote default branch and current SHA with read-only remote commands. Require local `main` HEAD to equal that SHA exactly; on mismatch, stop without pull, merge, rebase, reset, or checkout.",
+    "Require the exact branch `agent/publish-fluent-rename-phase07` to be absent locally and remotely before `git switch -c`; on collision, stop rather than reusing or deleting it.",
+    "Freeze and hash raw NUL-safe status/path data. Compare the staged index through a deterministic normalized NUL-safe representation, using no-renames path accounting for exact equality and a separate rename/delete-add reconciliation report.",
+    "After `git add -A`, prove exact manifest equality, run `git diff --cached --check`, and scan staged paths and staged blob contents for `.env`, secrets, credentials, tokens, private keys, certificates, local data, caches, and sensitive evidence. Report only paths and rule identifiers, never matched values.",
+    "Explicitly include and review the user-authorized protected changes to `CLAUDE.md` and `.claude/agents/development-judge.md`; do not broaden to any unmanifested path.",
+    "Create exactly one descriptive commit on the dedicated branch. Verify `main` remains unchanged and the commit parent is the verified main SHA.",
+    "Push only with a normal upstream push; never force, rewrite, pull, merge, or rebase. Create a draft PR against the verified default branch and do not merge it.",
+    "State prominently in the draft PR that Phase 07C remains to be reconciled/reviewed and that the PR must not be merged solely on the basis of publication.",
+    "After commit creation, record commit SHA, push result, remote branch, and draft-PR URL only in the conversation. On any failure, stop and report the exact error without modifying history or creating another commit."
+  ],
+  "evidence": [
+    "docs/project/evidence/git-publication-2026-07-22/execution-contract.draft.json",
+    "Current branch: main.",
+    "Current remote: origin = https://github.com/exhorte/Fluent.git.",
+    "Current unstaged inventory exists and will be replaced by the contractually frozen manifest rather than a fixed count.",
+    "User explicitly authorized publication of the complete snapshot and specifically included CLAUDE.md and .claude/agents/development-judge.md despite Phase 07C requiring reconciliation."
+  ],
+  "saferAlternative": "Keep the complete snapshot local and publish only after Phase 07C reconciliation. The user has instead explicitly authorized the guarded draft-PR publication path.",
+  "requiredNextStep": "Record this verdict, activate the amended contract, and execute the checks in order: remote/default SHA equality, branch nonexistence, branch creation, final NUL-safe manifest freeze and SHA-256, git add -A, exact normalized index equality, secret/path/content scan, rename reconciliation, cached diff check, single commit, non-forced upstream push, and draft PR. Stop immediately on any mismatch or failure and report it without destructive recovery.",
+  "timestamp": "2026-07-22T00:00:00+02:00"
+}

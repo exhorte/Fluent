@@ -1,0 +1,13 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T005",
+  "action": "Activate Phase 07B-R2 for deletion of the redundant old-manager RequestRefresh call",
+  "riskLevel": "high",
+  "reason": "Per-path instrumentation isolated the excess network activity to a redundant refresh request on a ConfigurationManager immediately discarded and replaced. Deleting only that line preserves the lock, fresh pinned manager, single retry and every JWT validation rule.",
+  "constraints": [
+    "Delete only the identified RequestRefresh call.",
+    "Retain exact assertions for two metadata and two JWKS requests.",
+    "Do not alter refresh locking, manager construction, cache policy, endpoint pinning, retry count, validation parameters, packages or external state."
+  ],
+  "timestamp": "2026-07-22T00:00:00+02:00"
+}

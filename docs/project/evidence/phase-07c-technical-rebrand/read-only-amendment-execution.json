@@ -1,0 +1,10 @@
+{
+  "taskId": "FV-P07-T003-A01",
+  "status": "stopped-before-directory-move",
+  "state": "A2-failed-source-restored",
+  "a0": { "staticMappingVerified": true, "sourcePresent": true, "targetAbsent": true, "parentChildOrderVerified": true, "capturedAttributes": "ReadOnly, Directory" },
+  "a1": { "readOnlyRemoved": true, "remainingAttributes": "Directory" },
+  "a2": { "renameSucceeded": false, "errorClass": "AccessDenied", "sourceWasNotMoved": true },
+  "recovery": { "sourceAttributesRestored": "ReadOnly, Directory", "targetWasNotCreated": true, "automaticRollback": "not-required" },
+  "excludedActions": ["ACL change", "ownership change", "content change", "user-data change", "secret access", "Git operation"]
+}

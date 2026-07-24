@@ -1,0 +1,13 @@
+{
+  "session_id": "fixture-session",
+  "transcript_path": "fixture-transcript.jsonl",
+  "cwd": "$PROJECT_ROOT",
+  "permission_mode": "default",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "PowerShell",
+  "tool_input": {
+    "command": "dotnet build NyxVoice.sln",
+    "description": "Build solution"
+  },
+  "tool_use_id": "toolu_fixture_safe_build"
+}

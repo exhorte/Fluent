@@ -1,0 +1,88 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="Nyx.WindowBrush" Color="#050608" />
+    <SolidColorBrush x:Key="Nyx.SidebarBrush" Color="#090B0F" />
+    <SolidColorBrush x:Key="Nyx.CardBrush" Color="#0D1016" />
+    <SolidColorBrush x:Key="Nyx.SelectedBrush" Color="#171B24" />
+    <SolidColorBrush x:Key="Nyx.BorderBrush" Color="#242A36" />
+    <SolidColorBrush x:Key="Nyx.CapsuleBorderBrush" Color="#3E4450" />
+    <SolidColorBrush x:Key="Nyx.PrimaryTextBrush" Color="#F4F6FA" />
+    <SolidColorBrush x:Key="Nyx.SecondaryTextBrush" Color="#9299A6" />
+    <SolidColorBrush x:Key="Nyx.MutedTextBrush" Color="#5D6573" />
+    <SolidColorBrush x:Key="Nyx.CyanBrush" Color="#30D1CB" />
+    <SolidColorBrush x:Key="Nyx.BlueBrush" Color="#639BFA" />
+    <SolidColorBrush x:Key="Nyx.VioletBrush" Color="#7A55E7" />
+    <SolidColorBrush x:Key="Nyx.SuccessBrush" Color="#65D6A6" />
+    <SolidColorBrush x:Key="Nyx.WarningBrush" Color="#E7B867" />
+    <SolidColorBrush x:Key="Nyx.ErrorBrush" Color="#F06A76" />
+
+    <LinearGradientBrush x:Key="Nyx.AccentGradientBrush"
+                         StartPoint="0,0"
+                         EndPoint="1,1">
+        <GradientStop Color="#CFFAF1" Offset="0" />
+        <GradientStop Color="#30D1CB" Offset="0.36" />
+        <GradientStop Color="#639BFA" Offset="0.68" />
+        <GradientStop Color="#7A55E7" Offset="1" />
+    </LinearGradientBrush>
+
+    <Style x:Key="Nyx.PageTitleTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontFamily" Value="Segoe UI Variable Display" />
+        <Setter Property="FontSize" Value="24" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource Nyx.PrimaryTextBrush}" />
+    </Style>
+
+    <Style x:Key="Nyx.SectionTitleTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontFamily" Value="Segoe UI Variable Display" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource Nyx.PrimaryTextBrush}" />
+    </Style>
+
+    <Style x:Key="Nyx.LabelTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontFamily" Value="Segoe UI Variable Text" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource Nyx.MutedTextBrush}" />
+    </Style>
+
+    <Style x:Key="Nyx.BodyTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontFamily" Value="Segoe UI Variable Text" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{StaticResource Nyx.SecondaryTextBrush}" />
+    </Style>
+
+    <Style x:Key="Nyx.MetricTextStyle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontFamily" Value="Segoe UI Variable Display" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource Nyx.PrimaryTextBrush}" />
+    </Style>
+
+    <Style x:Key="Nyx.DashboardCardStyle" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{StaticResource Nyx.CardBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource Nyx.BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Padding" Value="18" />
+    </Style>
+
+    <ControlTemplate x:Key="Nyx.LogoMarkTemplate" TargetType="{x:Type Control}">
+        <Grid>
+            <Border Background="{StaticResource Nyx.AccentGradientBrush}"
+                    CornerRadius="9" />
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
+                <Border Width="2" Height="6" Margin="1,0" CornerRadius="1" Background="#E6FFFFFF" />
+                <Border Width="2" Height="11" Margin="1,0" CornerRadius="1" Background="#E6FFFFFF" />
+                <Border Width="2" Height="16" Margin="1,0" CornerRadius="1" Background="#F2FFFFFF" />
+                <Border Width="2" Height="10" Margin="1,0" CornerRadius="1" Background="#E6FFFFFF" />
+                <Border Width="2" Height="5" Margin="1,0" CornerRadius="1" Background="#E6FFFFFF" />
+            </StackPanel>
+            <Border BorderBrush="#35FFFFFF"
+                    BorderThickness="1"
+                    CornerRadius="9" />
+        </Grid>
+    </ControlTemplate>
+</ResourceDictionary>

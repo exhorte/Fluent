@@ -1,0 +1,16 @@
+Command: dotnet test Fluent.sln -c Release --no-build -m:1 --disable-build-servers --logger "console;verbosity=minimal"
+Date: 2026-07-21
+
+Fluent.Core.Tests: 11 passed, 0 failed
+Fluent.Windows.Tests: 6 passed, 0 failed
+Fluent.Audio.Tests: 6 passed, 0 failed
+Fluent.Speech.Tests: 9 passed, 0 failed
+Fluent.Rewrite.Tests: 164 passed, 0 failed
+Fluent.Persistence.Tests: 19 passed, 0 failed
+Fluent.IntegrationTests: 12 passed, 0 failed
+Fluent.Backend.Tests: 29 passed, 0 failed
+
+Total: 256 passed, 0 failed, 0 skipped.
+
+Revalidation after the approved scope amendment:
+Total: 256 passed, 0 failed, 0 skipped.

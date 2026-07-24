@@ -1,0 +1,21 @@
+  Fluent.Core -> C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\src\Fluent.Core\bin\Debug\net10.0\Fluent.Core.dll
+  Fluent.Persistence -> C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\src\Fluent.Persistence\bin\Debug\net10.0\Fluent.Persistence.dll
+  Fluent.Windows -> C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\src\Fluent.Windows\bin\Debug\net10.0-windows\Fluent.Windows.dll
+  Fluent.ManualHarness -> C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\tools\Fluent.ManualHarness\bin\Debug\net10.0\Fluent.ManualHarness.dll
+  Fluent.Speech -> C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\src\Fluent.Speech\bin\Debug\net10.0\Fluent.Speech.dll
+  Fluent.Persistence.Tests -> C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\tests\Fluent.Persistence.Tests\bin\Debug\net10.0\Fluent.Persistence.Tests.dll
+  Fluent.Windows.Tests -> C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\tests\Fluent.Windows.Tests\bin\Debug\net10.0-windows\Fluent.Windows.Tests.dll
+  Fluent.Audio -> C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\src\Fluent.Audio\bin\Debug\net10.0\Fluent.Audio.dll
+  Fluent.Rewrite -> C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\src\Fluent.Rewrite\bin\Debug\net10.0\Fluent.Rewrite.dll
+  Fluent.Speech.Tests -> C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\tests\Fluent.Speech.Tests\bin\Debug\net10.0\Fluent.Speech.Tests.dll
+  Fluent.Core.Tests -> C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\tests\Fluent.Core.Tests\bin\Debug\net10.0\Fluent.Core.Tests.dll
+  Fluent.App -> C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\src\Fluent.App\bin\Debug\net10.0-windows\Fluent.App.dll
+  Fluent.Audio.Tests -> C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\tests\Fluent.Audio.Tests\bin\Debug\net10.0\Fluent.Audio.Tests.dll
+  Fluent.Rewrite.Tests -> C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\tests\Fluent.Rewrite.Tests\bin\Debug\net10.0\Fluent.Rewrite.Tests.dll
+  Fluent.IntegrationTests -> C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\tests\Fluent.IntegrationTests\bin\Debug\net10.0-windows\Fluent.IntegrationTests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:08.22

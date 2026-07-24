@@ -1,0 +1,59 @@
+{
+  "taskId": "FV-P07-T016",
+  "phaseId": "FV-P07",
+  "title": "Phase 07E — tableau de bord local fondé sur des statuts réels",
+  "objective": "Faire évoluer l’Overview avec des résumés calculés uniquement depuis l’état local déjà présent : profil, dictionnaire, authentification et autorisation Cloud. La tranche ne crée ni historique ni stockage, et ne prétend jamais qu’un backend ou Gemini est disponible.",
+  "status": "completed",
+  "createdAt": "2026-07-22T00:00:00+02:00",
+  "updatedAt": "2026-07-22T00:00:00+02:00",
+  "expiresAt": "2026-08-22T00:00:00Z",
+  "approvedByJudge": true,
+  "scope": {
+    "included": [
+      "Une présentation pure et testable des statuts locaux du dashboard.",
+      "Des résumés UI pour le profil courant, le dictionnaire, l’état de session et l’autorisation Cloud.",
+      "Les états chargement, vide, dégradé et erreur déjà représentables par les sources existantes.",
+      "Une matrice source-vers-métrique et une checklist de smoke visuel sans donnée personnelle."
+    ],
+    "excluded": [
+      "Historique, compteurs de dictées, rétention, télémétrie, analytics, persistance ou affichage de texte dicté.",
+      "Modification d’authentification, Cloud, backend, fournisseurs, Supabase, Google, DeepSeek, Gemini, configuration externe, .env, secrets ou réseau.",
+      "Déploiement, exécution de l’application, Git, commit, push ou modification des phases 06B, 06C, 07A, 07B, 07C ou 07D."
+    ]
+  },
+  "allowedPaths": [
+    "src/Fluent.App/Dashboard/DashboardStatusPresentation.cs",
+    "src/Fluent.App/MainWindow.xaml",
+    "src/Fluent.App/MainWindow.xaml.cs",
+    "tests/Fluent.IntegrationTests/DashboardStatusPresentationTests.cs",
+    "docs/architecture/component-boundaries.md",
+    "docs/product/user-flows.md",
+    "docs/project/phases/phase-07e-dynamic-dashboard.md",
+    "docs/project/evidence/phase-07e-dynamic-dashboard/**",
+    "docs/project/evidence/phase-07-planning-audit/page-function-matrix.md",
+    "docs/project/project-state.md",
+    "docs/project/roadmap.md",
+    "docs/project/risk-register.md",
+    "docs/history_session.md",
+    ".claude/runtime/active-task.json"
+  ],
+  "readOnlyPaths": ["CLAUDE.md", ".claude/judge/**", ".claude/hooks/**", ".claude/schemas/**", ".env", ".env.*", "secrets/**", "credentials/**", ".git/**", "src/Fluent.Backend/**", "src/Fluent.Cloud/**", "src/Fluent.Rewrite/**", "src/Fluent.Persistence/**"],
+  "forbiddenPaths": [".git/**", ".env", ".env.*", "secrets/**", "credentials/**", "*.key", "*.pem", "*.pfx", "*.p12", "C:/Users/exhorte/AppData/Local/Fluent/**"],
+  "allowedCommandFamilies": ["rg", "powershell read-only inspection", "dotnet restore", "dotnet build", "dotnet test", "pwsh -File .claude/hooks/tests/Invoke-AllHookTests.ps1", "git status", "git diff"],
+  "forbiddenCommandFamilies": ["git add", "git commit", "git push", "git pull", "git reset", "git clean", "git checkout", "git switch", "curl", "Invoke-WebRequest", "supabase login", "supabase link", "gemini login", "deepseek login", "dotnet run", "reg add", "reg delete", "Remove-Item"],
+  "acceptanceCriteria": [
+    "Chaque résumé nouveau a une source locale identifiée et ne contient ni texte dicté, identité de compte, token, secret ni métrique historique inventée.",
+    "Le dashboard distingue au minimum dictionnaire en chargement/vide/persistant/secours, session configurée/déconnectée/en cours/hors ligne/échec/authentifiée, et Cloud non configuré/local/désactivé/consentement requis/autorisé sans affirmer la disponibilité du service.",
+    "Le défaut reste local ; le dashboard ne déclenche aucune opération ni activation Cloud.",
+    "La présentation pure est couverte par des tests déterministes de toutes les branches ; les textes XAML sont raccordés aux mises à jour de sources existantes.",
+    "Restore, build Release, suite complète, tests de hooks et git diff --check passent ; un smoke visuel manuel est préparé mais n’est pas inventé."
+  ],
+  "requiredTests": ["tests ciblés de DashboardStatusPresentation", "scan de non-persistance et de non-contenu", "dotnet restore", "dotnet build -c Release", "dotnet test -c Release", "hook tests", "git diff --check"],
+  "requiredReviews": ["Development Judge plan", "architecture/source des métriques", "privacy", "WPF/accessibilité", "tests", "Development Judge final"],
+  "requiredEvidence": ["plan-judge-verdict.json", "metrics-source-matrix.md", "implementation-summary.md", "dotnet-restore.log", "dotnet-build.log", "dotnet-test.log", "review-summary.md", "manual-dashboard-smoke-checklist.md", "development-judge-verdict.json"],
+  "risks": ["statut trompeur", "confusion autorisation Cloud/disponibilité Cloud", "fuite de contenu ou identité", "persistance implicite", "régression WPF"],
+  "rollbackPlan": ["Retirer les résumés 07E et restaurer les libellés statiques existants, sans affecter les services locaux ou Cloud."],
+  "dependencies": ["Tranche 07D hors ligne acceptée ; aucune activation live requise", "inventaire explicite des sources Overview existantes"],
+  "humanApprovals": ["L’utilisateur a demandé de passer à la phase suivante. Aucune autorisation externe, de dépense, de déploiement, de secret ou de persistance d’historique n’est incluse."],
+  "maxRepairCycles": 2
+}

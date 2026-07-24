@@ -1,0 +1,50 @@
+{
+  "taskId": "FV-P07-T017",
+  "phaseId": "FV-P07",
+  "title": "Consigner le smoke 07E et préparer la revue de clôture",
+  "objective": "Consigner le résultat PASS rapporté par l’utilisateur pour le smoke visuel 07E, mettre la phase en revue technique de clôture et demander le verdict du Judge, sans la clôturer et sans modifier le produit ou un service externe.",
+  "status": "completed",
+  "createdAt": "2026-07-22T00:00:00+02:00",
+  "updatedAt": "2026-07-22T00:00:00+02:00",
+  "expiresAt": "2026-08-22T00:00:00Z",
+  "approvedByJudge": true,
+  "scope": {
+    "included": [
+      "Enregistrer le PASS manuel de l’utilisateur dans la preuve 07E.",
+      "Mettre à jour seulement les statuts documentaires de 07E vers la revue de clôture.",
+      "Obtenir et consigner un verdict technique de clôture, puis présenter le résultat à l’utilisateur."
+    ],
+    "excluded": [
+      "Clôture de 07E sans instruction explicite de l’utilisateur.",
+      "Code, tests, dépendances, .env, secrets, backend, fournisseur, réseau, déploiement, données locales, Git, commit ou push.",
+      "Modification ou clôture de 06B, 06C, 07A, 07B, 07C ou 07D."
+    ]
+  },
+  "allowedPaths": [
+    "docs/project/evidence/phase-07e-dynamic-dashboard/**",
+    "docs/project/phases/phase-07e-dynamic-dashboard.md",
+    "docs/project/project-state.md",
+    "docs/project/roadmap.md",
+    "docs/project/risk-register.md",
+    "docs/history_session.md",
+    ".claude/runtime/active-task.json"
+  ],
+  "readOnlyPaths": ["CLAUDE.md", ".claude/judge/**", ".claude/hooks/**", ".claude/schemas/**", "src/**", "tests/**", ".env", ".env.*", ".git/**"],
+  "forbiddenPaths": [".git/**", ".env", ".env.*", "secrets/**", "credentials/**", "*.key", "*.pem", "*.pfx", "*.p12", "C:/Users/exhorte/AppData/Local/Fluent/**"],
+  "allowedCommandFamilies": ["rg", "powershell read-only inspection", "git status", "git diff"],
+  "forbiddenCommandFamilies": ["git add", "git commit", "git push", "git pull", "git reset", "git clean", "git checkout", "git switch", "curl", "Invoke-WebRequest", "supabase login", "supabase link", "gemini login", "deepseek login", "dotnet run", "reg add", "reg delete", "Remove-Item"],
+  "acceptanceCriteria": [
+    "Le PASS manuel est attribué au message explicite de l’utilisateur, sans test inventé ni détail sensible.",
+    "Le verdict de clôture distingue l’aptitude technique de la décision de clôture de l’utilisateur.",
+    "07E reste ouverte jusqu’à une instruction explicite de clôture ; 07D et les phases voisines restent inchangées.",
+    "Les JSON et le diff documentaire restent valides."
+  ],
+  "requiredTests": ["Validation JSON des contrats/verdicts", "git diff --check"],
+  "requiredReviews": ["Development Judge plan review", "Development Judge closure review", "Relecture factuelle des statuts"],
+  "requiredEvidence": ["manuel PASS utilisateur consigné", "development-judge-verdict.json existant", "verdict de clôture 07E"],
+  "risks": ["PASS assimilé à une clôture", "résultat manuel inventé", "modification d’une phase voisine"],
+  "rollbackPlan": ["Revenir uniquement sur les statuts et preuves de finalisation de 07E, sans toucher au produit ni aux preuves techniques."],
+  "dependencies": ["Verdict final de présentation FV-P07-T016", "Message utilisateur : PASS"],
+  "humanApprovals": ["L’utilisateur a rapporté PASS pour la checklist visuelle 07E ; aucune clôture explicite n’est inférée."],
+  "maxRepairCycles": 0
+}

@@ -1,0 +1,24 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T014",
+  "action": "Activate Phase 07D for offline authenticated-Gemini backend-origin configuration and gating only",
+  "toolName": "development-judge",
+  "riskLevel": "high",
+  "reason": "Desktop currently has no backend origin and can display Cloud activation despite Cloud being unreachable. A process-only public FLUENT_BACKEND_URL, strict HTTPS-origin validation and enablement gating can be implemented and tested offline without deployment, credentials, provider calls or backend changes.",
+  "rules": [
+    "Accept only an absolute HTTPS origin; reject userinfo, query, fragment and any non-root path.",
+    "Missing or invalid configuration leaves BaseAddress null, prevents Cloud enablement, exposes an unavailable state and performs no network action.",
+    "Cloud routing retains authenticated session, valid origin, explicit enablement, session-only consent and provider availability gates.",
+    "Tests use deterministic fakes and scoped environment restoration; no DNS, socket, OAuth, backend or provider request.",
+    "No dependency, Backend, OAuth, DeepSeek activation, secret, .env, deployment, user-data, governance or Git change."
+  ],
+  "evidence": [
+    "execution-contract.draft.json",
+    "Current CloudBackendOptions.BaseAddress is always null.",
+    "Current Profiles behavior allows Cloud activation despite no configured backend.",
+    "User authorized continuation after closing 07B, but not deployment, external configuration, credentials or live calls."
+  ],
+  "saferAlternative": "Keep BaseAddress null and Cloud permanently unavailable until a separately authorized deployment/configuration phase.",
+  "requiredNextStep": "Implement only validated process-origin composition, unavailable-state gating, deterministic tests and listed documentation; then run full verification and final Judge review before presentation.",
+  "timestamp": "2026-07-22T00:00:00+02:00"
+}

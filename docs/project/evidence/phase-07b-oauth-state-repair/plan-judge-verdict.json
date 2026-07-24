@@ -1,0 +1,8 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T004",
+  "riskLevel": "high",
+  "timestamp": "2026-07-22T00:00:00+02:00",
+  "reason": "Removing only the Fluent-owned state is compatible with preserved PKCE S256 binding and exact loopback handling. Terminal cleanup, bounded timeout, normalized errors and focused adversarial tests keep the repair fail-closed.",
+  "requiredNextStep": "Implement only the approved slice, run focused and full verification, and obtain final Judge review before asking for another user smoke."
+}

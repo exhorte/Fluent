@@ -1,0 +1,23 @@
+{
+  "verdict": "DENY",
+  "taskId": "FV-P01-T001",
+  "action": "Continue beyond Phase 01 to the next product phase",
+  "toolName": "development-judge",
+  "riskLevel": "medium",
+  "reason": "Phase 01 code, build, and automated tests are complete, but required manual verification against Notepad, browser, VS Code, Windows Terminal, password field, and target-change scenarios has not been executed. The Judge cannot approve continuation based only on compilation and unit tests.",
+  "rules": [
+    "P-014",
+    "QG: phase cannot close only because code compiles",
+    "docs/project/phases/phase-01-windows-interaction-spike.md acceptance criteria",
+    "manual verification required for real Windows focus behavior"
+  ],
+  "evidence": [
+    "docs/project/evidence/phase-01/implementation-summary.md",
+    "docs/project/evidence/phase-01/dotnet-build.json",
+    "docs/project/evidence/phase-01/dotnet-test.json",
+    "docs/project/evidence/phase-01/manual-verification-checklist.md"
+  ],
+  "saferAlternative": "Run the manual verification checklist in the four target applications, record results, then request a new Judge verdict.",
+  "requiredNextStep": "Execute and record Phase 01 manual verification before continuing to the next phase.",
+  "timestamp": "2026-07-12T08:30:00Z"
+}

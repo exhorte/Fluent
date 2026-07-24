@@ -1,0 +1,5 @@
+Command: `dotnet restore Fluent.sln --disable-parallel`
+
+Result: PASS — all projects were up to date for restore.
+
+No package was added and no network service, provider or secret was used by the product code.

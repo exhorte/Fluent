@@ -1,0 +1,177 @@
+{
+  "taskId": "FV-P07-T003",
+  "phaseId": "FV-P07C",
+  "title": "Fluent full technical rebrand",
+  "objective": "Replace every repository-level Fluent identifier, file and directory with Fluent equivalents, migrate the exact existing local application-data directory and database name without changing their bytes, and preserve the established local-first, authentication and Cloud safety behavior.",
+  "status": "active",
+  "createdAt": "2026-07-22T00:00:00+02:00",
+  "expiresAt": "2026-08-22T00:00:00Z",
+  "approvedByJudge": true,
+  "scope": {
+    "included": [
+      "Mechanical case-preserving replacements Fluent→Fluent, fluent→fluent and FLUENT→FLUENT in repository text sources, documentation, tests, project files, solution metadata, scripts and history_session.md, excluding generated and protected material",
+      "Explicit rename of the solution, 28 discovered Fluent-named files, all Fluent-named source/test/tool directories, and the two enclosing repository directories from C:/SECOND_BRAIN/PROJECTS/Fluent/Fluent to C:/SECOND_BRAIN/PROJECTS/Fluent/Fluent",
+      "Namespace, assembly, project-reference, test-name, resource and output-name migration necessary for Fluent.sln to build",
+      "Read-only exact pre/post manifest and SHA-256 baseline/final verification for C:/Users/exhorte/AppData/Local/Fluent including fluent.db and any SQLite sidecars, followed by exact same-parent Rename-Item steps to C:/Users/exhorte/AppData/Local/Fluent and fluent.db only when the destination is absent, both paths resolve to the same volume and Fluent/Fluent are not running",
+      "Evidence, architecture, privacy, state, roadmap, risk and history updates plus full restore/build/test and final Judge review"
+    ],
+    "excluded": [
+      "Reading, printing, modifying, committing or loading .env, .env.*, credentials, API keys, tokens, certificates, account data, secret configuration or database contents",
+      ".git metadata, Git remote configuration, git add/commit/push/pull/reset/clean/checkout/switch, GitHub, Supabase, Google, DeepSeek, browser settings, deployment, billing or live provider invocation",
+      "bin, obj, package caches, Visual Studio caches and any generated artifact; they must be recreated only by allowed build commands",
+      "Any semantic behavior, security guard, API contract, authentication flow, user data content, SQLite schema, Whisper model contents, audio, history payload or configuration value beyond renaming identifier/path labels",
+      "Overwriting a pre-existing C:/Users/exhorte/AppData/Local/Fluent directory or performing a local-data move if a source lock, live Fluent/Fluent process, same-volume precondition or hash mismatch is detected",
+      "Opening, querying, modifying, vacuuming, copying, deleting, restoring from backup or otherwise changing SQLite, model or user-data bytes"
+    ]
+  },
+  "allowedPaths": [
+    "C:/SECOND_BRAIN/PROJECTS/Fluent/Fluent/**",
+    "C:/SECOND_BRAIN/PROJECTS/Fluent/Fluent/**",
+    "C:/SECOND_BRAIN/PROJECTS/Fluent",
+    "C:/SECOND_BRAIN/PROJECTS/Fluent",
+    "C:/Users/exhorte/AppData/Local/Fluent",
+    "C:/Users/exhorte/AppData/Local/Fluent"
+  ],
+  "readOnlyPaths": [
+    ".git/**",
+    ".env",
+    ".env.*",
+    ".claude/judge/**",
+    ".claude/hooks/**",
+    ".claude/schemas/**",
+    "bin/**",
+    "obj/**"
+  ],
+  "forbiddenPaths": [
+    ".git/**",
+    ".env",
+    ".env.*",
+    "secrets/**",
+    "credentials/**",
+    "*.key",
+    "*.pem",
+    "*.pfx",
+    "*.p12"
+  ],
+  "allowedCommandFamilies": [
+    "rg",
+    "powershell read-only inspection",
+    "powershell read-only process inspection, manifest collection and volume/path checks",
+    "powershell explicit same-parent Rename-Item only after resolved path, destination, process, manifest and volume checks",
+    "powershell bulk mechanical text replacement limited to approved repository text extensions and excluding protected/generated paths",
+    "powershell conditional directory ReadOnly-attribute removal and exact restoration, limited to the 18 static source-to-target directory mappings after Judge approval",
+    "Get-FileHash",
+    "dotnet restore",
+    "dotnet build",
+    "dotnet test",
+    "git status",
+    "git diff",
+    "git rev-parse",
+    "pwsh -File .claude/hooks/tests/Invoke-AllHookTests.ps1"
+  ],
+  "forbiddenCommandFamilies": [
+    "git add",
+    "git commit",
+    "git push",
+    "git pull",
+    "git reset",
+    "git clean",
+    "git checkout",
+    "git switch",
+    "curl",
+    "Invoke-WebRequest",
+    "supabase login",
+    "supabase link",
+    "deepseek login",
+    "winget",
+    "choco",
+    "reg add",
+    "reg delete",
+    "Remove-Item"
+  ],
+  "acceptanceCriteria": [
+    "The renamed repository root is C:/SECOND_BRAIN/PROJECTS/Fluent/Fluent and Fluent.sln builds every project with Fluent identifiers.",
+    "No case-insensitive Fluent identifier remains in repository text/source files after excluding .git, bin and obj; no Fluent-named file or directory remains inside the renamed repository.",
+    "The local SQLite database and every present SQLite sidecar have equal before/after SHA-256 hashes, Models remains present, the destination was absent before migration and no user data content is opened or altered.",
+    "Existing local-first, authentication, Cloud, DeepSeek-disabled-by-default-configuration, target safety and privacy controls retain their behavior after identifier migration.",
+    "history_session.md is updated to record the controlled technical migration without inventing external configuration or test evidence.",
+    "Restore, Release build, complete test suite, rename scans, diff check, reviews and final Judge evidence pass; status remains IMPLEMENTED_AWAITING_USER_REVIEW.",
+    "No secret access, external account mutation, provider call, deployment or Git mutation occurs."
+  ],
+  "requiredTests": [
+    "Pre/post full-repository case-insensitive identifier and filename/directory scans excluding .git, bin and obj",
+    "Solution/project-reference and namespace consistency inspection",
+    "Local-data source/destination and same-volume preflight; Fluent/Fluent process and lock check; exact pre/post directory manifests; SHA-256 equality for database/sidecars; Models presence; source-path disappearance after exact rename",
+    "dotnet restore Fluent.sln --disable-build-servers",
+    "dotnet build Fluent.sln -c Release -m:1 --disable-build-servers",
+    "dotnet test Fluent.sln -c Release --no-build -m:1 --disable-build-servers",
+    "git diff --check and full test regression"
+  ],
+  "requiredReviews": [
+    "Development Judge plan verdict",
+    "Rename mapping and project-graph review",
+    "Local-data migration and privacy review",
+    "Source/documentation/history completeness review",
+    "Test/build review",
+    "Development Judge final evidence verdict"
+  ],
+  "requiredEvidence": [
+    "docs/project/evidence/phase-07c-technical-rebrand/plan-judge-verdict.json",
+    "docs/project/evidence/phase-07c-technical-rebrand/rename-manifest.json",
+    "docs/project/evidence/phase-07c-technical-rebrand/local-data-migration.json",
+    "docs/project/evidence/phase-07c-technical-rebrand/dotnet-restore.log",
+    "docs/project/evidence/phase-07c-technical-rebrand/dotnet-build.log",
+    "docs/project/evidence/phase-07c-technical-rebrand/dotnet-test.log",
+    "docs/project/evidence/phase-07c-technical-rebrand/review-summary.md",
+    "docs/project/evidence/phase-07c-technical-rebrand/development-judge-verdict.json"
+  ],
+  "risks": [
+    "A partial rename can break solution references, namespaces, WPF XAML type names, test discovery or build output.",
+    "A broad text replacement can alter protected/configuration/generated material or historical evidence incorrectly.",
+    "A local application-data move can lose user dictionary access, overwrite data, fail under a lock or alter database bytes.",
+    "An interruption after the directory rename but before every database filename rename can leave a mixed path state unless the recorded state machine is followed.",
+    "An external service or Git reference can be changed unintentionally while trying to complete a repository rebrand.",
+    "The source project/test/tool directories carry the NTFS ReadOnly attribute and currently block Rename-Item; any attribute adjustment must be captured, exact-path-only, reversible and followed by the same target attribute after a successful rename."
+  ],
+  "rollbackPlan": [
+    "Use the recorded explicit reverse rename mapping before any Git mutation.",
+    "State S0 (no mutation): source stays C:/Users/exhorte/AppData/Local/Fluent if any preflight condition fails.",
+    "State S1 (directory renamed): if a database/sidecar rename fails, reverse only completed file renames then Rename-Item C:/Users/exhorte/AppData/Local/Fluent back to C:/Users/exhorte/AppData/Local/Fluent, but only if each reverse destination is absent.",
+    "State S2 (all names renamed): if post-migration manifest or hash verification fails, reverse exact database/sidecar filenames then the directory name, subject to absent reverse destinations; otherwise stop without overwrite and report the exact unresolved state.",
+    "Restore no content from backups because this task never rewrites database or model bytes."
+  ],
+  "dependencies": [
+    "User request on 2026-07-22 to update history_session.md and replace Fluent with Fluent in every repository file and folder.",
+    "Existing Fluent public rebrand, Supabase authentication and DeepSeek optional-provider phases remain implemented awaiting user review and are not closed by this task.",
+    "The existing local application-data source exists and C:/Users/exhorte/AppData/Local/Fluent is absent at planning time."
+  ],
+  "humanApprovals": [
+    "On 2026-07-22, the user explicitly confirmed the complete renaming of all files, directories and file contents from Fluent to Fluent. This authorizes the bounded repository and exact local-data rename described here, including C:/Users/exhorte/AppData/Local/Fluent to C:/Users/exhorte/AppData/Local/Fluent and fluent.db to fluent.db, without changing contents.",
+    "No authority exists for secrets, external-account mutation, deployment, billing, live provider invocation or Git publication."
+  ],
+  "maxRepairCycles": 2,
+  "verification": {
+    "baseline": "Before Phase 07C, Release build was clean and the complete suite passed 294/294; repository scan found 28 Fluent-named files and 275 case-insensitive Fluent text files excluding bin/obj; local source exists with Models and an 8192-byte SQLite database while the Fluent destination is absent.",
+    "planJudge": "ALLOW on 2026-07-22 after explicit user approval of the full file, directory, content and local-data rename; the bounded S0/S1/S2 local-data state machine is mandatory."
+  },
+  "openFindings": [
+    "A detected running Fluent/Fluent process, source lock, destination conflict, different-volume condition, missing source, manifest/hash mismatch or failed rollback precondition blocks the local-data move rather than overwrite or retry destructively."
+  ],
+  "executionAmendments": [
+    {
+      "id": "FV-P07-T003-A01",
+      "status": "approved",
+      "reason": "All 18 static source project/test/tool directories were observed with the NTFS ReadOnly attribute, and Rename-Item is denied before any directory move.",
+      "scope": [
+        "A0: before every mapping, verify the exact static source/target pair, source-directory presence, target absence, no unresolved parent/child ordering conflict, and capture the complete source Attributes value.",
+        "A1: remove only the ReadOnly bit from that one source directory without recursion, then reread the source Attributes value to verify that all remaining bits are unchanged.",
+        "A2: perform the exact Rename-Item only after A0/A1 verification succeeds.",
+        "A3: verify source absent and target present, apply the complete captured Attributes value to the target directory, then reread it to prove equality.",
+        "If a failure occurs before A2, restore and verify the complete captured Attributes value on the unchanged source, then stop.",
+        "If a failure occurs after A2, do not attempt to recreate or overwrite the absent source. Stop in the recorded target-path state, preserve evidence and require a new decision for recovery.",
+        "Do not alter ACLs, ownership, inherited permissions, files, data, Git, secrets or generated contents."
+      ],
+      "rollback": "Before A2 only, restore the captured attribute to the unchanged source and verify equality. After A2, no automatic reverse rename occurs; the target-path state is preserved without overwrite and requires a new reviewed recovery decision."
+    }
+  ]
+}

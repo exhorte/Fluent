@@ -1,0 +1,34 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T016",
+  "action": "Present the Phase 07E local dynamic dashboard to the user for manual visual review; do not close Phase 07E or Phase 07D",
+  "toolName": "development-judge",
+  "riskLevel": "medium",
+  "reason": "The implementation remains within the approved pure-presentation scope. Profile, dictionary, account-session, and Cloud summaries are derived only from existing in-memory/local state; no dictated content, account identity, history, persistence, network operation, or service-availability claim is introduced. Cloud wording explicitly describes local authorization rather than backend or provider reachability. Targeted tests, restore, Release build, all 346 tests executed sequentially, governance hooks, JSON/static scans, and diff integrity pass. The timed-out aggregate test invocation does not block presentation because its identified test processes were stopped and the same complete project set subsequently passed deterministically. The visual smoke remains honestly open.",
+  "rules": [
+    "This verdict authorizes user presentation and manual visual review only; it is not user acceptance or phase closure.",
+    "Keep Phase 07D open and do not imply live backend, Gemini, or DeepSeek availability.",
+    "Do not display dictated/rewrite content, dictionary entry content, account name/email/subject, token, endpoint, key, secret, historical metric, or telemetry.",
+    "Cloud labels must continue to distinguish local configuration, authentication, enablement, consent, and authorization without claiming network reachability or provider success.",
+    "The unperformed visual smoke must remain marked open; no result may be inferred from automated tests.",
+    "The stale Phase 07C working tree and all unrelated phase states remain unchanged."
+  ],
+  "evidence": [
+    "docs/project/evidence/phase-07e-dynamic-dashboard/execution-contract.draft.json",
+    "docs/project/evidence/phase-07e-dynamic-dashboard/implementation-summary.md",
+    "docs/project/evidence/phase-07e-dynamic-dashboard/review-summary.md",
+    "docs/project/evidence/phase-07e-dynamic-dashboard/verification-summary.md",
+    "docs/project/evidence/phase-07e-dynamic-dashboard/metrics-source-matrix.md",
+    "docs/project/evidence/phase-07e-dynamic-dashboard/dotnet-restore.log: PASS.",
+    "docs/project/evidence/phase-07e-dynamic-dashboard/dotnet-build.log: Release build completed with 0 warnings and 0 errors.",
+    "docs/project/evidence/phase-07e-dynamic-dashboard/dotnet-test.log: 346 passed across Core 11, Rewrite 164, Windows 6, Audio 6, Speech 9, Persistence 19, Backend 54, and Integration 77.",
+    "src/Fluent.App/Dashboard/DashboardStatusPresentation.cs",
+    "src/Fluent.App/MainWindow.xaml",
+    "src/Fluent.App/MainWindow.xaml.cs",
+    "tests/Fluent.IntegrationTests/DashboardStatusPresentationTests.cs",
+    "Governance hooks: 33/33 passed; git diff --check exited 0."
+  ],
+  "saferAlternative": "Keep the existing static Overview visible until the user completes the visual smoke; automated evidence already supports a controlled presentation of the new summaries.",
+  "requiredNextStep": "Present Phase 07E as IMPLEMENTED_AWAITING_USER_REVIEW and ask the user to perform the documented manual dashboard smoke, including window resizing/wrapping, loading/empty/fallback dictionary labels, session-state changes, Cloud configuration/enablement/consent labels, absence of identity or dictated content, and no Cloud activation. Record the user result separately. Keep both Phase 07E and Phase 07D open until their respective explicit acceptance or closure authority is provided.",
+  "timestamp": "2026-07-22T00:00:00+02:00"
+}

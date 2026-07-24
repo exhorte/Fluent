@@ -1,0 +1,51 @@
+{
+  "taskId": "FV-P07-T015",
+  "phaseId": "FV-P07",
+  "title": "Consigner l’acceptation utilisateur de la tranche 07D hors ligne",
+  "objective": "Consigner l’acceptation explicite de l’utilisateur pour la tranche 07D hors ligne validée techniquement, sans déclarer Gemini live, sans clôturer la phase entière et sans effectuer de configuration externe.",
+  "status": "completed",
+  "createdAt": "2026-07-22T00:00:00+02:00",
+  "updatedAt": "2026-07-22T00:00:00+02:00",
+  "expiresAt": "2026-08-22T00:00:00Z",
+  "approvedByJudge": true,
+  "scope": {
+    "included": [
+      "Consigner l’acceptation utilisateur de la tranche Desktop hors ligne 07D.",
+      "Mettre à jour seulement les statuts, roadmap, historique, risques et preuves 07D.",
+      "Conserver la phase 07D ouverte pour l’autorisation future distincte de configuration live."
+    ],
+    "excluded": [
+      "Clôture de la phase 07D entière ou déclaration de succès Gemini live.",
+      "Code, tests, dépendances, .env, secrets, Credential Manager, Supabase, Google, backend, fournisseur, données locales, Git, commit, push, déploiement ou appel réseau.",
+      "Modification ou clôture de 06B, 06C, 07A ou 07C."
+    ]
+  },
+  "allowedPaths": [
+    "docs/project/evidence/phase-07d-authenticated-gemini/**",
+    "docs/project/phases/phase-07d-authenticated-gemini.md",
+    "docs/project/project-state.md",
+    "docs/project/roadmap.md",
+    "docs/project/risk-register.md",
+    "docs/history_session.md",
+    ".claude/runtime/active-task.json"
+  ],
+  "readOnlyPaths": ["CLAUDE.md", ".claude/judge/**", ".claude/hooks/**", ".claude/schemas/**", "src/**", "tests/**", ".env", ".env.*", ".git/**"],
+  "forbiddenPaths": [".git/**", ".env", ".env.*", "secrets/**", "credentials/**", "*.key", "*.pem", "*.pfx", "*.p12", "C:/Users/exhorte/AppData/Local/Fluent/**"],
+  "allowedCommandFamilies": ["rg", "powershell read-only inspection", "git status", "git diff"],
+  "forbiddenCommandFamilies": ["git add", "git commit", "git push", "git pull", "git reset", "git clean", "git checkout", "curl", "Invoke-WebRequest", "supabase login", "supabase link", "reg add", "reg delete", "Remove-Item"],
+  "acceptanceCriteria": [
+    "L’acceptation utilisateur est attribuée au message explicite « je valide » de cette conversation et limitée à la tranche 07D hors ligne présentée.",
+    "La phase 07D reste ouverte et porte explicitement l’absence d’autorisation live externe.",
+    "Les preuves de tests et le verdict ALLOW existants restent liés sans en inventer de nouveaux.",
+    "Aucune autre phase, aucun code, secret, service externe, donnée réelle ou état Git n’est modifié.",
+    "Les JSON et le diff documentaire restent valides."
+  ],
+  "requiredTests": ["Validation JSON des contrats/verdicts", "git diff --check"],
+  "requiredReviews": ["Development Judge plan review", "Relecture factuelle des statuts"],
+  "requiredEvidence": ["development-judge-verdict.json", "instruction explicite de l’utilisateur consignée", "verdict de finalisation documentaire 07D"],
+  "risks": ["acceptation de tranche confondue avec clôture de phase", "activation live inférée", "modification d’une phase voisine"],
+  "rollbackPlan": ["Revenir uniquement sur les statuts et preuves d’acceptation sans toucher au produit ni aux preuves techniques."],
+  "dependencies": ["Verdict final ALLOW FV-P07-T014", "Instruction utilisateur : je valide."],
+  "humanApprovals": ["L’utilisateur a explicitement validé la tranche 07D hors ligne présentée dans cette conversation."],
+  "maxRepairCycles": 0
+}

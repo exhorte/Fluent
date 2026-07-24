@@ -1,0 +1,32 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P03-T001",
+  "action": "Implement the bounded Fluent visual foundation, non-activating three-state capsule, native recording animation, and truthful dashboard Overview",
+  "toolName": "development-judge",
+  "riskLevel": "medium",
+  "reason": "The plan is authorized by the user, bounded to the WPF presentation layer, reversible, and aligned with the MVP requirement for a local dashboard and non-activating recording capsule. All six reference images are present and provide coherent visual direction, while the contract explicitly forbids embedding their bitmaps, copying BridgeVoice branding, fabricating dashboard records or statistics, and implementing unavailable history, dictionary, profile, or settings behavior. Existing dictation, privacy, focus, and insertion protections remain outside mutable scope. Implementation is allowed subject to the mandatory capsule-state and animation corrections stated below.",
+  "rules": [
+    "CLAUDE.md P-002: processing remains local-first",
+    "CLAUDE.md P-003 and P-004: no audio persistence or telemetry",
+    "CLAUDE.md P-005 through P-009: insertion and focus protections remain unchanged",
+    "CLAUDE.md P-008: the floating window must not steal focus",
+    "CLAUDE.md P-013: the visual change has written acceptance criteria",
+    "CLAUDE.md P-014: build success alone cannot close the phase",
+    "docs/product/requirements.md FR-002: floating recording capsule",
+    "docs/product/requirements.md FR-007: local dashboard",
+    "docs/product/requirements.md UX-001 and UX-003: preserve target focus",
+    ".claude/judge/constitution.md: prefer minimal, reversible, evidenced actions"
+  ],
+  "evidence": [
+    ".claude/runtime/active-task.json: bounded FV-P03-T001 scope, exclusions, rollback plan, tests, reviews, and user authorization",
+    "docs/templates: six visual references inspected, including idle and recording capsules, waveform language, Overview, and Dictionary layouts",
+    "docs/project/project-state.md: dashboard, dictionary, history, and rewriting are not currently implemented",
+    "src/Fluent.App/MainWindow.xaml: current window exposes only real hotkey, dictation, target, and last-result state",
+    "src/Fluent.App/Phase01/RecordingCapsuleWindow.xaml: ShowActivated=false and Focusable=false",
+    "src/Fluent.App/Phase01/RecordingCapsuleWindow.xaml.cs: existing WS_EX_NOACTIVATE tool-window protection is applied",
+    "docs/product/requirements.md: dashboard and non-focus-stealing capsule are MVP requirements"
+  ],
+  "saferAlternative": "Use reusable native WPF resources and explicit capsule-state methods, retain the reference images as read-only design evidence, and represent unavailable dashboard destinations as disabled labeled placeholders without records, counts, synchronization claims, or interactive behavior.",
+  "requiredNextStep": "Persist this verdict and approve FV-P03-T001 before mutation. During implementation, enforce these mandatory corrections: keep the capsule in its recording-waveform presentation for the entire period that microphone capture is active, even while model preparation reports progress; enter processing presentation only after recording stop is requested; stop and reset the waveform on every transition to processing, idle, recovery, and window close; use one bounded animation lifecycle without accumulating Storyboards, timers, or rendering handlers across repeated dictations; describe the waveform as a recording-state indicator rather than measured microphone amplitude; make the idle presentation non-interactive and avoid implying an unsupported pause/resume command; keep future navigation visibly unavailable and free of fabricated counts or content. The Windows smoke must cover at least two complete recording cycles, processing transitions, idle return, animation shutdown, and retained focus. User visual acceptance remains mandatory before phase closure.",
+  "timestamp": "2026-07-14T20:01:04.3726511+02:00"
+}

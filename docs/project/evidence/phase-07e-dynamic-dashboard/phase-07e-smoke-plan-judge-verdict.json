@@ -1,0 +1,30 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T017",
+  "action": "Record the user-reported Phase 07E visual-smoke PASS and prepare the technical closure review without closing the phase",
+  "toolName": "development-judge",
+  "riskLevel": "medium",
+  "reason": "The user directly reported “PASS” for the requested 07E manual dashboard checklist. The draft contract is limited to documenting that result and reconciling closure-review evidence. It does not infer explicit phase acceptance, close Phase 07E, alter Phase 07D or another phase, or authorize code, network, secret, external-system, user-data, or Git operations.",
+  "rules": [
+    "Attribute the manual smoke result explicitly to the user; do not represent it as agent-executed UI verification.",
+    "Record only the checklist scope and PASS result actually reported; do not invent screenshots, observations, timings, or additional live behavior.",
+    "Keep Phase 07E open in an awaiting-technical-closure or awaiting-user-acceptance state.",
+    "Do not change Phase 07D or any other phase status.",
+    "Do not modify code, tests, dependencies, external systems, networks, secrets, .env files, user data, protected governance assets, or Git state.",
+    "A later technical closure ALLOW remains distinct from explicit user authority to close Phase 07E."
+  ],
+  "evidence": [
+    "docs/project/evidence/phase-07e-dynamic-dashboard/phase-07e-smoke-finalization-contract.draft.json",
+    "docs/project/evidence/phase-07e-dynamic-dashboard/manual-dashboard-smoke-checklist.md",
+    "docs/project/evidence/phase-07e-dynamic-dashboard/development-judge-verdict.json",
+    "docs/project/evidence/phase-07e-dynamic-dashboard/implementation-summary.md",
+    "docs/project/evidence/phase-07e-dynamic-dashboard/review-summary.md",
+    "docs/project/evidence/phase-07e-dynamic-dashboard/verification-summary.md",
+    "docs/project/phases/phase-07e-dynamic-dashboard.md",
+    "docs/project/project-state.md",
+    "Direct user report dated 2026-07-22: “PASS” for the requested Phase 07E visual smoke."
+  ],
+  "saferAlternative": "Leave the manual smoke open until a more detailed user report is provided; this is unnecessary because the requested checklist received an explicit PASS, provided no unreported details are added.",
+  "requiredNextStep": "Record the user-attributed PASS in the contract-listed evidence and update only the Phase 07E review state. Preserve all deterministic evidence and other phase states unchanged. Then submit the complete Phase 07E evidence for a separate final technical closure verdict. Even if technically approved, request explicit user acceptance before marking Phase 07E closed.",
+  "timestamp": "2026-07-22T00:00:00+02:00"
+}

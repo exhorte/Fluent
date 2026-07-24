@@ -1,0 +1,5 @@
+Command: `dotnet test Fluent.sln -c Release --no-build -m:1 --disable-build-servers`
+
+Result: PASS — 318 passed, 0 failed, 0 skipped.
+
+Breakdown: Core 11; Windows 6; Audio 6; Speech 9; Rewrite 164; Persistence 19; Integration 49; Backend 54.

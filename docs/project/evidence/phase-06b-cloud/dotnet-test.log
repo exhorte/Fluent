@@ -1,0 +1,60 @@
+# Phase 06B Test Evidence
+
+Date: 2026-07-19
+
+## Focused tests
+
+Command: dotnet test tests/Fluent.Rewrite.Tests/... -c Release --no-restore --filter "FullyQualifiedName~Cloud"
+
+```
+Passed!  - Failed: 0, Passed: 39, Skipped: 0, Total: 39 - Fluent.Rewrite.Tests.dll (net10.0)
+```
+
+Command: dotnet test tests/Fluent.IntegrationTests/... -c Release --no-restore --filter "FullyQualifiedName~Cloud"
+
+```
+Passed!  - Failed: 0, Passed: 4, Skipped: 0, Total: 4 - Fluent.IntegrationTests.dll (net10.0)
+```
+
+Command: dotnet test tests/Fluent.Backend.Tests/Fluent.Backend.Tests.csproj -c Release
+
+```
+Passed!  - Failed: 0, Passed: 29, Skipped: 0, Total: 29 - Fluent.Backend.Tests.dll (net10.0)
+```
+
+All filters matched a non-zero test count.
+
+## Defect found and fixed by the focused tests
+
+`CloudRewriteValidatorTests.Sensitive_token_mutation_is_rejected` initially FAILED for the Windows-path case
+(`C:\Apps\Fluent` -> `C:\Apps\NyxFlow` was accepted). Root cause: the sensitive-token regex had been written with a
+mangled escape, producing `(?:[A-Za-z]:\|\\)` (a literal pipe) instead of `(?:[A-Za-z]:\\|\\\\)`, so Windows paths were
+never extracted and therefore never protected. This was a genuine P-011 gap. The regex was corrected and the test now
+passes; the case remains in the suite as a regression guard.
+
+## Complete suite
+
+Command: dotnet test Fluent.sln -c Release --no-build -m:1 --disable-build-servers
+
+```
+Passed!  - Failed: 0, Passed:  11, Total:  11 - Fluent.Core.Tests.dll
+Passed!  - Failed: 0, Passed:   6, Total:   6 - Fluent.Windows.Tests.dll
+Passed!  - Failed: 0, Passed:   6, Total:   6 - Fluent.Audio.Tests.dll
+Passed!  - Failed: 0, Passed:   9, Total:   9 - Fluent.Speech.Tests.dll
+Passed!  - Failed: 0, Passed: 164, Total: 164 - Fluent.Rewrite.Tests.dll
+Passed!  - Failed: 0, Passed:  19, Total:  19 - Fluent.Persistence.Tests.dll
+Passed!  - Failed: 0, Passed:  12, Total:  12 - Fluent.IntegrationTests.dll
+Passed!  - Failed: 0, Passed:  29, Total:  29 - Fluent.Backend.Tests.dll
+```
+
+Complete suite total after both repair cycles: **256 / 256** passed (184 accepted at Phase 06A closure + 72 new
+Phase 06B tests). Every pre-existing test still passes, confirming local mode is unchanged.
+
+## Second repair cycle
+
+A code review returned FAIL on a blocking defect: the cloud validator call sat outside the orchestrator guard, so a
+`RegexMatchTimeoutException` would have destroyed the dictation instead of falling back to the exact local text. That
+defect, plus a validator drift gap (scheme, UNC, and proper-noun tokens unprotected on the cloud path), an ambiguous
+Unix-path regex, a backend DI captive dependency, frozen cloud options, and an unguarded outbound provider call were all
+repaired. Final figures: focused Rewrite `~Cloud` 39/39, Integration `~Cloud` 4/4, Backend 29/29, complete suite
+**256/256**, Release build 0 warnings and 0 errors.

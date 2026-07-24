@@ -1,0 +1,11 @@
+Command: C:\Program Files\dotnet\dotnet.exe build Fluent.sln -c Release --no-restore -m:1 --disable-build-servers
+Timestamp: 2026-07-15T14:12:55+02:00
+Exit code: 0
+Configuration: Release
+SDK: 10.0.302
+Result: Build succeeded.
+Warnings: 0
+Errors: 0
+Elapsed: 00:03:20.26
+
+Coverage note: this fresh build occurred after the final user-accepted XAML adjustment to 140 by 40 DIP and supersedes every earlier compact-capsule build result.

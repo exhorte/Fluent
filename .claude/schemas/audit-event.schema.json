@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NyxVoice Audit Event",
+  "type": "object",
+  "required": ["timestamp", "event", "taskId", "toolName", "decision", "reason"],
+  "properties": {
+    "timestamp": { "type": "string" },
+    "event": { "type": "string" },
+    "taskId": { "type": "string" },
+    "toolName": { "type": "string" },
+    "action": { "type": "string" },
+    "decision": { "type": "string" },
+    "riskLevel": { "type": "string" },
+    "reason": { "type": "string" },
+    "rules": { "type": "array", "items": { "type": "string" } },
+    "evidence": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": true
+}

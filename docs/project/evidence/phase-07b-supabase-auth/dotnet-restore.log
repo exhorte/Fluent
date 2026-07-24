@@ -1,0 +1,5 @@
+Command: `dotnet restore Fluent.sln --disable-build-servers -m:1`
+
+Result: PASS
+
+All projects were already up to date for restore. The approved direct dependency is `Microsoft.IdentityModel.Protocols.OpenIdConnect` 8.19.2 in `Fluent.Backend` only.

@@ -1,0 +1,11 @@
+{
+  "type": "dotnet-build",
+  "taskId": "FV-P00-T001",
+  "method": "dotnet build Fluent.sln --no-restore",
+  "startedAt": "2026-07-12T07:51:48.3225474Z",
+  "finishedAt": "2026-07-12T07:51:57.4668608Z",
+  "exitCode": 0,
+  "status": "PASS",
+  "summary": "Build succeeded after Fluent rename.",
+  "logPath": "docs/project/evidence/phase-00/dotnet-build.log"
+}

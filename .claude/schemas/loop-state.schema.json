@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NyxVoice Development Loop State",
+  "type": "object",
+  "required": ["phaseId", "taskId", "state", "repairCycle", "updatedAt"],
+  "properties": {
+    "phaseId": { "type": "string" },
+    "taskId": { "type": "string" },
+    "state": {
+      "type": "string",
+      "enum": [
+        "IDLE",
+        "INTAKE",
+        "CONTEXT_SYNC",
+        "PLANNING",
+        "PLAN_REVIEW",
+        "REJECTED_PLAN",
+        "CONTRACT_APPROVED",
+        "IMPLEMENTING",
+        "VERIFYING",
+        "REVIEWING",
+        "REWORK",
+        "READY_TO_CLOSE",
+        "COMPLETED",
+        "BLOCKED_TECHNICAL",
+        "WAITING_FOR_HUMAN",
+        "HALTED"
+      ]
+    },
+    "repairCycle": { "type": "integer", "minimum": 0 },
+    "lastEvent": { "type": "string" },
+    "updatedAt": { "type": "string" },
+    "evidence": { "type": "array", "items": { "type": "string" } },
+    "openFindings": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,31 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P05-T002",
+  "action": "Amend Phase 05B to use Microsoft.Data.Sqlite.Core 10.0.10, Dapper 2.1.79, and SQLitePCLRaw.bundle_e_sqlite3 3.0.3 with explicit SQLitePCL.Batteries_V2.Init() initialization.",
+  "toolName": "development-judge",
+  "riskLevel": "high",
+  "reason": "The original dependency path is correctly blocked by NU1903 because it resolves the vulnerable SQLitePCLRaw.lib.e_sqlite3 2.1.11. The amendment preserves the approved SQLite architecture and feature scope while replacing that vulnerable native dependency path with an explicitly supplied bundle backed by a patched SQLite version. Dependencies remain centrally pinned and isolated to Fluent.Persistence, warning enforcement remains intact, no implementation code or real LocalAppData database has been touched, and one corrective restore is a bounded and reversible action.",
+  "rules": [
+    "Do not suppress NU1903 or otherwise weaken vulnerability enforcement.",
+    "Remove Microsoft.Data.Sqlite and use only Microsoft.Data.Sqlite.Core 10.0.10, Dapper 2.1.79, and SQLitePCLRaw.bundle_e_sqlite3 3.0.3 for Phase 05B.",
+    "Keep all package versions centrally pinned and package references isolated to Fluent.Persistence.",
+    "Initialize SQLitePCL explicitly inside the persistence boundary before opening any SQLite connection.",
+    "Do not access or mutate the real LocalAppData database during development commands or automated tests.",
+    "Only one corrective solution restore is authorized for this amendment.",
+    "The restored dependency graph must contain neither SQLitePCLRaw.lib.e_sqlite3 2.1.11 nor another dependency affected by the cited advisory.",
+    "All previously approved migration, rollback, testing, review, and user restart-smoke requirements remain mandatory."
+  ],
+  "evidence": [
+    "The approved restore failed with NU1903 for GHSA-2m69-gcr7-jv3q and CVE-2025-6965 through SQLitePCLRaw.lib.e_sqlite3 2.1.11.",
+    "TreatWarningsAsErrors prevented the vulnerable dependency graph from being accepted.",
+    "No Phase 05B implementation code has been written.",
+    "Only Directory.Packages.props and Fluent.Persistence.csproj currently contain the rejected package changes.",
+    "Microsoft.Data.Sqlite.Core intentionally permits supplying a separate native SQLite bundle.",
+    "SQLitePCLRaw.bundle_e_sqlite3 3.0.3 resolves SourceGear.sqlite3 at or above 3.50.4.5 and SQLitePCLRaw.config.e_sqlite3 at or above 3.0.3.",
+    "The proposed explicit Batteries_V2.Init() call keeps native-provider initialization within the persistence boundary.",
+    "The amendment does not expand product behavior, persistence data, paths, publication authority, or real-database access."
+  ],
+  "saferAlternative": "If the amended packages cannot restore cleanly or the resolved graph still contains a vulnerable SQLite component, remove the Phase 05B package references, retain the accepted Phase 05A session-only implementation, and stop for a new dependency evaluation.",
+  "requiredNextStep": "Update the contract and dependency evidence with this amendment, replace the rejected central and project package references, perform the single corrective restore, and record the resolved dependency graph and vulnerability result before writing persistence implementation code.",
+  "timestamp": "2026-07-16T00:00:00+02:00"
+}

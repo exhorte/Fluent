@@ -1,0 +1,55 @@
+{
+  "taskId": "FV-P02-T002",
+  "timestamp": "2026-07-14T17:54:15+02:00",
+  "hardware": {
+    "cpu": "Intel Core i7-8650U",
+    "physicalCores": 4,
+    "logicalProcessors": 8,
+    "gpu": "Intel UHD Graphics 620",
+    "memoryGb": 15.8
+  },
+  "runtime": "Whisper.net 1.9.1 CPU; AVX, AVX2, F16C, FMA, OpenMP and repack enabled; no CoreML or OpenVINO",
+  "method": {
+    "audio": "Three French Windows TTS phrases generated once and retained in memory as 16 kHz mono float samples",
+    "models": [
+      "Multilingual Base Q5_0",
+      "Multilingual Base Q8_0"
+    ],
+    "threadCounts": [4, 6, 8],
+    "metrics": "Case-insensitive punctuation-free token Levenshtein WER, median inference seconds, and median real-time factor",
+    "limitations": "Synthetic TTS is suitable for relative comparison only. Number formatting is counted as word errors. Real microphone quality requires a user recheck.",
+    "audioPersisted": false
+  },
+  "preliminaryProductBaseline": {
+    "model": "Base Q5_0",
+    "audioSeconds": 5.625,
+    "inferenceSeconds": 5.55,
+    "realTimeFactor": 0.99
+  },
+  "matrix": [
+    { "model": "Q5_0", "threads": 4, "medianSeconds": 6.102, "medianRtf": 1.006, "errors": 17, "words": 43, "wer": 0.3953 },
+    { "model": "Q5_0", "threads": 6, "medianSeconds": 4.047, "medianRtf": 0.667, "errors": 17, "words": 43, "wer": 0.3953 },
+    { "model": "Q5_0", "threads": 8, "medianSeconds": 4.493, "medianRtf": 0.732, "errors": 17, "words": 43, "wer": 0.3953 },
+    { "model": "Q8_0", "threads": 4, "medianSeconds": 4.405, "medianRtf": 0.714, "errors": 15, "words": 43, "wer": 0.3488 },
+    { "model": "Q8_0", "threads": 6, "medianSeconds": 3.760, "medianRtf": 0.620, "errors": 15, "words": 43, "wer": 0.3488 },
+    { "model": "Q8_0", "threads": 8, "medianSeconds": 3.457, "medianRtf": 0.515, "errors": 15, "words": 43, "wer": 0.3488 }
+  ],
+  "selection": {
+    "model": "Base Q8_0",
+    "threads": 8,
+    "qualityGate": "PASS: 15 normalized errors versus 17 for Q5_0",
+    "latencyGate": "PASS: 3.457 seconds versus the best Q5_0 median of 4.047 seconds",
+    "relativeWerImprovement": 0.1176,
+    "relativeMatrixLatencyImprovement": 0.1458
+  },
+  "productVerificationAfterPreparation": {
+    "audioSeconds": 5.625,
+    "preparationDuringRecordingSeconds": 2.408,
+    "inferenceRunsSeconds": [3.194, 3.135],
+    "medianInferenceSeconds": 3.1645,
+    "medianRealTimeFactor": 0.5625,
+    "relativeStopToTextImprovementVersusPreliminaryBaseline": 0.4298,
+    "recognizedText": "Bonjour, ceci est un test de transcription local rapide et précise."
+  },
+  "decision": "Select Base Q8_0 with eight threads. Prepare and warm the persistent processor while recording so its 2.408-second setup cost is normally hidden before Stop. Keep a real-voice recheck mandatory because the synthetic phrase still contains one agreement error."
+}

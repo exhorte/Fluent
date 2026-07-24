@@ -1,0 +1,15 @@
+Focused command: dotnet test tests\Fluent.Rewrite.Tests\Fluent.Rewrite.Tests.csproj -c Release --no-restore --disable-build-servers
+Focused result: PASS - 37 passed, 0 failed, 0 skipped
+
+Complete command: dotnet test Fluent.sln -c Release --no-build --no-restore -m:1 --disable-build-servers
+Complete result: PASS - 71 passed, 0 failed, 0 skipped
+
+Breakdown:
+- Fluent.Core.Tests: 11 passed
+- Fluent.Windows.Tests: 6 passed
+- Fluent.Audio.Tests: 6 passed
+- Fluent.Speech.Tests: 9 passed
+- Fluent.Rewrite.Tests: 37 passed
+- Fluent.Persistence.Tests: 1 passed
+- Fluent.IntegrationTests: 1 passed
+

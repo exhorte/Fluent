@@ -1,0 +1,26 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07B-CLOSE",
+  "action": "Approve Phase 07B as technically ready for closure; do not change phase status to closed without explicit user closure authority",
+  "toolName": "development-judge",
+  "riskLevel": "high",
+  "reason": "Phase 07B has complete deterministic and manual evidence. Core Google OAuth succeeds; session restoration after restart passes; offline startup remains Offline/local; sign-out followed by restart restores no session; and Cloud activation and consent reset on restart. Release build, all 301 tests, and all 33 governance hooks pass. This is technical approval only, not user acceptance or phase closure.",
+  "rules": [
+    "Technical Judge approval and user phase-closure authority are separate.",
+    "Manual checks remain attributed to the user's direct report, not agent-executed external operations.",
+    "Phase 07B may become closed only after an explicit user instruction accepting and closing it.",
+    "Phase 07C and other awaiting-review phases are outside this verdict.",
+    "No live operation, external configuration, deployment, secret handling, data mutation or Git action is authorized."
+  ],
+  "evidence": [
+    "phase-07b-closure-contract.draft.json",
+    "manual-session-closure-result.md",
+    "manual-supabase-google-smoke-checklist.md",
+    "docs/project/evidence/phase-07b-oauth-state-repair/development-judge-verdict.json",
+    "docs/project/evidence/phase-07-planning-audit/verification-summary.md",
+    "Direct user report: all four remaining session checks PASS."
+  ],
+  "saferAlternative": "Keep Phase 07B in IMPLEMENTED_AWAITING_USER_REVIEW despite complete technical evidence until the user explicitly accepts and authorizes closure.",
+  "requiredNextStep": "Present technical closure readiness to the user and request an explicit Phase 07B acceptance and closure instruction. Only then may a docs-only state update mark the phase closed.",
+  "timestamp": "2026-07-22T00:00:00+02:00"
+}

@@ -1,0 +1,27 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P03-T001",
+  "action": "Advance the rebuilt compact draggable capsule implementation to the user's manual Windows smoke while keeping FV-P03-T001 open in verifying status.",
+  "toolName": "development-judge",
+  "riskLevel": "medium",
+  "reason": "The implementation is technically ready for manual smoke. The actual source diff is confined to the approved three-file WPF slice, static review found no blocking, high, or medium defect, the Release build passed with zero warnings and errors, and all 35 automated tests passed. Runtime drag, focus, DPI, cursor, and two-cycle evidence remains required before closure.",
+  "rules": [
+    ".claude/judge/constitution.md: documented evidence supports progression while missing runtime evidence blocks closure",
+    ".claude/rules/wpf-xaml.md: overlay windows must not activate and UI states must remain explicit",
+    ".claude/rules/windows-native.md: native behavior requires tests or manual harness evidence",
+    "CLAUDE.md P-008: the floating window must not steal focus",
+    "CLAUDE.md P-014: compilation alone cannot complete a phase"
+  ],
+  "evidence": [
+    "RecordingCapsuleWindow.xaml defines the fixed 144 by 44 DIP non-focusable compact host and reduced three-state content",
+    "RecordingCapsuleWindow.xaml.cs removes the hook on close, preserves the no-activate style, returns MA_NOACTIVATE for WM_MOUSEACTIVATE, and returns HTCAPTION for WM_NCHITTEST",
+    "MainWindow.xaml.cs initializes top-right placement only when constructing the capsule",
+    "dotnet-build.log records 0 warnings and 0 errors with .NET SDK 10.0.302",
+    "dotnet-test.log records 35 passed, 0 failed, and 0 skipped",
+    "compact-capsule-review.md reports no blocking, high, or medium finding",
+    "windows-visual-smoke.md documents the unavailable automation control tool and the required seven-step user smoke"
+  ],
+  "saferAlternative": "Keep the validated implementation unchanged and run the documented manual smoke before any additional code change; return to implementing and use the rollback plan if focus, drag, position, cursor, or rendering fails.",
+  "requiredNextStep": "The user must start the rebuilt Release executable, confirm compact rendering, drag without lost text focus, verify the cursor, complete two recording cycles without position reset, and confirm text reaches the original target before a separate closure verdict.",
+  "timestamp": "2026-07-15T13:22:11+02:00"
+}

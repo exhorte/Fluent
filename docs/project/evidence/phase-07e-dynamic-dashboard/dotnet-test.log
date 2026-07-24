@@ -1,0 +1,7 @@
+Vérifications réalisées le 2026-07-22 :
+
+- Ciblé `DashboardStatusPresentationTests` : PASS, 28/28.
+- Suite complète exécutée projet par projet : PASS, 346/346.
+  - Core 11/11 ; Rewrite 164/164 ; Windows 6/6 ; Audio 6/6 ; Speech 9/9 ; Persistence 19/19 ; Backend 54/54 ; Integration 77/77.
+
+La commande unique sur la solution a dépassé le délai borné et n’est pas retenue comme preuve. Son arborescence de test, confirmée comme issue de cette commande, a été arrêtée avant le relancement séquentiel ; aucun processus utilisateur ou fichier de travail n’a été touché.

@@ -1,0 +1,11 @@
+{
+  "taskId": "FV-P00-T001",
+  "operation": "git push origin main",
+  "category": "E-008",
+  "whyJudgeCannotDecide": "Remote publication requires user authority.",
+  "options": ["Do not push", "Ask user for explicit push authorization"],
+  "recommendedOption": "Do not push during Phase 00.",
+  "risks": ["External state changes", "Unreviewed publication"],
+  "refusalConsequence": "The branch remains local.",
+  "singleQuestion": "Do you authorize this specific git push?"
+}

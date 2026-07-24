@@ -1,0 +1,13 @@
+{
+  "session_id": "fixture-session",
+  "transcript_path": "fixture-transcript.jsonl",
+  "cwd": "$PROJECT_ROOT",
+  "permission_mode": "default",
+  "hook_event_name": "PreToolUse",
+  "tool_name": "Write",
+  "tool_input": {
+    "file_path": "$PROJECT_ROOT/.claude/judge/constitution.md",
+    "content": "attempted governance overwrite"
+  },
+  "tool_use_id": "toolu_fixture_protected_write"
+}

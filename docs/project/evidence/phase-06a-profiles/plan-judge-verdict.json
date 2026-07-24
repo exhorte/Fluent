@@ -1,0 +1,53 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P06-T001",
+  "action": "Plan review of the Phase 06A execution contract (Selectable Local Profiles) at docs/project/evidence/phase-06a-profiles/execution-contract.json, prior to any implementation",
+  "toolName": "development-judge-plan-review",
+  "riskLevel": "high",
+  "reason": "The contract is internally coherent, matches the phase document line for line, and is grounded in the verified user authorization of 2026-07-17 plus the pre-existing roadmap Profiles placeholder, so no scope is invented. allowedPaths are consistent with the existing Rewrite profile, rewriter, and SafeProfileRewriteService architecture; the ProfilesPage mirrors the accepted DictionaryPage pattern. readOnlyPaths protect Core, Windows, Audio, Speech, Persistence, Dictionary, Validation, and Phase01 code; forbiddenPaths block the real user database and .git. No new package, network, Ollama, restore, or destructive command family is allowed. The exact-source fallback semantics already implemented by SafeProfileRewriteService support P-010 and P-011, and RewriteOutputValidator gives an objective mechanism for exact-preservation claims. The immutable recording-start snapshot and session-only, non-persisted selection satisfy P-002 and P-013. Baseline hashes were captured before any Phase 06A source edit. No protected governance asset is in allowedPaths and no E-001..E-017 escalation is triggered.",
+  "rules": [
+    "Constitution: Decision Principles (active approved contract required for mutable work)",
+    "Constitution: Fail-Closed Policy",
+    "Constitution: Evidence (agent narrative alone insufficient)",
+    "P-002 (local-first, no mandatory cloud)",
+    "P-010 (rewriting must never invent information)",
+    "P-011 (preserve numbers, proper nouns, URLs, paths, versions, commands, identifiers)",
+    "P-013 (written acceptance criteria required)",
+    "P-014 (compiling is not completion)",
+    "P-015/P-016 (versioned docs are canonical, not model memory)",
+    "P-018 (Judge cannot modify its own limiting rules)",
+    "protected-assets.md (governance paths excluded from allowedPaths)",
+    "risk-classification.md (multi-project modification classified High)",
+    "escalation-policy.md E-001 through E-017 (none triggered by this plan)"
+  ],
+  "evidence": [
+    "docs/project/evidence/phase-06a-profiles/execution-contract.json",
+    "docs/project/evidence/phase-06a-profiles/phase-05b-baseline-manifest.md",
+    "docs/project/phases/phase-06a-selectable-local-profiles.md",
+    "docs/project/project-state.md",
+    "docs/project/roadmap.md",
+    "src/Fluent.Rewrite/Profiles/RewriteProfile.cs",
+    "src/Fluent.Rewrite/Profiles/RewriteProfiles.cs",
+    "src/Fluent.Rewrite/SafeProfileRewriteService.cs",
+    "src/Fluent.Rewrite/Rewriting/RewriteRequest.cs",
+    "src/Fluent.Rewrite/Rewriting/ProfessionalFrenchRuleBasedRewriter.cs",
+    "src/Fluent.Rewrite/Validation/RewriteOutputValidator.cs",
+    "src/Fluent.App/MainWindow.xaml.cs",
+    "src/Fluent.App/Views/DictionaryPage.xaml.cs",
+    ".claude/judge/constitution.md",
+    ".claude/judge/escalation-policy.md",
+    ".claude/judge/risk-classification.md",
+    ".claude/judge/protected-assets.md",
+    ".claude/schemas/verdict.schema.json",
+    "docs/engineering/quality-gates.md"
+  ],
+  "advisoryConditions": [
+    "Every new focused test file and class name must contain the substring 'Profile' so the contract's ~Profile test filters match a non-zero test count; a filter matching zero tests must not be recorded as a pass.",
+    "Transcribe the contract's five risks into docs/project/risk-register.md before closure.",
+    "The focused WPF truthfulness review must explicitly cover the profile snapshot and routing wiring in MainWindow.xaml.cs, since it is only exercised by integration tests and the mandatory Windows smoke.",
+    "All requiredEvidence files must exist before the final Development Judge verdict; closure still requires explicit user validation."
+  ],
+  "saferAlternative": "Not required; the plan already uses the safest available design (session-only non-persisted selection, immutable recording-start snapshot, deterministic catalog-only routing, exact-source fallback) and touches no protected, persistence, or network surface.",
+  "requiredNextStep": "Lead Engineer may implement strictly within allowedPaths, then produce all required evidence before requesting the final Development Judge verdict.",
+  "timestamp": "2026-07-18T12:00:00+02:00"
+}

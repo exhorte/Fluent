@@ -1,0 +1,47 @@
+{
+  "taskId": "FV-P07-T006",
+  "phaseId": "FV-P07B-R3",
+  "title": "Coalesce overlapping unknown-kid JWKS refreshes",
+  "objective": "Make the existing refresh lock a true single-flight boundary so validations overlapping one forced unknown-kid refresh reuse its result instead of starting a second sequential network cycle.",
+  "status": "active",
+  "approvedByJudge": true,
+  "createdAt": "2026-07-22T00:00:00+02:00",
+  "expiresAt": "2026-08-22T00:00:00Z",
+  "scope": {
+    "included": [
+      "Add an in-memory refresh generation counter to SupabaseJwtValidator.",
+      "Capture the generation at validation start; after acquiring the existing lock, reuse the current manager without another refresh when that generation changed during the validation.",
+      "Increment the generation at forced-refresh start and completion in a finally block.",
+      "Retain the fresh pinned ConfigurationManager, refreshOnKeyMiss=false retry, exact metadata=2/JWKS=2 concurrent regression and all existing failure-path tests."
+    ],
+    "excluded": [
+      "Changing trust policy, algorithms, issuer/audience/lifetime/subject/role validation, endpoints, cache intervals, HTTP transport, packages or response mapping.",
+      "Adding retries, timers, persistence, logging, external operations, live smoke, secrets, deployment or Git mutation.",
+      "Coalescing non-overlapping sequential validations or weakening exact request bounds."
+    ]
+  },
+  "allowedPaths": [
+    "src/Fluent.Backend/Auth/SupabaseJwtValidator.cs",
+    "tests/Fluent.Backend.Tests/SupabaseJwtValidatorTests.cs",
+    "docs/project/evidence/phase-07b-oauth-state-repair/**",
+    "docs/project/project-state.md",
+    "docs/project/risk-register.md",
+    "docs/history_session.md",
+    ".claude/runtime/active-task.json"
+  ],
+  "acceptanceCriteria": [
+    "Two deterministic overlapping unknown-kid validations return Invalid and perform aggregate metadata=2, JWKS=2.",
+    "One serial unknown-kid validation retains metadata=2, JWKS=2.",
+    "All other JWT valid, invalid, forbidden and unavailable tests remain unchanged and pass.",
+    "No token or key material is logged or persisted; full Release verification passes."
+  ],
+  "evidence": [
+    "The deterministic async-gated concurrent regression observed metadata=3 after the redundant RequestRefresh deletion.",
+    "The current SemaphoreSlim serializes refresh bodies but does not tell a queued caller that a refresh completed while it waited."
+  ],
+  "rollbackPlan": [
+    "Remove the generation counter and generation checks while retaining the already-approved redundant RequestRefresh deletion.",
+    "Do not weaken or remove the failing concurrency regression."
+  ],
+  "maxRepairCycles": 1
+}

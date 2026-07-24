@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\Fluent.Core\Fluent.Core.csproj" />
+    <ProjectReference Include="..\Fluent.Windows\Fluent.Windows.csproj" />
+    <ProjectReference Include="..\Fluent.Audio\Fluent.Audio.csproj" />
+    <ProjectReference Include="..\Fluent.Speech\Fluent.Speech.csproj" />
+    <ProjectReference Include="..\Fluent.Rewrite\Fluent.Rewrite.csproj" />
+    <ProjectReference Include="..\Fluent.Cloud\Fluent.Cloud.csproj" />
+    <ProjectReference Include="..\Fluent.Persistence\Fluent.Persistence.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>Fluent</AssemblyName>
+    <Product>Fluent</Product>
+    <Description>Application Windows locale de dictée française Fluent.</Description>
+  </PropertyGroup>
+
+</Project>

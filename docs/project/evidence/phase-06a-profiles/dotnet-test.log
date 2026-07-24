@@ -1,0 +1,35 @@
+# Phase 06A Test Evidence
+
+Date: 2026-07-18
+
+## Focused profile tests
+
+Command: dotnet test tests/Fluent.Rewrite.Tests/Fluent.Rewrite.Tests.csproj -c Release --no-restore --filter "FullyQualifiedName~Profile"
+
+```
+Passed!  - Failed:     0, Passed:    41, Skipped:     0, Total:    41 - Fluent.Rewrite.Tests.dll (net10.0)
+```
+
+Command: dotnet test tests/Fluent.IntegrationTests/Fluent.IntegrationTests.csproj -c Release --no-restore --filter "FullyQualifiedName~Profile"
+
+```
+Passed!  - Failed:     0, Passed:     4, Skipped:     0, Total:     4 - Fluent.IntegrationTests.dll (net10.0)
+```
+
+Both filters matched a non-zero test count, as required by the plan-judge advisory condition.
+
+## Complete suite
+
+Command: dotnet test Fluent.sln -c Release --no-build --no-restore -m:1 --disable-build-servers
+
+```
+Passed!  - Failed: 0, Passed:  11, Total:  11 - Fluent.Core.Tests.dll (net10.0)
+Passed!  - Failed: 0, Passed:   6, Total:   6 - Fluent.Windows.Tests.dll (net10.0)
+Passed!  - Failed: 0, Passed:   6, Total:   6 - Fluent.Audio.Tests.dll (net10.0)
+Passed!  - Failed: 0, Passed:   9, Total:   9 - Fluent.Speech.Tests.dll (net10.0)
+Passed!  - Failed: 0, Passed: 125, Total: 125 - Fluent.Rewrite.Tests.dll (net10.0)
+Passed!  - Failed: 0, Passed:  19, Total:  19 - Fluent.Persistence.Tests.dll (net10.0)
+Passed!  - Failed: 0, Passed:   8, Total:   8 - Fluent.IntegrationTests.dll (net10.0)
+```
+
+Complete suite total: 184 / 184 passed (147 accepted at Phase 05B closure + 37 new Phase 06A profile tests).

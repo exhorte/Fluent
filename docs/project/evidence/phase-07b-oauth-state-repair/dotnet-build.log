@@ -1,0 +1,8 @@
+Command: dotnet build Fluent.sln -c Release --no-restore -m:1 --disable-build-servers
+Date: 2026-07-22
+Exit code: 0
+
+Build succeeded.
+0 Warning(s)
+0 Error(s)
+Time Elapsed 00:00:13.81

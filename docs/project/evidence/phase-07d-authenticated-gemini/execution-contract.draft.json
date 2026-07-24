@@ -1,0 +1,101 @@
+{
+  "taskId": "FV-P07-T014",
+  "phaseId": "FV-P07",
+  "title": "Phase 07D — préparation desktop Gemini authentifiée sans déploiement",
+  "objective": "Ajouter un chemin de configuration publique, borné et sans secret pour que le Desktop puisse connaître l'origine HTTPS d'un backend Fluent, tout en conservant le mode local par défaut et sans effectuer d'appel Gemini, de déploiement ou de configuration externe.",
+  "status": "approved",
+  "createdAt": "2026-07-22T00:00:00+02:00",
+  "updatedAt": "2026-07-22T00:00:00+02:00",
+  "expiresAt": "2026-08-22T00:00:00Z",
+  "approvedByJudge": true,
+  "scope": {
+    "included": [
+      "Créer une configuration publique Desktop lue exclusivement depuis une variable d'environnement de processus `FLUENT_BACKEND_URL`.",
+      "Accepter seulement une origine HTTPS absolue, sans userinfo, query, fragment, port non standard ni chemin ; normaliser l'origine avant emploi.",
+      "Fournir cette origine à `CloudBackendOptions` par la composition WPF, sans y placer de clé fournisseur ni de secret Supabase.",
+      "Rendre l'interface Cloud honnête : sans origine backend valide, l'activation Cloud reste indisponible et la dictée demeure locale.",
+      "Ajouter des tests déterministes de validation de configuration, de câblage et de non-régression du fallback local ; mettre à jour les documents de phase et preuves."
+    ],
+    "excluded": [
+      "Toute lecture, chargement, impression ou modification de .env, .env.*, secret, token, code OAuth, clé Gemini/DeepSeek, modèle, certificat ou donnée locale utilisateur.",
+      "Tout appel réseau, navigateur, OAuth réel, Supabase/Google/Gemini/DeepSeek, backend local ou distant, déploiement, hébergement, compte, facturation ou publication.",
+      "Toute activation live Gemini, modification de la validation JWT serveur, activation DeepSeek, routage inter-fournisseur, historique, réglage persistant ou ajout de dépendance.",
+      "Toute opération Git mutante, commit, push, reset, clean, migration réelle ou modification des phases 06B, 06C, 07A ou 07C."
+    ]
+  },
+  "allowedPaths": [
+    "src/Fluent.App/Cloud/FluentBackendPublicConfiguration.cs",
+    "src/Fluent.App/MainWindow.xaml.cs",
+    "src/Fluent.App/Views/ProfilesPage.xaml.cs",
+    "tests/Fluent.IntegrationTests/FluentBackendPublicConfigurationTests.cs",
+    "tests/Fluent.IntegrationTests/CloudRewriteIntegrationTests.cs",
+    "docs/architecture/component-boundaries.md",
+    "docs/product/privacy-principles.md",
+    "docs/product/user-flows.md",
+    "docs/project/phases/phase-07d-authenticated-gemini.md",
+    "docs/project/evidence/phase-07d-authenticated-gemini/**",
+    "docs/project/project-state.md",
+    "docs/project/roadmap.md",
+    "docs/project/risk-register.md",
+    "docs/history_session.md",
+    ".claude/runtime/active-task.json"
+  ],
+  "readOnlyPaths": [
+    "CLAUDE.md", ".claude/judge/**", ".claude/hooks/**", ".claude/schemas/**",
+    ".env", ".env.*", "secrets/**", "credentials/**", ".git/**",
+    "src/Fluent.Backend/**", "src/Fluent.Cloud/**", "src/Fluent.Core/**", "src/Fluent.Windows/**", "src/Fluent.Audio/**", "src/Fluent.Speech/**", "src/Fluent.Persistence/**", "src/Fluent.Rewrite/**"
+  ],
+  "forbiddenPaths": [
+    ".git/**", ".env", ".env.*", "secrets/**", "credentials/**", "*.key", "*.pem", "*.pfx", "*.p12", "C:/Users/exhorte/AppData/Local/Fluent/**"
+  ],
+  "allowedCommandFamilies": [
+    "rg", "powershell read-only inspection", "dotnet restore", "dotnet build", "dotnet test", "git status", "git diff", "git rev-parse", "pwsh -File .claude/hooks/tests/Invoke-AllHookTests.ps1"
+  ],
+  "forbiddenCommandFamilies": [
+    "git add", "git commit", "git push", "git pull", "git reset", "git clean", "git checkout", "git switch", "curl", "Invoke-WebRequest", "supabase login", "supabase link", "gemini login", "deepseek login", "dotnet run", "reg add", "reg delete", "Remove-Item"
+  ],
+  "acceptanceCriteria": [
+    "Une origine backend valide est construite uniquement depuis `FLUENT_BACKEND_URL` du processus ; le Desktop ne charge jamais .env.",
+    "Les entrées absentes, HTTP, relatives, avec userinfo/query/fragment, port non standard ou chemin sont refusées et ne donnent aucune BaseAddress.",
+    "Avec origine absente/invalide, l'interface n'autorise pas l'activation Cloud et le pipeline conserve le Local exact sans appel Cloud.",
+    "Avec origine valide, la sélection et l'activation restent soumises à session authentifiée, consentement explicite et comportement de fallback existant ; aucune requête n'est faite par les tests.",
+    "Les tests ciblés, restore, build Release, suite complète, tests de garde, scans de secrets et diff passent sans avertissement ou erreur de compilation.",
+    "La documentation indique que l'origine publique ne rend pas Gemini live : serveur, JWT, clé serveur, déploiement et smoke restent une autorisation humaine distincte."
+  ],
+  "requiredTests": [
+    "Validation unitaire de toutes les formes d'URL acceptées et refusées",
+    "Régression du comportement sans configuration et du fallback local",
+    "Source scan : absence de .env, clé fournisseur, endpoint fournisseur ou configuration secrète dans le Desktop",
+    "dotnet restore Fluent.sln --disable-parallel",
+    "dotnet build Fluent.sln -c Release --no-restore -m:1 --disable-build-servers",
+    "dotnet test Fluent.sln -c Release --no-build -m:1 --disable-build-servers",
+    "pwsh -NoProfile -File .claude/hooks/tests/Invoke-AllHookTests.ps1",
+    "git diff --check"
+  ],
+  "requiredReviews": [
+    "Development Judge plan verdict", "architecture/configuration review", "security/privacy review", "WPF state review", "test review", "Development Judge final evidence verdict"
+  ],
+  "requiredEvidence": [
+    "execution-contract.draft.json", "plan-judge-verdict.json", "implementation-summary.md", "dotnet-restore.log", "dotnet-build.log", "dotnet-test.log", "review-summary.md", "development-judge-verdict.json"
+  ],
+  "risks": [
+    "Une URL backend arbitraire pourrait contourner l'intention de confiance ou envoyer du texte vers une origine non prévue.",
+    "Une configuration pourrait être confondue avec une activation Cloud ou Gemini live.",
+    "Une clé, un endpoint fournisseur ou un .env pourrait glisser vers le Desktop.",
+    "Un état UI pourrait promettre Cloud sans backend joignable."
+  ],
+  "rollbackPlan": [
+    "Retirer la configuration publique et le câblage de l'origine backend ; BaseAddress redevient null et le pipeline local exact reste le comportement par défaut.",
+    "Ne pas modifier les sessions, tokens, données utilisateur, backend ou configuration externe pendant le rollback."
+  ],
+  "dependencies": [
+    "Phase 07B clôturée sous autorité utilisateur le 2026-07-22.",
+    "Architecture 06B déjà compilée : transport Desktop vers backend, JWT serveur et fallback local.",
+    "Aucune autorisation de déploiement, secret serveur, appel fournisseur ou coût n'est disponible dans cette tranche."
+  ],
+  "humanApprovals": [
+    "L'utilisateur a demandé de poursuivre après la clôture 07B.",
+    "Cette demande autorise uniquement la préparation locale hors ligne ; toute activation live requiert une autorisation explicite distincte."
+  ],
+  "maxRepairCycles": 2
+}

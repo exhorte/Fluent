@@ -1,0 +1,29 @@
+using Fluent.Speech.Transcription;
+
+namespace Fluent.Speech.Tests;
+
+public sealed class WhisperFrenchTranscriberTests
+{
+    [Fact]
+    public async Task TranscribeFrenchAsync_rejects_calls_after_disposal_without_loading_a_model()
+    {
+        WhisperFrenchTranscriber transcriber = new(Path.Combine(Path.GetTempPath(), $"unused-{Guid.NewGuid():N}.bin"));
+        transcriber.Dispose();
+
+        await Assert.ThrowsAsync<ObjectDisposedException>(
+            () => transcriber.TranscribeFrenchAsync([]));
+    }
+
+    [Fact]
+    public async Task TranscribeFrenchAsync_rejects_silence_without_creating_or_loading_a_model()
+    {
+        string root = Path.Combine(Path.GetTempPath(), $"fluent-silence-{Guid.NewGuid():N}");
+        string modelPath = Path.Combine(root, "model.bin");
+        using WhisperFrenchTranscriber transcriber = new(modelPath);
+
+        string result = await transcriber.TranscribeFrenchAsync(new float[16_000]);
+
+        Assert.Equal(string.Empty, result);
+        Assert.False(Directory.Exists(root));
+    }
+}

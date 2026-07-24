@@ -1,0 +1,21 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P06-T002",
+  "action": "PLAN_REVIEW: Phase 06B execution contract for the Optional Cloud Rewrite Engine, prior to any implementation",
+  "riskLevel": "high",
+  "reason": "Coherent, reversible, governance-consistent. Local rewriting stays the unchanged default (baseline hashes captured). Cloud is reachable only when authenticated AND enabled AND consented AND provider-enabled; since no auth system exists, IsAuthenticated defaults false and the Cloud path is unreachable in live use until a future auth phase. No Desktop or repository secret is permitted. Exact-local fallback on any timeout/error/invalid/conversational/empty output is required and testable. DeepSeek is registered but never called. The backend is scoped minimal, compiling, unit-tested, undeployed, and making no live provider call during verification. Observability records only provider, duration, fallback, cause with no user content.",
+  "conditions": [
+    "Security/privacy review must confirm observability never leaves the backend own operational logging: no third-party analytics sink, no Desktop-side persistence, no cross-session user identifier beyond what auth/rate-limiting already needs.",
+    "List and justify in evidence any new NuGet package added via Directory.Packages.props for Fluent.Cloud or Fluent.Backend.",
+    "Explicitly decide and document CloudRewriteEnabled/CloudConsentGranted as session-only (default) absent a dedicated persistence design.",
+    "Promote ADR-0005 from Proposed to Accepted with a dated changelog referencing this plan verdict as part of the evidence deliverables.",
+    "Do not close Phase 06B on agent-relayed narrative alone; closure must capture the user own direct, quoted confirmation through a channel the read-only Judge can independently observe."
+  ],
+  "rules": [
+    "P-001", "P-002", "P-004", "P-010", "P-011", "P-012", "P-013", "P-017", "P-018",
+    "ADR-0002", "ADR-0005 (Proposed)", "privacy-principles.md", "threat-model.md",
+    "escalation E-001 functional scope, E-003 stack change, E-004 secrets, E-009 deployment"
+  ],
+  "requiredNextStep": "Proceed to implementation under this contract, folding the five conditions into the focused reviews and final evidence; keep status IMPLEMENTED_AWAITING_USER_REVIEW and do not close on agent narrative alone.",
+  "timestamp": "2026-07-19T12:00:00+02:00"
+}

@@ -1,0 +1,24 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P04-T001",
+  "action": "Open and execute the bounded Phase 04A Professional French Safe Rewriting Foundation plan while preserving the accepted Phase 03 baseline.",
+  "toolName": "development-judge",
+  "riskLevel": "high",
+  "reason": "The plan is bounded, reversible, local-only, dependency-free and aligned with the documented next action. Rewriting remains inside Fluent.Rewrite, MainWindow receives only minimal orchestration, validation fails closed to the exact transcript, and all external model, package, persistence and publication operations are excluded.",
+  "rules": [
+    ".claude/judge/constitution.md: mutable work requires a scoped approved contract",
+    ".claude/rules/ai-rewriting.md: never invent information and preserve sensitive content with deterministic fallback",
+    ".claude/rules/dotnet-csharp.md: propagate cancellation and test business rules",
+    ".claude/rules/testing.md: deterministic offline tests only"
+  ],
+  "evidence": [
+    "docs/product/voice-profiles.md defines Professional French and its preservation constraints",
+    "docs/architecture/system-overview.md places ProfileRewriter and OutputValidator before TextInserter",
+    "src/Fluent.Rewrite already exists and requires no new dependency",
+    "MainWindow has a single integration seam after non-empty transcription and before target-safe insertion",
+    "Ollama and local models are unavailable and explicitly excluded from Phase 04A"
+  ],
+  "saferAlternative": "If live integration regresses, remove only the SafeProfileRewriteService call and continue inserting the original transcript while retaining the isolated tested library.",
+  "requiredNextStep": "Install the approved FV-P04-T001 contract, capture the accepted Phase 03 baseline, implement only the listed paths, then run focused and complete Release verification plus final review.",
+  "timestamp": "2026-07-15T14:25:00+02:00"
+}

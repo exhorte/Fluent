@@ -1,0 +1,29 @@
+{
+  "taskId": "FV-PXX-TYYY",
+  "phaseId": "FV-PXX",
+  "title": "",
+  "objective": "",
+  "status": "draft",
+  "createdAt": "",
+  "updatedAt": "",
+  "expiresAt": "",
+  "approvedByJudge": false,
+  "scope": {
+    "included": [],
+    "excluded": []
+  },
+  "allowedPaths": [],
+  "readOnlyPaths": [],
+  "forbiddenPaths": [],
+  "allowedCommandFamilies": [],
+  "forbiddenCommandFamilies": [],
+  "acceptanceCriteria": [],
+  "requiredTests": [],
+  "requiredReviews": [],
+  "requiredEvidence": [],
+  "risks": [],
+  "rollbackPlan": [],
+  "dependencies": [],
+  "humanApprovals": [],
+  "maxRepairCycles": 3
+}

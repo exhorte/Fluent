@@ -1,0 +1,31 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P05-T001",
+  "action": "Open and execute the bounded Phase 05 Session Dictionary And Local Corrections plan.",
+  "toolName": "development-judge",
+  "riskLevel": "high",
+  "reason": "The proposed slice is authorized, bounded, reversible, local-only and aligned with the MVP personal-dictionary scope and canonical processing flow. Dictionary business logic remains isolated in Fluent.Rewrite, the WPF page exposes only truthful session data, substitutions are deterministic and snapshot-based, protected spans fail closed to the exact transcript, and persistence, packages, network, audio, Win32, insertion-policy and publication changes are explicitly excluded.",
+  "rules": [
+    "CLAUDE.md P-009: target changes must retain the explicit clipboard fallback",
+    "CLAUDE.md P-010 and P-011: transformations must not invent information and must preserve sensitive content",
+    "CLAUDE.md P-013 and P-014: major changes require written acceptance criteria and verification beyond compilation",
+    ".claude/judge/constitution.md: mutable work requires a scoped approved contract",
+    ".claude/rules/architecture.md: dictionary business logic belongs outside WPF UI code",
+    ".claude/rules/ai-rewriting.md: preserve protected content and provide deterministic fallback",
+    ".claude/rules/dotnet-csharp.md: propagate caller cancellation and test business rules",
+    ".claude/rules/testing.md: tests must remain deterministic and offline"
+  ],
+  "evidence": [
+    "The user explicitly requested continuation after completion of Phase 04A",
+    "docs/project/project-state.md records Phase 04A completed with final Judge ALLOW and names a new bounded product slice as the next action",
+    "docs/product/scope.md includes a personal dictionary and local dashboard in the MVP",
+    "docs/architecture/system-overview.md places DictionaryProcessor between SpeechToText and ProfileRewriter",
+    "docs/architecture/component-boundaries.md assigns dictionary processing to Fluent.Rewrite and navigation/UI composition to Fluent.App",
+    "docs/project/roadmap.md identifies Dictionary and dashboard feature pages as pending later phases",
+    "The proposed contract excludes persistence, dependencies, network access and all existing insertion-security mechanisms while requiring focused, build, full-suite and review evidence"
+  ],
+  "saferAlternative": "If live integration regresses, remove the dictionary pipeline call and Dictionary page navigation, restore direct transcript-to-profile rewriting, then rebuild and rerun the complete suite.",
+  "requiredNextStep": "Persist the approved FV-P05-T001 contract and Phase 04 baseline before mutation. Treat caller or shutdown cancellation as propagated cancellation; only a separately identified internal dictionary timeout may return the exact raw transcript. Implement only the allowed paths, run the required focused and complete Release verification and reviews, then request the documented manual smoke before product-phase closure.",
+  "timestamp": "2026-07-15T15:02:00+02:00"
+}
+

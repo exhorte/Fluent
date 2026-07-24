@@ -1,0 +1,13 @@
+Command: C:\Program Files\dotnet\dotnet.exe test Fluent.sln -c Release --no-build --no-restore -m:1 --disable-build-servers
+Timestamp: 2026-07-15T14:13:44+02:00
+Exit code: 0
+Configuration: Release
+Fluent.Core.Tests: 11 passed, 0 failed, 0 skipped
+Fluent.Windows.Tests: 6 passed, 0 failed, 0 skipped
+Fluent.Audio.Tests: 6 passed, 0 failed, 0 skipped
+Fluent.Speech.Tests: 9 passed, 0 failed, 0 skipped
+Fluent.Rewrite.Tests: 1 passed, 0 failed, 0 skipped
+Fluent.Persistence.Tests: 1 passed, 0 failed, 0 skipped
+Fluent.IntegrationTests: 1 passed, 0 failed, 0 skipped
+Total: 35 passed, 0 failed, 0 skipped
+Coverage note: this fresh complete run used assemblies rebuilt after the final 140 by 40 DIP XAML adjustment.

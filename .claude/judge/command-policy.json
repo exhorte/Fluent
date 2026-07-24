@@ -1,0 +1,113 @@
+{
+  "$schema": "../schemas/command-policy.schema.json",
+  "version": 1,
+  "normalization": {
+    "case": "lower-invariant",
+    "collapseWhitespace": true,
+    "normalizeQuotes": true,
+    "splitOperators": [";", "&&", "||", "|"],
+    "normalizePathSeparators": true
+  },
+  "alwaysDeny": [
+    {
+      "id": "cmd.git-reset-hard",
+      "pattern": "\\bgit\\s+reset\\s+--hard\\b",
+      "reason": "Destructive Git reset is forbidden."
+    },
+    {
+      "id": "cmd.git-clean-destructive",
+      "pattern": "\\bgit\\s+clean\\s+.*(-f|-d|-x)",
+      "reason": "Destructive Git clean is forbidden."
+    },
+    {
+      "id": "cmd.git-force-push",
+      "pattern": "\\bgit\\s+push\\b.*(--force|-f|--force-with-lease)",
+      "reason": "Force push is forbidden."
+    },
+    {
+      "id": "cmd.recursive-delete",
+      "pattern": "\\b(rm\\s+-rf|remove-item\\b.*-(recurse|r)\\b|del\\s+/s|rmdir\\s+/s)\\b",
+      "reason": "Recursive deletion requires explicit human approval and scoped tooling."
+    },
+    {
+      "id": "cmd.format-disk",
+      "pattern": "\\b(format|diskpart)\\b",
+      "reason": "Disk formatting and partitioning commands are forbidden."
+    },
+    {
+      "id": "cmd.bypass-permissions",
+      "pattern": "(bypasspermissions|dangerously-skip-permissions|disableallhooks)",
+      "reason": "Permission bypass and hook disabling are forbidden."
+    },
+    {
+      "id": "cmd.package-publish",
+      "pattern": "\\b(npm\\s+publish|dotnet\\s+nuget\\s+push|winget\\s+create|choco\\s+push)\\b",
+      "reason": "Publishing is outside Phase 00."
+    }
+  ],
+  "requireHuman": [
+    {
+      "id": "cmd.registry",
+      "pattern": "\\b(reg\\s+(add|delete|import)|set-itemproperty\\b.*hklm:|new-itemproperty\\b.*hklm:)\\b",
+      "category": "E-010",
+      "reason": "Windows registry modification requires user authorization."
+    },
+    {
+      "id": "cmd.admin-install",
+      "pattern": "\\b(msiexec|winget\\s+install|choco\\s+install|scoop\\s+install)\\b",
+      "category": "E-010",
+      "reason": "Administrator or machine-level installation may require human approval."
+    }
+  ],
+  "contractGated": [
+    {
+      "id": "cmd.deploy",
+      "pattern": "\\b(terraform\\s+apply|az\\s+deployment|kubectl\\s+apply|vercel\\s+deploy|netlify\\s+deploy)\\b",
+      "tier": "R1/R2",
+      "reason": "ADR-0007: deployment is allowed without a user prompt only when the active contract records the target in allowedCommandFamilies. A non-force git push is R1 and is no longer human-gated; force-push stays denied."
+    }
+  ],
+  "judgeMayAllow": [
+    "dotnet restore",
+    "dotnet build",
+    "dotnet test",
+    "git add",
+    "git commit",
+    "pwsh -file .claude/hooks/tests/invoke-allhooktests.ps1"
+  ],
+  "readOnlySafe": [
+    "git status",
+    "git diff",
+    "git log",
+    "dotnet --list-sdks",
+    "dotnet --info",
+    "claude --version",
+    "pwsh --version"
+  ],
+  "protectedPatterns": [
+    "CLAUDE.md",
+    ".claude/settings.json",
+    ".claude/judge/**",
+    ".claude/hooks/**",
+    ".claude/schemas/**",
+    ".claude/agents/development-judge.md",
+    ".claude/agents/project-director.md",
+    "docs/engineering/quality-gates.md",
+    "docs/engineering/definition-of-done.md",
+    ".git/**"
+  ],
+  "externalEffects": [
+    "git push",
+    "package publish",
+    "deployment",
+    "account login",
+    "remote API mutation"
+  ],
+  "dangerousFlags": [
+    "--force",
+    "-f",
+    "--hard",
+    "--dangerously-skip-permissions",
+    "--permission-mode bypassPermissions"
+  ]
+}

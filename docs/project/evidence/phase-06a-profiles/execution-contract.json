@@ -1,0 +1,191 @@
+{
+  "taskId": "FV-P06-T001",
+  "phaseId": "FV-P06",
+  "title": "Selectable Local Profiles",
+  "objective": "Provide a truthful session-only choice between the accepted Professional French transformation and an exact Developer profile, while visibly deferring unsafe semantic simplification and preserving every accepted dictionary, validation, target, insertion, and privacy protection.",
+  "status": "completed",
+  "createdAt": "2026-07-17T12:19:12+02:00",
+  "updatedAt": "2026-07-19T09:30:00+02:00",
+  "expiresAt": "2099-12-31T23:59:59Z",
+  "approvedByJudge": true,
+  "scope": {
+    "included": [
+      "Add a canonical local catalog for Professional French, Developer, and visibly unavailable Simplified French metadata",
+      "Add validated session-only profile selection with Professional French as the launch default",
+      "Add deterministic routing to the existing Professional rewriter or an exact Developer pass-through rewriter",
+      "Capture an immutable selected-profile snapshot at recording start for the complete dictation",
+      "Add a real Profiles page and navigation with truthful current and unavailable states",
+      "Update Overview and header copy to disclose the actual rewrite profile separately from the Whisper engine",
+      "Add deterministic profile, routing, pipeline, UI-state, cancellation, and regression tests",
+      "Produce Release build, complete-suite, focused-review, Judge, and Windows-smoke evidence"
+    ],
+    "excluded": [
+      "Ollama, local-model installation or download, network, prompts, semantic generation, or new packages",
+      "Claiming that Simplified French is operational",
+      "Profile persistence, SQLite migration, settings files, registry, or LocalAppData mutation",
+      "History, stored text, analytics, telemetry, export, synchronization, cloud, accounts, or secrets",
+      "Whisper, audio, hotkey, capsule, Win32, target identity, password, clipboard, insertion policy, Enter, or permission changes",
+      "Packaging, deployment, installation, Git commit, push, release, or publication"
+    ]
+  },
+  "allowedPaths": [
+    "src/Fluent.Rewrite/Profiles/**",
+    "src/Fluent.Rewrite/Rewriting/**",
+    "src/Fluent.Rewrite/SafeProfileRewriteService.cs",
+    "src/Fluent.App/MainWindow.xaml",
+    "src/Fluent.App/MainWindow.xaml.cs",
+    "src/Fluent.App/Views/ProfilesPage.xaml",
+    "src/Fluent.App/Views/ProfilesPage.xaml.cs",
+    "tests/Fluent.Rewrite.Tests/*Profile*Tests.cs",
+    "tests/Fluent.IntegrationTests/*Profile*Tests.cs",
+    "docs/project/phases/phase-06a-selectable-local-profiles.md",
+    "docs/project/evidence/phase-06a-profiles/**",
+    "docs/project/project-state.md",
+    "docs/project/roadmap.md",
+    "docs/project/risk-register.md",
+    ".claude/runtime/active-task.json"
+  ],
+  "readOnlyPaths": [
+    "CLAUDE.md",
+    "docs/product/**",
+    "docs/architecture/**",
+    "docs/design/**",
+    "docs/templates/**",
+    "Directory.Packages.props",
+    "src/Fluent.Core/**",
+    "src/Fluent.Windows/**",
+    "src/Fluent.Audio/**",
+    "src/Fluent.Speech/**",
+    "src/Fluent.Persistence/**",
+    "src/Fluent.Rewrite/Dictionary/**",
+    "src/Fluent.Rewrite/Validation/**",
+    "src/Fluent.App/Phase01/**",
+    "src/Fluent.App/Views/DictionaryPage.xaml",
+    "src/Fluent.App/Views/DictionaryPage.xaml.cs",
+    "tests/Fluent.Core.Tests/**",
+    "tests/Fluent.Windows.Tests/**",
+    "tests/Fluent.Audio.Tests/**",
+    "tests/Fluent.Speech.Tests/**",
+    "tests/Fluent.Persistence.Tests/**",
+    ".claude/judge/**",
+    ".claude/hooks/**",
+    ".claude/schemas/**",
+    ".claude/agents/development-judge.md"
+  ],
+  "forbiddenPaths": [
+    ".git/**",
+    ".env",
+    ".env.*",
+    "secrets/**",
+    "credentials/**",
+    "*.key",
+    "*.pem",
+    "*.pfx",
+    "*.p12",
+    "%LOCALAPPDATA%/Fluent/**",
+    "C:/Users/exhorte/AppData/Local/Fluent/**"
+  ],
+  "allowedCommandFamilies": [
+    "rg",
+    "pwsh",
+    "powershell",
+    "dotnet build",
+    "dotnet test",
+    "git status",
+    "git diff",
+    "git show",
+    "git rev-parse",
+    "git ls-files",
+    "Get-FileHash"
+  ],
+  "forbiddenCommandFamilies": [
+    "dotnet add package",
+    "dotnet restore",
+    "ollama",
+    "curl",
+    "Invoke-WebRequest",
+    "git add",
+    "git commit",
+    "git push",
+    "git pull",
+    "git reset",
+    "git clean",
+    "git checkout",
+    "git switch",
+    "winget",
+    "choco",
+    "reg add"
+  ],
+  "acceptanceCriteria": [
+    "Professional French is the default on every launch and retains its accepted deterministic safe output.",
+    "Developer is selectable and returns the exact post-dictionary source for ordinary, Unicode, multiline, code, command, URL, path, version, number, and identifier samples.",
+    "Simplified French is visible but disabled with an honest local-semantic-engine explanation.",
+    "Only canonical catalog-owned available profiles can be selected or routed.",
+    "The profile captured at recording start remains fixed until that dictation completes.",
+    "Unknown, unavailable, empty, failed, cancelled, or unsafe routing preserves the accepted exact-source fallback semantics.",
+    "The Profiles page, navigation, Overview, and header display only real profile state.",
+    "Dictionary persistence and every accepted target, password, clipboard, no-Enter, shutdown, and audio-privacy protection remain unchanged.",
+    "No selection or user text is persisted or logged and no network, package, Ollama, database, history, or settings mutation is added.",
+    "Focused tests pass, the Release solution builds with zero warnings and errors, the complete suite passes, focused reviews have no blocker, and the user Windows smoke passes before closure."
+  ],
+  "requiredTests": [
+    "dotnet test tests/Fluent.Rewrite.Tests/Fluent.Rewrite.Tests.csproj -c Release --no-restore --filter FullyQualifiedName~Profile",
+    "dotnet test tests/Fluent.IntegrationTests/Fluent.IntegrationTests.csproj -c Release --no-restore --filter FullyQualifiedName~Profile",
+    "dotnet build Fluent.sln -c Release --no-restore -m:1 --disable-build-servers",
+    "dotnet test Fluent.sln -c Release --no-build --no-restore -m:1 --disable-build-servers"
+  ],
+  "requiredReviews": [
+    "Development Judge plan verdict",
+    "Focused rewrite architecture and safety review",
+    "Focused WPF truthfulness and profile-snapshot review",
+    "Focused security, privacy, and test review",
+    "Development Judge final evidence verdict",
+    "User Windows profile-selection smoke before closure"
+  ],
+  "requiredEvidence": [
+    "docs/project/evidence/phase-06a-profiles/plan-judge-verdict.json",
+    "docs/project/evidence/phase-06a-profiles/phase-05b-baseline-manifest.md",
+    "docs/project/evidence/phase-06a-profiles/dotnet-build.log",
+    "docs/project/evidence/phase-06a-profiles/dotnet-test.log",
+    "docs/project/evidence/phase-06a-profiles/focused-review.md",
+    "docs/project/evidence/phase-06a-profiles/windows-profile-smoke.md",
+    "docs/project/evidence/phase-06a-profiles/implementation-summary.md",
+    "docs/project/evidence/phase-06a-profiles/development-judge-verdict.json"
+  ],
+  "risks": [
+    "A fabricated profile object could bypass canonical routing.",
+    "Changing selection during recording could affect the in-flight dictation.",
+    "Developer mode could accidentally normalize technical text.",
+    "The UI could imply unavailable semantic simplification or persistence.",
+    "The accepted uncommitted MainWindow and rewrite baselines must be preserved."
+  ],
+  "rollbackPlan": [
+    "Restore the accepted Professional French profile as the single hard-coded selection.",
+    "Remove only Phase 06A profile catalog additions, router, session selection, Profiles page, navigation, tests, and evidence.",
+    "Preserve the accepted Phase 05B database and all prior source behavior.",
+    "Rebuild and rerun the complete suite after rollback."
+  ],
+  "dependencies": [
+    "Completed, user-accepted, and closure-Judge-approved Phase 05B",
+    "Accepted deterministic Professional French rewrite and exact fallback service",
+    "Existing Profiles navigation placeholder and WPF visual language",
+    "Explicit user direction on 2026-07-17 to continue to the next phase"
+  ],
+  "humanApprovals": [
+    "On 2026-07-17 the user explicitly said `c'est bon phase suivante`, accepting Phase 05B and authorizing preparation of the next bounded phase.",
+    "No authorization is inferred for Ollama installation, downloads, persistence changes, history capture, Git publication, deployment, registry, or administrator operations."
+  ],
+  "maxRepairCycles": 2,
+  "verification": {
+    "planJudge": "ALLOW on 2026-07-18 with advisory conditions (test-filter naming, risk-register entry, WPF snapshot review)",
+    "baseline": "CAPTURED before Phase 06A product-source mutation",
+    "implementation": "PASS - canonical catalog, session selection, immutable recording-start snapshot, deterministic reference-equality routing, exact Developer pass-through, real Profiles page, truthful header and Overview disclosure",
+    "focusedTests": "PASS - Rewrite ~Profile 41/41, Integration ~Profile 4/4, both filters non-zero",
+    "releaseBuild": "PASS - 0 warnings, 0 errors (re-confirmed after doc-only repair)",
+    "completeTests": "PASS - 184/184",
+    "focusedReview": "PASS - rewrite architecture/safety, WPF truthfulness/snapshot, and security/privacy/test reviews; 1/2 repair cycles used, no blocking or major finding",
+    "manualSmoke": "PASS - user accepted the complete profile-selection smoke on 2026-07-19 with `c'est bon`, including the mid-recording switch and session-only restart reset",
+    "finalJudge": "Evidence ALLOW on 2026-07-18 to proceed to the smoke. Closure Judge verdict is DENY (see phase-06a-closure-verdict.json) solely because the read-only Judge cannot independently observe the live user acceptance; no technical defect. Phase closed on 2026-07-19 under the user's explicit CLAUDE.md phase-closure authority."
+  },
+  "openFindings": []
+}

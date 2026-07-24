@@ -1,0 +1,21 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P06-T003",
+  "action": "Activate the Phase 06C DeepSeek optional-provider contract for bounded offline preparation only",
+  "riskLevel": "high",
+  "reason": "The contract keeps DeepSeek default-deny behind authentication, Cloud enablement, session consent, explicit provider selection, output validation and exact local fallback. It forbids .env access, secret exposure, external requests, account configuration, deployment and Git mutation; fake-only tests preserve an offline boundary.",
+  "rules": [
+    ".claude/judge/constitution.md: approved contracts authorize only bounded mutable work; external actions remain outside the authorization.",
+    ".claude/judge/risk-classification.md: provider, network, configuration and potential-cost work is high risk.",
+    ".claude/judge/escalation-policy.md: credentials, live provider calls, deployment and spending require separate explicit user authority.",
+    ".claude/judge/protected-assets.md: .env, secrets, credentials, keys and certificates remain prohibited."
+  ],
+  "evidence": [
+    "docs/project/evidence/phase-06c-deepseek/execution-contract.draft.json",
+    "docs/project/phases/phase-06c-deepseek-activation.md",
+    "docs/project/evidence/phase-07b-supabase-auth/dotnet-test.log: 271 passed, 0 failed, 0 skipped."
+  ],
+  "saferAlternative": "Keep DeepSeek nonselectable and use only local fake transports until a later, separately authorized controlled-live-validation task.",
+  "requiredNextStep": "Implement only the approved offline paths. Prove no default/cross-provider invocation, no egress without every gate and valid backend configuration, no Desktop secret exposure, bounded request construction and exact local fallback; then obtain final Judge review. Do not close any phase or run live DeepSeek work without separate explicit authority.",
+  "timestamp": "2026-07-21T00:00:00+02:00"
+}

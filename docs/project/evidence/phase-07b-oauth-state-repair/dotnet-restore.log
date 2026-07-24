@@ -1,0 +1,6 @@
+Command: dotnet restore Fluent.sln --disable-build-servers
+Date: 2026-07-22
+Exit code: 0
+
+Determining projects to restore...
+All projects are up-to-date for restore.

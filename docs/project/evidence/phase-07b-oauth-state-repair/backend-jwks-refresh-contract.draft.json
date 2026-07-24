@@ -1,0 +1,48 @@
+{
+  "taskId": "FV-P07-T005",
+  "phaseId": "FV-P07B-R2",
+  "title": "Remove the redundant discarded-manager JWKS refresh",
+  "objective": "Restore the documented one bounded unknown-kid refresh cycle by removing the redundant RequestRefresh call on a ConfigurationManager that is immediately discarded, without changing JWT trust policy or OAuth Desktop behavior.",
+  "status": "active",
+  "approvedByJudge": true,
+  "createdAt": "2026-07-22T00:00:00+02:00",
+  "expiresAt": "2026-08-22T00:00:00Z",
+  "scope": {
+    "included": [
+      "Remove only the RequestRefresh invocation on the old ConfigurationManager immediately before replacement with a fresh manager.",
+      "Keep the refresh lock, pinned issuer/metadata/JWKS addresses, RS256/ES256 allow-list, issuer/audience/lifetime/subject/role checks and fail-closed result unchanged.",
+      "Retain per-path metadata and JWKS request counters proving exactly one initial fetch and one bounded unknown-kid refresh.",
+      "Focused backend test, complete Release verification and security review."
+    ],
+    "excluded": [
+      "Any Supabase, Google, network, deployment, secret, token, .env, Git or live-smoke operation.",
+      "Changing JWT acceptance, retry counts elsewhere, cache intervals, endpoint derivation, HTTP transport, packages or Desktop authentication.",
+      "Accepting six requests, weakening the exact bound, or hiding the extra cycle in the test."
+    ]
+  },
+  "allowedPaths": [
+    "src/Fluent.Backend/Auth/SupabaseJwtValidator.cs",
+    "tests/Fluent.Backend.Tests/SupabaseJwtValidatorTests.cs",
+    "docs/project/evidence/phase-07b-oauth-state-repair/**",
+    "docs/project/project-state.md",
+    "docs/project/risk-register.md",
+    "docs/history_session.md",
+    ".claude/runtime/active-task.json"
+  ],
+  "acceptanceCriteria": [
+    "An unknown kid performs two metadata requests and two JWKS requests total: one initial cycle and one explicit refresh cycle.",
+    "The token remains Invalid after the refreshed JWKS still lacks the kid.",
+    "No trust, algorithm, issuer, audience, lifetime, subject or role validation changes.",
+    "Focused backend test, Release build and complete suite pass."
+  ],
+  "evidence": [
+    "Full suite observed six total requests instead of four.",
+    "Per-path instrumentation observed three metadata requests where two are required.",
+    "SupabaseJwtValidator.RefreshAndValidateAsync calls RequestRefresh on the old manager and immediately replaces that manager before validation."
+  ],
+  "rollbackPlan": [
+    "Restore the single removed RequestRefresh invocation if focused verification reveals a security regression.",
+    "Do not weaken tests or change external configuration."
+  ],
+  "maxRepairCycles": 1
+}

@@ -1,0 +1,29 @@
+{
+  "taskId": "FV-P00-T001",
+  "phaseId": "FV-P00",
+  "title": "Bootstrap Phase 00 harness",
+  "objective": "Create and validate the governance harness without implementing product features.",
+  "status": "implementing",
+  "createdAt": "2026-07-12T00:00:00Z",
+  "updatedAt": "2026-07-12T00:00:00Z",
+  "expiresAt": "2099-12-31T23:59:59Z",
+  "approvedByJudge": true,
+  "scope": {
+    "included": ["Phase 00 bootstrap artifacts"],
+    "excluded": ["Product feature implementation"]
+  },
+  "allowedPaths": ["CLAUDE.md", "README.md", ".claude/**", "docs/**", "src/**", "tests/**", "benchmarks/**", "tools/**", "*.sln", "*.props", ".editorconfig", ".gitignore", "LICENSE"],
+  "readOnlyPaths": [],
+  "forbiddenPaths": [".git/**", ".env", ".env.*", "secrets/**"],
+  "allowedCommandFamilies": ["git status", "git diff", "dotnet restore", "dotnet build", "dotnet test", "pwsh"],
+  "forbiddenCommandFamilies": ["git reset --hard", "git clean", "git push --force"],
+  "acceptanceCriteria": ["QG-001 through QG-025 assessed"],
+  "requiredTests": ["hook tests", "json validation", "frontmatter validation", "dotnet build", "dotnet test"],
+  "requiredReviews": ["judge policy review"],
+  "requiredEvidence": ["bootstrap report", "hook report", "build report", "test report"],
+  "risks": ["Live Claude Code hook behavior requires fresh-session verification"],
+  "rollbackPlan": ["Revert Phase 00 files before user review if necessary"],
+  "dependencies": [],
+  "humanApprovals": ["Initial user mission authorizes Phase 00 bootstrap only"],
+  "maxRepairCycles": 3
+}

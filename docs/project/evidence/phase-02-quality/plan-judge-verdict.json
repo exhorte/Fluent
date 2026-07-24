@@ -1,0 +1,25 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P02-T002",
+  "action": "Execute the bounded Base Q5_0 versus Base Q8_0 latency and French-quality optimization plan",
+  "toolName": "development-judge",
+  "riskLevel": "medium",
+  "reason": "The plan is necessary, reversible, and proportionate to the user's observed latency and recognition issues. It compares one same-architecture candidate against the current model using identical in-memory samples, bounds thread evaluation to 4, 6, and 8, measures preparation, inference, RTF, and WER, and preserves Base Q5_0 unless Base Q8_0 improves quality without increasing inference latency. PrepareAsync and conservative silence rejection are independently testable. GPU, cloud, telemetry, persistent audio, and aggressive signal processing remain excluded.",
+  "rules": [
+    "CLAUDE.md P-002: local-first",
+    "CLAUDE.md P-003: no audio saved by default",
+    "CLAUDE.md P-013: written acceptance criteria required",
+    "CLAUDE.md P-014: compilation alone cannot complete a phase",
+    "docs/product/requirements.md PERF-001 and PERF-002",
+    ".claude/rules/audio-speech.md: measure latency and preserve cancellation"
+  ],
+  "evidence": [
+    "User real-device report on 2026-07-14",
+    "Local Intel Core i7-8650U hardware inspection",
+    "Preliminary Base Q5_0 baseline: 5.625 seconds of French TTS audio processed in approximately 5.55 seconds",
+    "Official Whisper.net and whisper.cpp model/runtime documentation"
+  ],
+  "saferAlternative": "Retain Base Q5_0 unchanged whenever Q8_0 fails either the quality-improvement gate or the no-latency-regression gate.",
+  "requiredNextStep": "Persist this contract, benchmark the identical in-memory samples, implement only measured improvements, then build, test, and require one real-voice recheck.",
+  "timestamp": "2026-07-14T17:47:23+02:00"
+}

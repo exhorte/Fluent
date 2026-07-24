@@ -1,0 +1,13 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T004-A01",
+  "action": "Amend FV-P07-T004 for the isolated dictionary-test correction and backend-test refresh instrumentation only",
+  "riskLevel": "medium",
+  "reason": "Both complete-suite failures are outside OAuth production code and can be investigated without expanding production scope. The rebrand selector repair is test-only. Per-path JWT counters preserve the one-refresh-cycle security invariant instead of weakening the expected total from four to six.",
+  "constraints": [
+    "No production dictionary or backend modification is authorized.",
+    "Do not normalize six requests or weaken the one-refresh-cycle invariant.",
+    "If instrumentation proves multiple refresh cycles, require a separate backend repair contract and Judge review."
+  ],
+  "timestamp": "2026-07-22T00:00:00+02:00"
+}

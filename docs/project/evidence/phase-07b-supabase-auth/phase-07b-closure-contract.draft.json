@@ -1,0 +1,49 @@
+{
+  "taskId": "FV-P07-T008",
+  "phaseId": "FV-P07",
+  "title": "Clôture contrôlée de la Phase 07B Supabase Auth",
+  "objective": "Obtenir et documenter les vérifications manuelles restantes de session avant de soumettre la clôture de Phase 07B, sans modifier le code, les comptes externes, les secrets ou le dépôt.",
+  "status": "approved",
+  "createdAt": "2026-07-22T00:00:00+02:00",
+  "updatedAt": "2026-07-22T00:00:00+02:00",
+  "expiresAt": "2026-08-22T00:00:00Z",
+  "approvedByJudge": true,
+  "scope": {
+    "included": [
+      "Faire exécuter par l'utilisateur les checks de restauration, hors-ligne, déconnexion et consentement de session.",
+      "Consigner uniquement PASS/FAIL, états UI et catégories d'erreur désensibilisées.",
+      "Soumettre l'évidence consolidée au Development Judge puis demander l'acceptation de clôture à l'utilisateur."
+    ],
+    "excluded": [
+      "Toute modification de code, Supabase, Google, Credentials Manager, .env, secret, backend, déploiement ou Git.",
+      "Toute copie de token, refresh token, code OAuth, e-mail complet, clé, URI comportant une valeur sensible ou contenu de dictée."
+    ]
+  },
+  "allowedPaths": [
+    "docs/project/evidence/phase-07b-supabase-auth/**",
+    "docs/project/phases/phase-07b-supabase-auth.md",
+    "docs/project/project-state.md",
+    "docs/project/roadmap.md",
+    "docs/history_session.md",
+    ".claude/runtime/active-task.json"
+  ],
+  "readOnlyPaths": ["CLAUDE.md", ".claude/judge/**", ".claude/hooks/**", ".env", ".env.*", "src/**", "tests/**", ".git/**"],
+  "forbiddenPaths": [".git/**", ".env", ".env.*", "secrets/**", "credentials/**", "*.key", "*.pem", "*.pfx", "*.p12", "C:/Users/exhorte/AppData/Local/Fluent/**"],
+  "allowedCommandFamilies": ["rg", "powershell read-only inspection", "git status", "git diff", "dotnet build", "dotnet test"],
+  "forbiddenCommandFamilies": ["git add", "git commit", "git push", "git reset", "git clean", "curl", "Invoke-WebRequest", "supabase login", "supabase link", "reg add", "reg delete", "Remove-Item"],
+  "acceptanceCriteria": [
+    "Après relance, une session valide est restaurée sans valeur sensible affichée.",
+    "Une indisponibilité réseau restaure un état Offline et le mode local sans navigateur ni Cloud.",
+    "La déconnexion efface la session effective : après relance aucune session n'est restaurée.",
+    "Le consentement et l'activation Cloud reviennent à désactivé après relance.",
+    "Chaque résultat est rapporté par l'utilisateur sans secret et 07B n'est clôturée qu'après son acceptation explicite."
+  ],
+  "requiredTests": ["Checklist manuelle utilisateur phase 07B", "Relecture du Judge de clôture"],
+  "requiredReviews": ["Development Judge closure review", "Acceptation explicite de l'utilisateur"],
+  "requiredEvidence": ["manual-supabase-google-smoke-checklist.md mis à jour", "manual-session-closure-result.md", "phase-07b-closure-judge-verdict.json", "acceptation utilisateur consignée sans secret"],
+  "risks": ["Session persistante non supprimée", "mode offline ambigu", "consentement session-only rétabli à tort", "clôture inférée sans résultat utilisateur"],
+  "rollbackPlan": ["Conserver 07B ouverte et le comportement local-first inchangé si un check échoue ou est incomplet."],
+  "dependencies": ["Core OAuth smoke PASS rapporté le 2026-07-22", "configuration Supabase/Google déjà déclarée par l'utilisateur"],
+  "humanApprovals": ["L'utilisateur doit exécuter les checks et détenir l'autorité de clôture.", "Aucune opération externe supplémentaire n'est autorisée par ce brouillon."],
+  "maxRepairCycles": 0
+}

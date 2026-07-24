@@ -1,0 +1,3 @@
+Command: `dotnet restore Fluent.sln --disable-build-servers -m:1`
+
+Result: PASS — all projects were up to date for restore.

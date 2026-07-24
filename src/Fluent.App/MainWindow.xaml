@@ -1,0 +1,471 @@
+<Window x:Class="Fluent.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:Fluent.App.Views"
+        mc:Ignorable="d"
+        Title="Fluent"
+        Height="640"
+        Width="1040"
+        MinHeight="560"
+        MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource Nyx.WindowBrush}"
+        Foreground="{StaticResource Nyx.PrimaryTextBrush}"
+        FontFamily="Segoe UI Variable Text"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="42" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"
+                Background="{StaticResource Nyx.WindowBrush}"
+                BorderBrush="{StaticResource Nyx.BorderBrush}"
+                BorderThickness="0,0,0,1">
+            <Grid Margin="18,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="170" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Control Width="24"
+                             Height="24"
+                             Focusable="False"
+                             Template="{StaticResource Nyx.LogoMarkTemplate}" />
+                    <TextBlock Text="Fluent"
+                               Margin="9,0,0,0"
+                               VerticalAlignment="Center"
+                               FontFamily="Segoe UI Variable Display"
+                               FontSize="14"
+                               FontWeight="SemiBold" />
+                </StackPanel>
+
+                <TextBlock Grid.Column="1"
+                           Text="Fluent  ·  local  ·  sur l'appareil"
+                           VerticalAlignment="Center"
+                           Foreground="{StaticResource Nyx.MutedTextBrush}"
+                           FontSize="11" />
+
+                <StackPanel Grid.Column="2"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <TextBlock x:Name="HeaderProfileText"
+                               Text="Profil · Français professionnel"
+                               Margin="0,0,14,0"
+                               Foreground="{StaticResource Nyx.SecondaryTextBrush}"
+                               FontFamily="Cascadia Mono"
+                               FontSize="10" />
+                    <Ellipse Width="6"
+                             Height="6"
+                             Fill="{StaticResource Nyx.CyanBrush}" />
+                    <TextBlock Text="Moteur Base Q8 · CPU"
+                               Margin="7,0,0,0"
+                               Foreground="{StaticResource Nyx.SecondaryTextBrush}"
+                               FontFamily="Cascadia Mono"
+                               FontSize="10" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="188" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Border Background="{StaticResource Nyx.SidebarBrush}"
+                    BorderBrush="{StaticResource Nyx.BorderBrush}"
+                    BorderThickness="0,0,1,0">
+                <Grid Margin="14,22,14,18">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel>
+                        <TextBlock Text="ESPACE LOCAL"
+                                   Margin="10,0,0,10"
+                                   Style="{StaticResource Nyx.LabelTextStyle}" />
+
+                        <Button Padding="0"
+                                BorderThickness="0"
+                                Background="Transparent"
+                                Foreground="{StaticResource Nyx.PrimaryTextBrush}"
+                                HorizontalContentAlignment="Stretch"
+                                Cursor="Hand"
+                                Click="OnOverviewNavigationClick">
+                            <Border x:Name="OverviewNavigationSurface"
+                                    Background="{StaticResource Nyx.SelectedBrush}"
+                                    BorderBrush="{StaticResource Nyx.BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="10,9">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="22" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="⌂"
+                                               Foreground="{StaticResource Nyx.CyanBrush}"
+                                               FontSize="15"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="Vue d'ensemble"
+                                               VerticalAlignment="Center"
+                                               FontSize="12"
+                                               FontWeight="SemiBold" />
+                                </Grid>
+                            </Border>
+                        </Button>
+
+                        <Grid Margin="10,14,8,0" Opacity="0.52">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="22" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="◷" FontSize="13" />
+                            <TextBlock Grid.Column="1" Text="Historique" FontSize="12" />
+                            <TextBlock Grid.Column="2" Text="À venir" FontSize="9" />
+                        </Grid>
+
+                        <Button Margin="0,5,0,0"
+                                Padding="0"
+                                BorderThickness="0"
+                                Background="Transparent"
+                                Foreground="{StaticResource Nyx.PrimaryTextBrush}"
+                                HorizontalContentAlignment="Stretch"
+                                Cursor="Hand"
+                                Click="OnDictionaryNavigationClick">
+                            <Border x:Name="DictionaryNavigationSurface"
+                                    Background="Transparent"
+                                    BorderBrush="{StaticResource Nyx.BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="10,9">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="22" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Aa"
+                                               Foreground="{StaticResource Nyx.CyanBrush}"
+                                               FontSize="10"
+                                               FontWeight="Bold" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="Dictionnaire"
+                                               FontSize="12"
+                                               FontWeight="SemiBold" />
+                                    <TextBlock x:Name="DictionaryNavigationStatusText"
+                                               Grid.Column="2"
+                                               Text="CHARGEMENT"
+                                               Foreground="{StaticResource Nyx.MutedTextBrush}"
+                                               FontSize="8" />
+                                </Grid>
+                            </Border>
+                        </Button>
+
+                        <Button Margin="0,5,0,0"
+                                Padding="0"
+                                BorderThickness="0"
+                                Background="Transparent"
+                                Foreground="{StaticResource Nyx.PrimaryTextBrush}"
+                                HorizontalContentAlignment="Stretch"
+                                Cursor="Hand"
+                                Click="OnProfilesNavigationClick">
+                            <Border x:Name="ProfilesNavigationSurface"
+                                    Background="Transparent"
+                                    BorderBrush="{StaticResource Nyx.BorderBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="8"
+                                    Padding="10,9">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="22" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="✦"
+                                               Foreground="{StaticResource Nyx.CyanBrush}"
+                                               FontSize="12" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="Profils"
+                                               FontSize="12"
+                                               FontWeight="SemiBold" />
+                                    <TextBlock x:Name="ProfilesNavigationStatusText"
+                                               Grid.Column="2"
+                                               Text="PRO"
+                                               Foreground="{StaticResource Nyx.MutedTextBrush}"
+                                               FontSize="8" />
+                                </Grid>
+                            </Border>
+                        </Button>
+
+                        <Grid Margin="10,14,8,0" Opacity="0.52">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="22" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="⚙" FontSize="12" />
+                            <TextBlock Grid.Column="1" Text="Paramètres" FontSize="12" />
+                            <TextBlock Grid.Column="2" Text="À venir" FontSize="9" />
+                        </Grid>
+                    </StackPanel>
+
+                    <Border Grid.Row="2"
+                            Background="{StaticResource Nyx.CardBrush}"
+                            BorderBrush="{StaticResource Nyx.BorderBrush}"
+                            BorderThickness="1"
+                            CornerRadius="9"
+                            Padding="11">
+                        <StackPanel>
+                            <TextBlock Text="100 % LOCAL"
+                                       Style="{StaticResource Nyx.LabelTextStyle}"
+                                       Foreground="{StaticResource Nyx.CyanBrush}" />
+                            <TextBlock Text="Audio en mémoire uniquement"
+                                       Margin="0,5,0,0"
+                                       TextWrapping="Wrap"
+                                       FontSize="10"
+                                       Foreground="{StaticResource Nyx.SecondaryTextBrush}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <ScrollViewer x:Name="OverviewPage"
+                          Grid.Column="1"
+                          VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <Grid Margin="28,26,28,30">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="20" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="18" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="18" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel>
+                        <TextBlock Text="Vue d'ensemble"
+                                   Style="{StaticResource Nyx.PageTitleTextStyle}" />
+                        <TextBlock Text="Votre dictée locale, son état et ses protections en un coup d'œil."
+                                   Margin="0,6,0,0"
+                                   Style="{StaticResource Nyx.BodyTextStyle}" />
+                    </StackPanel>
+
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Style="{StaticResource Nyx.DashboardCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="ÉTAT" Style="{StaticResource Nyx.LabelTextStyle}" />
+                                <TextBlock x:Name="DictationStateText"
+                                           Text="Idle"
+                                           Margin="0,8,0,0"
+                                           TextTrimming="CharacterEllipsis"
+                                           Style="{StaticResource Nyx.MetricTextStyle}" />
+                                <TextBlock Text="Dictée courante"
+                                           Margin="0,5,0,0"
+                                           Style="{StaticResource Nyx.BodyTextStyle}"
+                                           FontSize="10" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2" Style="{StaticResource Nyx.DashboardCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="RACCOURCI" Style="{StaticResource Nyx.LabelTextStyle}" />
+                                <TextBlock Text="Ctrl + Espace"
+                                           Margin="0,8,0,0"
+                                           Style="{StaticResource Nyx.MetricTextStyle}"
+                                           FontSize="17" />
+                                <TextBlock x:Name="HotkeyStatusText"
+                                           Text="Initialisation"
+                                           Margin="0,5,0,0"
+                                           TextTrimming="CharacterEllipsis"
+                                           Style="{StaticResource Nyx.BodyTextStyle}"
+                                           FontSize="10" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="4" Style="{StaticResource Nyx.DashboardCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="MOTEUR" Style="{StaticResource Nyx.LabelTextStyle}" />
+                                <TextBlock Text="Base Q8"
+                                           Margin="0,8,0,0"
+                                           Style="{StaticResource Nyx.MetricTextStyle}" />
+                                <TextBlock Text="Whisper local · CPU"
+                                           Margin="0,5,0,0"
+                                           Style="{StaticResource Nyx.BodyTextStyle}"
+                                           FontSize="10" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="6" Style="{StaticResource Nyx.DashboardCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="CONFIDENTIALITÉ" Style="{StaticResource Nyx.LabelTextStyle}" />
+                                <TextBlock Text="En mémoire"
+                                           Margin="0,8,0,0"
+                                           Style="{StaticResource Nyx.MetricTextStyle}"
+                                           FontSize="17" />
+                                <TextBlock Text="Aucun fichier audio"
+                                           Margin="0,5,0,0"
+                                           Style="{StaticResource Nyx.BodyTextStyle}"
+                                           FontSize="10" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <Grid Grid.Row="4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Style="{StaticResource Nyx.DashboardCardStyle}">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Dernière activité"
+                                               Style="{StaticResource Nyx.SectionTitleTextStyle}" />
+                                    <Border Grid.Column="1"
+                                            Background="#1430D1CB"
+                                            BorderBrush="#4030D1CB"
+                                            BorderThickness="1"
+                                            CornerRadius="8"
+                                            Padding="8,3">
+                                        <TextBlock Text="LOCAL"
+                                                   FontSize="9"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{StaticResource Nyx.CyanBrush}" />
+                                    </Border>
+                                </Grid>
+
+                                <Border Margin="0,16,0,0"
+                                        Background="{StaticResource Nyx.SelectedBrush}"
+                                        BorderBrush="{StaticResource Nyx.BorderBrush}"
+                                        BorderThickness="1"
+                                        CornerRadius="9"
+                                        Padding="14">
+                                    <TextBlock x:Name="LastResultText"
+                                               Text="Placez le curseur dans un champ texte, puis utilisez Ctrl+Espace pour démarrer et arrêter la dictée."
+                                               TextWrapping="Wrap"
+                                               LineHeight="20"
+                                               Style="{StaticResource Nyx.BodyTextStyle}"
+                                               Foreground="{StaticResource Nyx.PrimaryTextBrush}" />
+                                </Border>
+
+                                <TextBlock Text="Insertion seulement si la cible initiale reste valide ; sinon, copie explicite dans le presse-papiers. Aucun historique n'est enregistré."
+                                           Margin="0,12,0,0"
+                                           TextWrapping="Wrap"
+                                           Style="{StaticResource Nyx.BodyTextStyle}"
+                                           FontSize="10" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="2" Style="{StaticResource Nyx.DashboardCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Cible sécurisée"
+                                           Style="{StaticResource Nyx.SectionTitleTextStyle}" />
+                                <TextBlock x:Name="TargetStatusText"
+                                           Text="Aucune cible verrouillée"
+                                           Margin="0,14,0,0"
+                                           TextWrapping="Wrap"
+                                           LineHeight="18"
+                                           Style="{StaticResource Nyx.BodyTextStyle}" />
+                                <Border Margin="0,18,0,0"
+                                        Background="#1265D6A6"
+                                        BorderBrush="#3565D6A6"
+                                        BorderThickness="1"
+                                        CornerRadius="8"
+                                        Padding="10,7">
+                                    <TextBlock Text="Champ secret bloqué · cible revérifiée avant insertion"
+                                               TextWrapping="Wrap"
+                                               FontSize="10"
+                                               Foreground="{StaticResource Nyx.SuccessBrush}" />
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <Border Grid.Row="6" Style="{StaticResource Nyx.DashboardCardStyle}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel>
+                                <TextBlock Text="Fondations du produit"
+                                           Style="{StaticResource Nyx.SectionTitleTextStyle}" />
+                                <TextBlock Text="Le dashboard est prêt à accueillir les prochaines fonctions sans afficher de données fictives."
+                                           Margin="0,6,0,0"
+                                           Style="{StaticResource Nyx.BodyTextStyle}" />
+                            </StackPanel>
+                            <WrapPanel Grid.Column="1"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center">
+                                <Border Margin="0,0,8,0" Background="{StaticResource Nyx.SelectedBrush}" CornerRadius="7" Padding="9,5">
+                                    <TextBlock x:Name="ProfileSummaryText"
+                                               Text="Profil · Français professionnel"
+                                               FontSize="9"
+                                               Foreground="{StaticResource Nyx.SecondaryTextBrush}" />
+                                </Border>
+                                <Border Margin="0,0,8,0" Background="{StaticResource Nyx.SelectedBrush}" CornerRadius="7" Padding="9,5">
+                                    <TextBlock x:Name="DictionarySummaryText"
+                                               Text="Dictionnaire · chargement"
+                                               FontSize="9"
+                                               Foreground="{StaticResource Nyx.SecondaryTextBrush}" />
+                                </Border>
+                                <Border Margin="0,0,8,0" Background="{StaticResource Nyx.SelectedBrush}" CornerRadius="7" Padding="9,5">
+                                    <TextBlock x:Name="AuthenticationSummaryText"
+                                               Text="Compte · vérification"
+                                               FontSize="9"
+                                               Foreground="{StaticResource Nyx.SecondaryTextBrush}" />
+                                </Border>
+                                <Border Margin="0,0,8,0" Background="{StaticResource Nyx.SelectedBrush}" CornerRadius="7" Padding="9,5">
+                                    <TextBlock x:Name="CloudSummaryText"
+                                               Text="Cloud · local"
+                                               FontSize="9"
+                                               Foreground="{StaticResource Nyx.SecondaryTextBrush}" />
+                                </Border>
+                                <Border Background="{StaticResource Nyx.SelectedBrush}" CornerRadius="7" Padding="9,5">
+                                    <TextBlock Text="Historique · à venir" FontSize="9" Foreground="{StaticResource Nyx.SecondaryTextBrush}" />
+                                </Border>
+                            </WrapPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </ScrollViewer>
+
+            <views:DictionaryPage x:Name="DictionaryPage"
+                                  Grid.Column="1"
+                                  Visibility="Collapsed" />
+
+            <views:ProfilesPage x:Name="ProfilesPage"
+                                Grid.Column="1"
+                                Visibility="Collapsed" />
+        </Grid>
+    </Grid>
+</Window>

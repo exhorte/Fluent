@@ -1,0 +1,31 @@
+{
+  "verdict": "DENY",
+  "taskId": "FV-P03-T001",
+  "action": "Close FV-P03-T001 and declare the Phase 03 visual dashboard and capsule foundation complete",
+  "toolName": "development-judge",
+  "riskLevel": "high",
+  "reason": "The implementation is technically validated and ready for user smoke testing. The six-reference visual analysis is complete, the dashboard contains only truthful current-state information, future destinations are visibly unavailable, capsule states and animation lifecycles are bounded, recording-time preparation cannot replace the recording waveform, and the existing non-activation protections remain present. The Release build passed with zero warnings and errors, all 35 automated tests passed, and the focused repair review reports no remaining blocking code defect. Phase closure is nevertheless denied because the required Windows visual and focus evidence is missing. The authorized automation attempt was blocked when its declared helper disappeared, and correctly no prohibited fallback was used. Static inspection cannot prove actual rendering, two-cycle animation behavior, processing transitions, idle return, or retained focus in a real Windows text target.",
+  "rules": [
+    ".claude/judge/constitution.md: missing required evidence is failure",
+    "CLAUDE.md P-008: the floating window must not steal focus",
+    "CLAUDE.md P-014: compilation alone cannot complete a phase",
+    "docs/engineering/definition-of-done.md: acceptance criteria, tests, reviews, and evidence must be complete",
+    ".claude/runtime/active-task.json: Windows visual smoke and user visual review are required",
+    ".claude/runtime/active-task.json: user visual smoke remains an open finding"
+  ],
+  "evidence": [
+    "docs/design/visual-language.md: all six references are inventoried and translated into distinct Fluent rules without runtime bitmap reuse",
+    "src/Fluent.App/MainWindow.xaml: truthful dark Overview and unavailable navigation marked À venir",
+    "src/Fluent.App/MainWindow.xaml.cs: guarded idle, recording, processing, recovery, shutdown, and late-progress transitions",
+    "src/Fluent.App/Phase01/RecordingCapsuleWindow.xaml: ShowActivated=false, Focusable=false, IsHitTestVisible=false, and mutually exclusive native presentations",
+    "src/Fluent.App/Phase01/RecordingCapsuleWindow.xaml.cs: controllable Storyboards are removed on every state transition and close",
+    "docs/project/evidence/phase-03-visual/dotnet-build.log: Release build passed with 0 warnings and 0 errors",
+    "docs/project/evidence/phase-03-visual/dotnet-test.log: 35 passed, 0 failed, 0 skipped",
+    "docs/project/evidence/phase-03-visual/implementation-summary.md: focused review passed after repairs with no blocking finding",
+    "docs/project/evidence/phase-03-visual/windows-visual-smoke.md: automation blocked and required user smoke still pending",
+    ".claude/runtime/active-task.json: status verifying, userVisualSmoke PENDING, and one open finding"
+  ],
+  "saferAlternative": "Keep the validated implementation unchanged and complete the documented six-step user smoke; no additional implementation, unsafe automation fallback, or rollback is required before that result.",
+  "requiredNextStep": "Run the rebuilt Release application and record user confirmation of the dark dashboard, idle Fluent capsule, recording waveform, processing transition, idle return, two complete cycles without accumulated animation, retained focus in the original text field, and successful text delivery. Then clear the open finding and resubmit the evidence for the final closure verdict.",
+  "timestamp": "2026-07-14T20:19:34.5982737+02:00"
+}

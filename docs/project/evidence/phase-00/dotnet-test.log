@@ -1,0 +1,28 @@
+Test run for C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\tests\Fluent.Windows.Tests\bin\Debug\net10.0-windows\Fluent.Windows.Tests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+Test run for C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\tests\Fluent.Core.Tests\bin\Debug\net10.0\Fluent.Core.Tests.dll (.NETCoreApp,Version=v10.0)
+Test run for C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\tests\Fluent.Audio.Tests\bin\Debug\net10.0\Fluent.Audio.Tests.dll (.NETCoreApp,Version=v10.0)
+Test run for C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\tests\Fluent.Speech.Tests\bin\Debug\net10.0\Fluent.Speech.Tests.dll (.NETCoreApp,Version=v10.0)
+Test run for C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\tests\Fluent.Persistence.Tests\bin\Debug\net10.0\Fluent.Persistence.Tests.dll (.NETCoreApp,Version=v10.0)
+Test run for C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\tests\Fluent.Rewrite.Tests\bin\Debug\net10.0\Fluent.Rewrite.Tests.dll (.NETCoreApp,Version=v10.0)
+Test run for C:\SECOND_BRAIN\PROJECTS\RECORDFLOW\TRANSCRIPTFLOW\tests\Fluent.IntegrationTests\bin\Debug\net10.0-windows\Fluent.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 784 ms - Fluent.Windows.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:     2, Skipped:     0, Total:     2, Duration: 139 ms - Fluent.Core.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 30 ms - Fluent.Audio.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 29 ms - Fluent.Speech.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 17 ms - Fluent.Rewrite.Tests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 23 ms - Fluent.IntegrationTests.dll (net10.0)
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 22 ms - Fluent.Persistence.Tests.dll (net10.0)

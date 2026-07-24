@@ -1,0 +1,48 @@
+{
+  "taskId": "FV-P07-T018",
+  "phaseId": "FV-P07",
+  "title": "Publier le snapshot Fluent confirmé avec manifeste gelé",
+  "objective": "Publier sur GitHub l’intégralité du snapshot de travail confirmé par l’utilisateur, incluant le renommage NyxVoice vers Fluent, les preuves des phases 07 et les artefacts de gouvernance de publication créés avant le gel du manifeste, par une branche dédiée, un commit intentionnel, un push non forcé et une pull request en brouillon.",
+  "status": "implementing",
+  "createdAt": "2026-07-22T00:00:00+02:00",
+  "updatedAt": "2026-07-22T00:00:00+02:00",
+  "expiresAt": "2026-08-22T00:00:00Z",
+  "approvedByJudge": true,
+  "scope": {
+    "included": [
+      "Créer la branche `agent/publish-fluent-rename-phase07` depuis `main` seulement après égalité du SHA local et distant.",
+      "Geler en mémoire un manifeste NUL-safe exact des paires statut/chemin du snapshot de travail, avec son SHA-256, après tous les artefacts pré-commit et avant staging.",
+      "Ajouter avec `git add -A` exactement ce manifeste gelé, sans aucune écriture de l’arbre de travail entre gel et staging.",
+      "Vérifier le SHA de `main` distant, l’égalité exacte manifeste gelé/indexé, les chemins sensibles, le contenu indexé et la réconciliation delete/add du renommage avant commit.",
+      "Créer un commit unique, pousser la branche sans force et ouvrir une PR brouillon vers la branche par défaut."
+    ],
+    "excluded": [
+      "Lecture, ajout ou publication de `.env`, secrets, clés, certificats, données locales ou caches.",
+      "Force push, réécriture d’historique, reset, clean, suppression, merge de PR ou modification directe de `main`.",
+      "Toute modification de produit, test, configuration externe, fournisseur, backend, déploiement ou donnée utilisateur."
+    ]
+  },
+  "allowedPaths": [".git/**", "docs/project/evidence/git-publication-2026-07-22/**", ".claude/runtime/active-task.json"],
+  "readOnlyPaths": [".env", ".env.*", "secrets/**", "credentials/**", "C:/Users/exhorte/AppData/Local/Fluent/**"],
+  "forbiddenPaths": [".env", ".env.*", "secrets/**", "credentials/**", "*.key", "*.pem", "*.pfx", "*.p12", "C:/Users/exhorte/AppData/Local/Fluent/**"],
+  "allowedCommandFamilies": ["git status", "git diff", "git check-ignore", "git branch", "git switch -c", "git add -A", "git commit", "git push -u", "git rev-parse", "git remote", "git ls-remote", "git ls-files", "git show", "gh auth status", "gh repo view", "gh pr create"],
+  "forbiddenCommandFamilies": ["git push --force", "git push -f", "git reset", "git clean", "git checkout", "git restore", "git rebase", "git filter-repo", "git filter-branch", "git merge", "git pull", "Remove-Item", "curl", "Invoke-WebRequest", "supabase login", "gemini login", "deepseek login"],
+  "acceptanceCriteria": [
+    "La publication est limitée au manifeste NUL-safe gelé, représentant le snapshot entier confirmé par l’utilisateur et les artefacts pré-commit directement requis par cette publication, sur une branche dédiée issue de `main`.",
+    "Le SHA local de `main` correspond au SHA actuel de la branche par défaut distante avant la création de branche.",
+    "Le contrôle d’index prouve qu’aucun `.env`, secret, clé, certificat, cache ou donnée locale n’est staged, ni en chemin ni en contenu scanné.",
+    "Chaque suppression NyxVoice du renommage indexé a une addition Fluent correspondante ou une justification explicite dans le manifeste.",
+    "L’index correspond exactement au manifeste normalisé gelé avant le commit.",
+    "Le commit est créé avec un message descriptif et le push utilise l’upstream sans force.",
+    "Une PR brouillon est créée vers la branche par défaut et son URL est rapportée hors commit.",
+    "Aucun historique n’est réécrit et `main` local ou distant n’est pas modifié directement."
+  ],
+  "requiredTests": ["gel et SHA-256 du manifeste NUL-safe", "égalité manifeste gelé/indexé", "git diff --cached --check", "scan des chemins et contenus sensibles indexés", "vérification SHA branche/remote/upstream", "réconciliation delete/add du renommage", "gh auth status"],
+  "requiredReviews": ["Development Judge plan review", "relecture de l’index avant commit", "vérification post-push/PR"],
+  "requiredEvidence": ["manifest NUL-safe et SHA-256 rapportés hors commit", "inventaire de publication", "SHA local/distant vérifié", "rapport de réconciliation du renommage", "rapport de scan indexé sans valeur sensible", "SHA du commit", "branche distante", "URL de PR brouillon ou erreur précise"],
+  "risks": ["publication d’un renommage massif", "secret ajouté accidentellement", "push sur la mauvaise branche", "divergence distante", "PR erronée", "manifeste non déterministe"],
+  "rollbackPlan": ["Ne pas réécrire l’historique ; si une correction est nécessaire, créer un commit additionnel ou fermer la PR brouillon sans modifier `main`. Les preuves post-commit (SHA, push, PR) sont rapportées dans la conversation et ne déclenchent aucune écriture du dépôt."],
+  "dependencies": ["Utilisateur a confirmé : publier l’ensemble", "origin = https://github.com/exhorte/Fluent.git", "GitHub CLI authentifiée", "SHA distant vérifié avant branche", "manifest gelé avant staging"],
+  "humanApprovals": ["L’utilisateur a explicitement confirmé la publication de l’ensemble des changements dans cette conversation.", "L’utilisateur a explicitement confirmé que cette publication inclut les modifications de gouvernance protégées `CLAUDE.md` et `.claude/agents/development-judge.md`, malgré l’état à réconcilier de 07C."],
+  "maxRepairCycles": 0
+}

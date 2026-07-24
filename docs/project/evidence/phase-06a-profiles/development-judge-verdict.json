@@ -1,0 +1,40 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P06-T001",
+  "action": "Final Development Judge evidence verdict for Phase 06A (Selectable Local Profiles), authorizing progression to the user Windows profile-selection smoke; this verdict does not close the task or the product phase",
+  "toolName": "development-judge-final-evidence-verdict",
+  "riskLevel": "high",
+  "reason": "All three plan-judge advisory conditions were honored and verified from primary evidence. (1) The FullyQualifiedName~Profile filters matched 41/41 in Fluent.Rewrite.Tests and 4/4 in Fluent.IntegrationTests, both non-zero. (2) risk-register.md R-011 (High) transcribes the contract's five risks with concrete mitigations and an accurate 'Open for Phase 06A, user smoke pending' status. (3) focused-review.md Review 2 explicitly covers the profile snapshot and routing wiring in MainWindow.xaml.cs, corroborated by direct inspection (capture at line 188 after target-safety checks, single local read in CompleteDictationAsync, clearing in finally and ResetToIdle). Required evidence all present except this verdict and the still-pending manual smoke result. Source spot-checks confirm reference-equality-only canonical routing (a fabricated value-equal profile throws and falls back to the exact source via the unchanged SafeProfileRewriteService, satisfying P-010/P-011), the Developer pass-through returns request.Text verbatim with no execution (P-007), and ProfileSelection is session-only and non-persisted (P-002). Release build clean (0/0), complete suite 184/184 with no regression to the 147 accepted baseline tests, three focused reviews PASS using 1/2 repair cycles. The residual WPF-level invariant (no automated MainWindow-object-graph test) is exactly what the mandatory user Windows smoke step 6 closes before any closure decision.",
+  "rules": [
+    "Constitution: Evidence (agent narrative alone insufficient)",
+    "Constitution: Fail-Closed Policy (verdict does not authorize closure)",
+    "P-002 (local-first; session-only non-persisted selection)",
+    "P-007 (Developer pass-through performs no execution)",
+    "P-010 (rewriting must never invent information)",
+    "P-011 (numbers, proper nouns, URLs, paths, versions, commands, identifiers preserved)",
+    "P-013 (written acceptance criteria present and verified)",
+    "P-014 (verification beyond compilation)",
+    "P-015/P-016 (versioned docs are the source of truth)",
+    "quality-gates.md (build/test/review evidence required)",
+    "Plan-judge advisory conditions of 2026-07-18 all confirmed honored"
+  ],
+  "evidence": [
+    "docs/project/evidence/phase-06a-profiles/execution-contract.json",
+    "docs/project/evidence/phase-06a-profiles/plan-judge-verdict.json",
+    "docs/project/evidence/phase-06a-profiles/dotnet-build.log",
+    "docs/project/evidence/phase-06a-profiles/dotnet-test.log",
+    "docs/project/evidence/phase-06a-profiles/focused-review.md",
+    "docs/project/evidence/phase-06a-profiles/implementation-summary.md",
+    "docs/project/evidence/phase-06a-profiles/windows-profile-smoke.md",
+    "docs/project/risk-register.md",
+    "docs/project/project-state.md",
+    "src/Fluent.Rewrite/Profiles/RewriteProfiles.cs",
+    "src/Fluent.Rewrite/Profiles/ProfileSelection.cs",
+    "src/Fluent.Rewrite/Rewriting/ProfileRoutedRewriter.cs",
+    "src/Fluent.Rewrite/Rewriting/DeveloperPassThroughRewriter.cs",
+    "src/Fluent.App/MainWindow.xaml.cs"
+  ],
+  "saferAlternative": "Not required; the implementation already uses the safest available approach (reference-equality-only canonical routing, immutable recording-start snapshot, session-only non-persisted selection, exact Developer pass-through, unchanged exact-source fallback service).",
+  "requiredNextStep": "The user must execute docs/project/evidence/phase-06a-profiles/windows-profile-smoke.md in full, including step 6 (mid-recording profile switch), and record PASS or FAIL. Only the user can then accept the smoke and authorize closure of FV-P06-T001 and Phase 06A; this verdict authorizes proceeding to that smoke only, not closure.",
+  "timestamp": "2026-07-18T13:00:00+02:00"
+}

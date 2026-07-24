@@ -1,0 +1,9 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T003",
+  "phaseId": "FV-P07C",
+  "riskLevel": "critical",
+  "timestamp": "2026-07-22T00:00:00+02:00",
+  "reason": "After explicit user approval, the contract bounds the local-data migration with exact manifests, process/destination/same-volume checks, hashes, same-parent Rename-Item-only operations, S0/S1/S2 recovery states and stop-without-overwrite behavior.",
+  "requiredNextStep": "Execute only the approved contract, preserving evidence and stopping on every unexpected source, destination, lock, hash or manifest condition."
+}

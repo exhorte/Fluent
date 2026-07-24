@@ -1,0 +1,23 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P03-T001",
+  "action": "Amend the active Phase 03 contract, then compact the floating capsule to 144x44 DIP and make its full surface drag-only through native non-activating hit testing while preserving its in-session position.",
+  "toolName": "apply_patch, dotnet build, dotnet test, computer-use",
+  "riskLevel": "medium",
+  "reason": "The user explicitly authorized this narrow visual and interaction change. The implementation is reversible, confined to allowed WPF application paths, preserves ShowActivated=false, Focusable=false, WS_EX_NOACTIVATE, and WS_EX_TOOLWINDOW, and does not alter microphone capture, transcription, insertion, target safety, persistence, dependencies, or permissions.",
+  "rules": [
+    ".claude/judge/constitution.md: mutable work requires an active approved contract and must be minimal, reversible, scoped, and evidenced",
+    ".claude/rules/wpf-xaml.md: overlay windows must not activate and UI states must remain explicit",
+    ".claude/rules/windows-native.md: native behavior requires tests or manual harness evidence",
+    "docs/engineering/quality-gates.md QG-016: closure without evidence is blocked"
+  ],
+  "evidence": [
+    "The user explicitly requested a movable capsule and reduced window, text, and icon dimensions",
+    "RecordingCapsuleWindow.xaml previously defined a fixed 184x64 DIP hit-test-disabled window",
+    "MainWindow.ShowCapsule previously reapplied the default top-right position on every state transition",
+    "WindowActivationStyles already applies WS_EX_NOACTIVATE and WS_EX_TOOLWINDOW"
+  ],
+  "saferAlternative": "Keep the whole compact pill as a caption-style drag surface with no buttons, commands, persistence, or custom mouse-capture loop; restore hit-test-disabled behavior if real Windows smoke shows activation or lost target focus.",
+  "requiredNextStep": "Implement only the approved three-file slice, run the complete Release build and tests, obtain focused review, and require real Windows drag, DPI, state-transition, and target-focus smoke before phase closure.",
+  "timestamp": "2026-07-15T13:02:23+02:00"
+}

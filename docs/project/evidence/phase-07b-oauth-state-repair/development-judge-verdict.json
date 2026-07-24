@@ -1,0 +1,17 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T004",
+  "action": "Present the Phase 07B OAuth/JWKS repair diff and request a user-controlled live retest; do not close the phase",
+  "riskLevel": "high",
+  "reason": "No blocking technical finding remains in the offline evidence. The OAuth repair removes only the conflicting Fluent-owned state while preserving PKCE S256 and the exact ephemeral loopback redirect. Cleanup, timeout, retry, JWKS refresh bounds, build, tests, source scans and diff integrity pass. The original live smoke remains failed.",
+  "evidence": [
+    "OAuth tests 12/12",
+    "JWT tests 13/13",
+    "Backend tests 54/54",
+    "Release build 0 warnings / 0 errors",
+    "Complete suite 301/301",
+    "git diff --check exit 0"
+  ],
+  "requiredNextStep": "Present the verified diff and ask the user for a controlled Supabase Google sign-in retest. Do not claim live success or close Phase 07B before the user reports success and explicitly accepts it.",
+  "timestamp": "2026-07-22T00:00:00+02:00"
+}

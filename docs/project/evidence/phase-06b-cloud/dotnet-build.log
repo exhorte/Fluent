@@ -1,0 +1,22 @@
+# Phase 06B Release Build Evidence
+
+Date: 2026-07-19
+Command: dotnet build Fluent.sln -c Release -m:1 --disable-build-servers
+
+Result:
+
+```
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+Time Elapsed 00:00:21.51
+```
+
+Notes:
+
+- Two new projects were added to the solution: `src/Fluent.Cloud` (Desktop transport, net10.0) and `src/Fluent.Backend` (minimal ASP.NET rewrite endpoint, net10.0), plus `tests/Fluent.Backend.Tests`.
+- **No new NuGet package was added by Phase 06B.** `Directory.Packages.props` was not modified by this phase. (It does
+  differ from git HEAD by three entries — `Dapper`, `Microsoft.Data.Sqlite.Core`, `SQLitePCLRaw.bundle_e_sqlite3` — but
+  those were introduced by the accepted Phase 05B persistent-dictionary slice and predate this contract; the repository
+  has a single initial commit, so all later phases show as uncommitted.) Everything added here uses the shared framework only: `System.Net.Http` / `System.Net.Http.Json` for the transport, `Microsoft.AspNetCore.App` (minimal API, built-in rate limiting) for the backend, and the already-pinned xunit/coverlet/test-sdk versions for the new test project. This satisfies the plan-judge condition to list and justify any new dependency: there are none.
+- The backend is not deployed and makes no live provider call during verification.

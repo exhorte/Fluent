@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Fluent Judge Verdict",
+  "type": "object",
+  "required": [
+    "verdict",
+    "taskId",
+    "action",
+    "toolName",
+    "riskLevel",
+    "reason",
+    "rules",
+    "evidence",
+    "saferAlternative",
+    "requiredNextStep",
+    "timestamp"
+  ],
+  "properties": {
+    "verdict": { "type": "string", "enum": ["ALLOW", "ALLOW_WITH_DEBT", "BLOCK_CRITICAL"] },
+    "taskId": { "type": "string" },
+    "action": { "type": "string" },
+    "toolName": { "type": "string" },
+    "riskLevel": { "type": "string", "enum": ["R0", "R1", "R2", "R3", "low", "medium", "high", "critical"] },
+    "reason": { "type": "string" },
+    "rules": { "type": "array", "items": { "type": "string" } },
+    "evidence": { "type": "array", "items": { "type": "string" } },
+    "debt": { "type": "array", "items": { "type": "string" } },
+    "saferAlternative": { "type": "string" },
+    "requiredNextStep": { "type": "string" },
+    "timestamp": { "type": "string" }
+  },
+  "additionalProperties": false
+}

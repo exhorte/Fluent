@@ -1,0 +1,27 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T001",
+  "action": "Approve and activate Phase 07A — Fluent product rebrand contract",
+  "toolName": "development-judge",
+  "riskLevel": "medium",
+  "reason": "The explicit user instruction of 2026-07-21 authorizes the Fluent rebrand. The contract is bounded to visible WPF branding, executable metadata and output, current documentation, and verification; it preserves Fluent internal identifiers, local data compatibility, functional behavior, protected assets, and excludes DeepSeek 06C.",
+  "rules": [
+    ".claude/judge/constitution.md: mutable work requires an approved active contract.",
+    "docs/project/evidence/phase-07a-fluent-rebrand/execution-contract.draft.json: allowed paths and commands are explicit; protected assets, data, secrets, Git mutation, deployment, and DeepSeek work are excluded.",
+    "docs/project/phases/phase-07a-fluent-rebrand.md: acceptance criteria preserve compatibility and require visible-string, Release-build, and complete-test verification.",
+    "docs/engineering/quality-gates.md: implementation must include verification, evidence, and state updates."
+  ],
+  "evidence": [
+    "docs/project/phases/phase-07a-fluent-rebrand.md",
+    "docs/project/evidence/phase-07a-fluent-rebrand/execution-contract.draft.json",
+    ".claude/judge/constitution.md",
+    ".claude/judge/escalation-policy.md",
+    ".claude/judge/risk-classification.md",
+    ".claude/judge/protected-assets.md",
+    ".claude/schemas/verdict.schema.json",
+    "docs/engineering/quality-gates.md"
+  ],
+  "saferAlternative": "Limit the rename to the contract-defined public surface; do not rename repositories, solutions, namespaces, folders, local data paths, providers, credentials, or remotes.",
+  "requiredNextStep": "Activate the approved contract, perform only its allowed-path changes, and produce compatibility, documentation, build, test, and final-review evidence.",
+  "timestamp": "2026-07-21T00:00:00+02:00"
+}

@@ -1,0 +1,35 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P05-T001",
+  "action": "Déclarer l’implémentation Phase 05A techniquement prête pour le smoke Windows utilisateur, sans fermer la phase produit.",
+  "toolName": "development-judge",
+  "riskLevel": "high",
+  "reason": "Le contrat approuvé est actif et limité à un dictionnaire de session local. Le code livré applique des entrées validées et plafonnées, produit un snapshot détaché par dictée, effectue un remplacement déterministe non récursif avec protection des spans techniques et repli exact, puis transmet le résultat à la réécriture professionnelle avant la recapture de cible et la politique d’insertion inchangée. Les vérifications requises passent, les revues WPF, sécurité et tests ne signalent plus de bloqueur après le cycle de réparation autorisé, et aucun ajout de dépendance, réseau ou persistance n’est présent. Le smoke manuel reste explicitement PENDING : ce verdict autorise uniquement le passage au smoke utilisateur et ne constitue ni une validation humaine ni une fermeture de phase produit.",
+  "rules": [
+    "CLAUDE.md P-009, P-010 et P-011 : préserver la cible initiale, ne rien inventer et protéger les contenus sensibles",
+    "CLAUDE.md P-014 : une phase ne se ferme pas sur la seule compilation",
+    ".claude/judge/constitution.md : une décision doit s’appuyer sur le contrat et des preuves versionnées",
+    ".claude/rules/architecture.md : les règles métier du dictionnaire restent dans Fluent.Rewrite",
+    ".claude/rules/ai-rewriting.md : transformation déterministe, protection des tokens techniques et repli sûr",
+    ".claude/rules/security-privacy.md : aucune exfiltration, télémétrie ou persistance implicite",
+    ".claude/rules/testing.md : tests déterministes et hors ligne",
+    ".claude/judge/constitution.md : le Juge ne peut pas créer l’approbation humaine requise pour la fermeture produit"
+  ],
+  "evidence": [
+    ".claude/runtime/active-task.json : contrat FV-P05-T001 approuvé, status reviewing, périmètre, critères et exclusions explicites",
+    "src/Fluent.Rewrite/Dictionary/SessionDictionary.cs : CRUD validé, unicité insensible à la casse, capacité bornée et snapshot détaché",
+    "src/Fluent.Rewrite/Dictionary/PersonalDictionaryProcessor.cs : traitement borné, repli exact, priorité aux formes les plus longues et spans techniques protégés",
+    "src/Fluent.App/MainWindow.xaml.cs : snapshot après transcription, dictionnaire puis réécriture professionnelle, recapture et insertion existantes conservées",
+    "src/Fluent.App/Views/DictionaryPage.xaml : divulgation visible SESSION · NON ENREGISTRÉ et commandes réelles",
+    "tests/Fluent.Rewrite.Tests/PersonalDictionaryTests.cs : couverture CRUD, validation, capacité, snapshot, priorité, non-cascade, Unicode, spans techniques, timeout et pipeline",
+    "docs/project/evidence/phase-05-dictionary/dotnet-build.log : Release PASS, 0 avertissement, 0 erreur",
+    "docs/project/evidence/phase-05-dictionary/dotnet-test.log : Dictionary 39/39, Rewrite 76/76 et solution complète 110/110",
+    "docs/project/evidence/phase-05-dictionary/focused-review.md : revues WPF, sécurité et tests PASS après le cycle de réparation 1",
+    "docs/project/evidence/phase-05-dictionary/windows-smoke.md : procédure complète présente et résultat encore PENDING USER EXECUTION",
+    "docs/project/project-state.md, docs/project/roadmap.md et docs/project/risk-register.md : état technique cohérent avec un smoke utilisateur encore requis"
+  ],
+  "saferAlternative": "Si le smoke Windows révèle une régression, ne pas fermer la phase; retirer uniquement la navigation, la page et l’appel du dictionnaire conformément au rollback du contrat, préserver les baselines Phase 03/04, puis reconstruire et réexécuter la suite complète.",
+  "requiredNextStep": "Faire exécuter par l’utilisateur les huit étapes de docs/project/evidence/phase-05-dictionary/windows-smoke.md, consigner son résultat explicite, puis seulement demander l’autorité utilisateur nécessaire à la fermeture de la Phase 05A. Tant que ce smoke reste PENDING, conserver la phase produit ouverte.",
+  "timestamp": "2026-07-15T15:47:26.7334076+02:00"
+}
+

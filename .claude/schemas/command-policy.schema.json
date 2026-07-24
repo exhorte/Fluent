@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NyxVoice Command Policy",
+  "type": "object",
+  "required": ["version", "alwaysDeny", "requireHuman", "judgeMayAllow", "readOnlySafe", "protectedPatterns", "externalEffects", "dangerousFlags"],
+  "properties": {
+    "version": { "type": "integer" },
+    "normalization": { "type": "object" },
+    "alwaysDeny": { "type": "array", "items": { "type": "object" } },
+    "requireHuman": { "type": "array", "items": { "type": "object" } },
+    "judgeMayAllow": { "type": "array", "items": { "type": "string" } },
+    "readOnlySafe": { "type": "array", "items": { "type": "string" } },
+    "protectedPatterns": { "type": "array", "items": { "type": "string" } },
+    "externalEffects": { "type": "array", "items": { "type": "string" } },
+    "dangerousFlags": { "type": "array", "items": { "type": "string" } }
+  },
+  "additionalProperties": false
+}

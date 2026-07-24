@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "disableBypassPermissionsMode": "disable",
+    "allow": [
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "PowerShell(git status*)",
+      "PowerShell(git diff*)",
+      "PowerShell(dotnet --list-sdks*)",
+      "PowerShell(dotnet --info*)",
+      "PowerShell(dotnet restore*)",
+      "PowerShell(dotnet build*)",
+      "PowerShell(dotnet test*)",
+      "Bash(git push*)",
+      "PowerShell(git push*)"
+    ],
+    "ask": [
+      "WebFetch",
+      "WebSearch",
+      "mcp__*"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(./credentials/**)",
+      "Read(./*.key)",
+      "Read(./*.pem)",
+      "Read(./*.pfx)",
+      "Read(./*.p12)",
+      "Read(./*.cer)",
+      "Read(./*.crt)",
+      "Read(./*.der)",
+      "Edit(./.git/**)",
+      "Write(./.git/**)",
+      "Bash(*git reset --hard*)",
+      "Bash(*git clean -*)",
+      "Bash(*git push --force*)",
+      "Bash(*dangerously-skip-permissions*)",
+      "Bash(*bypassPermissions*)",
+      "PowerShell(*git reset --hard*)",
+      "PowerShell(*git clean -*)",
+      "PowerShell(*git push --force*)",
+      "PowerShell(*dangerously-skip-permissions*)",
+      "PowerShell(*bypassPermissions*)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Initialize-SessionContext.ps1"]
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell|Write|Edit|Read|WebFetch|WebSearch|mcp__*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Invoke-HardSecurityGate.ps1"]
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Invoke-HardSecurityGate.ps1"]
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Write-AuditEvent.ps1"]
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Write-AuditEvent.ps1"]
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Initialize-SessionContext.ps1"]
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Test-SubagentCompletion.ps1"]
+          }
+        ]
+      }
+    ],
+    "TaskCreated": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Test-TaskCreation.ps1"]
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Test-TaskCompletion.ps1"]
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Test-SessionStop.ps1"]
+          }
+        ]
+      }
+    ],
+    "ConfigChange": [
+      {
+        "matcher": "project_settings|local_settings|policy_settings|skills",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Protect-Governance.ps1"]
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Save-CompactionContext.ps1"]
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Restore-CompactionContext.ps1"]
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "pwsh",
+            "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Write-AuditEvent.ps1"]
+          }
+        ]
+      }
+    ]
+  }
+}

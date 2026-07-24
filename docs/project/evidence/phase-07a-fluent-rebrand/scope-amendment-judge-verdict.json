@@ -1,0 +1,24 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T001",
+  "action": "Approve the Phase 07A execution-contract amendment for the single public Fluent status-message change",
+  "toolName": "development-judge",
+  "riskLevel": "medium",
+  "reason": "The amendment explicitly adds src/Fluent.App/MainWindow.xaml.cs and limits it to one public already-processing status message. It resolves the prior path-scope denial without expanding into behavior, namespaces, local-data paths, solution or repository identity, providers, DeepSeek, credentials, deployment, or protected assets.",
+  "rules": [
+    ".claude/judge/constitution.md: the amended contract gives explicit scope and path authority for the previously identified deviation.",
+    "docs/project/evidence/phase-07a-fluent-rebrand/execution-contract.draft.json: MainWindow.xaml.cs is explicitly allowed and constrained to one public message.",
+    "docs/engineering/quality-gates.md: final presentation requires fresh verification and final evidence review."
+  ],
+  "evidence": [
+    "docs/project/evidence/phase-07a-fluent-rebrand/execution-contract.draft.json",
+    "docs/project/phases/phase-07a-fluent-rebrand.md",
+    "src/Fluent.App/MainWindow.xaml.cs",
+    "docs/project/evidence/phase-07a-fluent-rebrand/dotnet-build.log",
+    "docs/project/evidence/phase-07a-fluent-rebrand/dotnet-test.log",
+    ".claude/runtime/active-task.json"
+  ],
+  "saferAlternative": "Keep the amendment limited to the named literal and do not use it to authorize broad text replacements, internal technical renames, migration work, provider changes, or DeepSeek 06C work.",
+  "requiredNextStep": "Rerun the Release build, complete test suite, visible-legacy-string checks, compatibility checks, and final Judge evidence review before presenting Fluent to the user.",
+  "timestamp": "2026-07-21T00:00:00+02:00"
+}

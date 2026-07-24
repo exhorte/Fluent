@@ -1,0 +1,139 @@
+{
+  "type": "adversarial-hook-tests",
+  "taskId": "FV-P00-T001",
+  "method": "subset of Invoke-AllHookTests.ps1",
+  "startedAt": "2026-07-12T04:51:39.1229947Z",
+  "finishedAt": "2026-07-12T04:51:51.3797163Z",
+  "exitCode": 0,
+  "status": "PASS",
+  "summary": "21 adversarial tests passed.",
+  "logPath": "docs/project/evidence/phase-00/hook-tests.json",
+  "tests": [
+    {
+      "name": "T-007 .env read is denied",
+      "status": "PASS",
+      "durationMs": 386,
+      "error": ""
+    },
+    {
+      "name": "T-008 certificate read is denied",
+      "status": "PASS",
+      "durationMs": 254,
+      "error": ""
+    },
+    {
+      "name": "T-009 git reset hard is denied",
+      "status": "PASS",
+      "durationMs": 331,
+      "error": ""
+    },
+    {
+      "name": "T-010 destructive git clean is denied",
+      "status": "PASS",
+      "durationMs": 246,
+      "error": ""
+    },
+    {
+      "name": "T-011 git push force is denied",
+      "status": "PASS",
+      "durationMs": 203,
+      "error": ""
+    },
+    {
+      "name": "T-012 recursive project delete is denied",
+      "status": "PASS",
+      "durationMs": 171,
+      "error": ""
+    },
+    {
+      "name": "T-013 dangerous command after semicolon is detected",
+      "status": "PASS",
+      "durationMs": 211,
+      "error": ""
+    },
+    {
+      "name": "T-014 dangerous command after && is detected",
+      "status": "PASS",
+      "durationMs": 197,
+      "error": ""
+    },
+    {
+      "name": "T-015 dangerous command in pipe is detected",
+      "status": "PASS",
+      "durationMs": 200,
+      "error": ""
+    },
+    {
+      "name": "T-017 malformed JSON fails safely",
+      "status": "PASS",
+      "durationMs": 2059,
+      "error": ""
+    },
+    {
+      "name": "T-022 ordinary git push asks user",
+      "status": "PASS",
+      "durationMs": 168,
+      "error": ""
+    },
+    {
+      "name": "T-023 registry modification asks user",
+      "status": "PASS",
+      "durationMs": 182,
+      "error": ""
+    },
+    {
+      "name": "T-024 administrator install asks user",
+      "status": "PASS",
+      "durationMs": 343,
+      "error": ""
+    },
+    {
+      "name": "T-005 write outside allowedPaths is denied",
+      "status": "PASS",
+      "durationMs": 265,
+      "error": ""
+    },
+    {
+      "name": "T-006 write in judge governance path is denied after lock",
+      "status": "PASS",
+      "durationMs": 248,
+      "error": ""
+    },
+    {
+      "name": "T-016 path traversal is denied",
+      "status": "PASS",
+      "durationMs": 227,
+      "error": ""
+    },
+    {
+      "name": "T-018 task without contract cannot write",
+      "status": "PASS",
+      "durationMs": 212,
+      "error": ""
+    },
+    {
+      "name": "T-019 expired contract cannot write",
+      "status": "PASS",
+      "durationMs": 408,
+      "error": ""
+    },
+    {
+      "name": "T-020 untested task cannot be completed",
+      "status": "PASS",
+      "durationMs": 182,
+      "error": ""
+    },
+    {
+      "name": "T-021 task with critical finding cannot be completed",
+      "status": "PASS",
+      "durationMs": 200,
+      "error": ""
+    },
+    {
+      "name": "T-030 Development Judge cannot modify constitution",
+      "status": "PASS",
+      "durationMs": 206,
+      "error": ""
+    }
+  ]
+}

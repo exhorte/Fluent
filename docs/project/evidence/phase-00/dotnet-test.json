@@ -1,0 +1,11 @@
+{
+  "type": "dotnet-test",
+  "taskId": "FV-P00-T001",
+  "method": "dotnet test Fluent.sln --no-build",
+  "startedAt": "2026-07-12T07:51:57.4760820Z",
+  "finishedAt": "2026-07-12T07:52:15.0610863Z",
+  "exitCode": 0,
+  "status": "PASS",
+  "summary": "All initial .NET tests passed after Fluent rename.",
+  "logPath": "docs/project/evidence/phase-00/dotnet-test.log"
+}

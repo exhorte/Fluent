@@ -1,0 +1,21 @@
+{
+  "verdict": "DENY",
+  "taskId": "FV-P03-T001",
+  "action": "Close FV-P03-T001 and declare Phase 03 technically and product-complete",
+  "toolName": "development-judge",
+  "riskLevel": "high",
+  "reason": "Build, tests, reviews, and user acceptance passed, but closure was not yet truthful because the evidence asserted 144 by 44 DIP while the actual user-accepted source defined 140 by 40 DIP.",
+  "rules": [
+    ".claude/judge/constitution.md: contradictory evidence is failure",
+    "CLAUDE.md P-015: versioned documents are the source of truth",
+    "docs/engineering/definition-of-done.md: acceptance evidence and project state must agree"
+  ],
+  "evidence": [
+    "RecordingCapsuleWindow.xaml defines Width=140 and Height=40",
+    "The active contract and focused review previously required 144 by 44 DIP",
+    "The user smoke passed and openFindings had been cleared"
+  ],
+  "saferAlternative": "Keep the user-accepted 140 by 40 DIP implementation and reconcile the contract, review calculations, evidence, and canonical project documents, then rebuild and retest.",
+  "requiredNextStep": "Reconcile 140 by 40 versus 144 by 44 DIP, rebuild, rerun all tests, update statuses, and resubmit closure.",
+  "timestamp": "2026-07-15T14:05:00.6117803+02:00"
+}

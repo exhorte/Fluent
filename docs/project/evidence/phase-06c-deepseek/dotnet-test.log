@@ -1,0 +1,16 @@
+Command: `dotnet test Fluent.sln -c Release --no-build -m:1 --disable-build-servers -v:minimal`
+
+Result: PASS — 294 passed, 0 failed, 0 skipped.
+
+| Project | Passed |
+| --- | ---: |
+| Fluent.Core.Tests | 11 |
+| Fluent.Windows.Tests | 6 |
+| Fluent.Audio.Tests | 6 |
+| Fluent.Speech.Tests | 9 |
+| Fluent.Rewrite.Tests | 164 |
+| Fluent.Persistence.Tests | 19 |
+| Fluent.IntegrationTests | 29 |
+| Fluent.Backend.Tests | 50 |
+
+Focused coverage verifies explicit session-only provider selection, all existing Cloud gates, DeepSeek Desktop routing, backend default-deny configuration, exact origin validation, fixed request path, header authorization, no secret in request body, non-success response, cancellation, output/fallback parity and source boundaries.

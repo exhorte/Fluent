@@ -1,0 +1,50 @@
+{
+  "taskId": "FV-P07-T013",
+  "phaseId": "FV-P07",
+  "title": "Formaliser la clôture autorisée de la Phase 07B",
+  "objective": "Consigner la clôture de la Phase 07B après le verdict technique ALLOW et l'instruction explicite de clôture de l'utilisateur, sans modifier le produit, les services externes, les secrets, les données ou Git.",
+  "status": "completed",
+  "createdAt": "2026-07-22T00:00:00+02:00",
+  "updatedAt": "2026-07-22T00:00:00+02:00",
+  "expiresAt": "2026-08-22T00:00:00Z",
+  "approvedByJudge": true,
+  "scope": {
+    "included": [
+      "Mettre à jour uniquement les statuts, la roadmap, l'historique, les risques et l'évidence de clôture 07B.",
+      "Attribuer la clôture à l'instruction explicite de l'utilisateur et distinguer cette autorité du verdict technique ALLOW du Judge.",
+      "Clore la tâche documentaire 07B sans démarrer une phase produit."
+    ],
+    "excluded": [
+      "Modification de code, tests, dépendances, configuration, secrets, .env, Credential Manager, Supabase, Google, backend, fournisseur, données locales, Git, commit, push ou déploiement.",
+      "Modification ou clôture de 06B, 06C, 07A ou 07C."
+    ]
+  },
+  "allowedPaths": [
+    "docs/project/evidence/phase-07b-supabase-auth/**",
+    "docs/project/phases/phase-07b-supabase-auth.md",
+    "docs/project/phases/phase-07b-oauth-state-repair.md",
+    "docs/project/project-state.md",
+    "docs/project/roadmap.md",
+    "docs/project/risk-register.md",
+    "docs/history_session.md",
+    ".claude/runtime/active-task.json"
+  ],
+  "readOnlyPaths": ["CLAUDE.md", ".claude/judge/**", ".claude/hooks/**", ".claude/schemas/**", "src/**", "tests/**", ".env", ".env.*", ".git/**"],
+  "forbiddenPaths": [".git/**", ".env", ".env.*", "secrets/**", "credentials/**", "*.key", "*.pem", "*.pfx", "*.p12", "C:/Users/exhorte/AppData/Local/Fluent/**"],
+  "allowedCommandFamilies": ["rg", "powershell read-only inspection", "git status", "git diff"],
+  "forbiddenCommandFamilies": ["git add", "git commit", "git push", "git pull", "git reset", "git clean", "git checkout", "curl", "Invoke-WebRequest", "supabase login", "supabase link", "reg add", "reg delete", "Remove-Item"],
+  "acceptanceCriteria": [
+    "La clôture cite le verdict technique ALLOW et l'instruction explicite de l'utilisateur, sans confondre leurs rôles.",
+    "Les quatre contrôles manuels et la vérification déterministe restent liés à leurs preuves existantes.",
+    "Aucune autre phase, aucun code, secret, service externe, donnée réelle ou état Git n'est modifié.",
+    "Les JSON et le diff documentaire restent valides."
+  ],
+  "requiredTests": ["Validation JSON des contrats/verdicts", "git diff --check"],
+  "requiredReviews": ["Development Judge plan review", "Relecture factuelle des statuts"],
+  "requiredEvidence": ["phase-07b-closure-judge-verdict.json", "instruction explicite de clôture de l'utilisateur consignée", "phase-07b-finalization-judge-verdict.json"],
+  "risks": ["clôture inférée", "confusion entre verdict technique et autorité utilisateur", "modification d'une phase voisine"],
+  "rollbackPlan": ["Revenir uniquement sur les statuts et preuves de finalisation sans toucher au produit ni aux preuves techniques."],
+  "dependencies": ["Verdict final ALLOW FV-P07B-CLOSE", "Instruction utilisateur : Je valide la clôture de la phase 07B."],
+  "humanApprovals": ["L'utilisateur a explicitement validé la clôture de la Phase 07B dans cette conversation."],
+  "maxRepairCycles": 0
+}

@@ -1,0 +1,14 @@
+{
+  "verdict": "ALLOW_WITH_DEBT",
+  "taskId": "FV-P07-T016",
+  "action": "Close phase 07E (dynamic local dashboard)",
+  "toolName": "Judge audit",
+  "riskLevel": "R1",
+  "reason": "Acceptance criteria met, targeted and full suites pass, visual smoke PASS reported by user; one minor documentation gap noted.",
+  "rules": ["constitution:phase-closure", "quality-gates"],
+  "evidence": ["docs/project/project-state.md", "docs/project/evidence/phase-07-planning-audit/"],
+  "debt": ["Overview page is only partially dynamic; document the remaining static sections."],
+  "saferAlternative": "None; closure evidence is sufficient and the debt is non-blocking.",
+  "requiredNextStep": "Record closure and start the next planned phase.",
+  "timestamp": "2026-07-23T00:00:00Z"
+}

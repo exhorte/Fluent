@@ -1,0 +1,86 @@
+[
+  {
+    "event": "ConfigChange",
+    "matcher": "project_settings|local_settings|policy_settings|skills",
+    "command": "pwsh",
+    "args": "-NoProfile -ExecutionPolicy Bypass -File ${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Protect-Governance.ps1"
+  },
+  {
+    "event": "PermissionRequest",
+    "matcher": "*",
+    "command": "pwsh",
+    "args": "-NoProfile -ExecutionPolicy Bypass -File ${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Invoke-HardSecurityGate.ps1"
+  },
+  {
+    "event": "PostCompact",
+    "matcher": "",
+    "command": "pwsh",
+    "args": "-NoProfile -ExecutionPolicy Bypass -File ${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Restore-CompactionContext.ps1"
+  },
+  {
+    "event": "PostToolUse",
+    "matcher": "*",
+    "command": "pwsh",
+    "args": "-NoProfile -ExecutionPolicy Bypass -File ${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Write-AuditEvent.ps1"
+  },
+  {
+    "event": "PostToolUseFailure",
+    "matcher": "*",
+    "command": "pwsh",
+    "args": "-NoProfile -ExecutionPolicy Bypass -File ${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Write-AuditEvent.ps1"
+  },
+  {
+    "event": "PreCompact",
+    "matcher": "",
+    "command": "pwsh",
+    "args": "-NoProfile -ExecutionPolicy Bypass -File ${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Save-CompactionContext.ps1"
+  },
+  {
+    "event": "PreToolUse",
+    "matcher": "Bash|PowerShell|Write|Edit|Read|WebFetch|WebSearch|mcp__*",
+    "command": "pwsh",
+    "args": "-NoProfile -ExecutionPolicy Bypass -File ${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Invoke-HardSecurityGate.ps1"
+  },
+  {
+    "event": "SessionEnd",
+    "matcher": "",
+    "command": "pwsh",
+    "args": "-NoProfile -ExecutionPolicy Bypass -File ${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Write-AuditEvent.ps1"
+  },
+  {
+    "event": "SessionStart",
+    "matcher": "",
+    "command": "pwsh",
+    "args": "-NoProfile -ExecutionPolicy Bypass -File ${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Initialize-SessionContext.ps1"
+  },
+  {
+    "event": "Stop",
+    "matcher": "",
+    "command": "pwsh",
+    "args": "-NoProfile -ExecutionPolicy Bypass -File ${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Test-SessionStop.ps1"
+  },
+  {
+    "event": "SubagentStart",
+    "matcher": "*",
+    "command": "pwsh",
+    "args": "-NoProfile -ExecutionPolicy Bypass -File ${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Initialize-SessionContext.ps1"
+  },
+  {
+    "event": "SubagentStop",
+    "matcher": "*",
+    "command": "pwsh",
+    "args": "-NoProfile -ExecutionPolicy Bypass -File ${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Test-SubagentCompletion.ps1"
+  },
+  {
+    "event": "TaskCompleted",
+    "matcher": "",
+    "command": "pwsh",
+    "args": "-NoProfile -ExecutionPolicy Bypass -File ${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Test-TaskCompletion.ps1"
+  },
+  {
+    "event": "TaskCreated",
+    "matcher": "",
+    "command": "pwsh",
+    "args": "-NoProfile -ExecutionPolicy Bypass -File ${CLAUDE_PROJECT_DIR}\\.claude\\hooks\\Test-TaskCreation.ps1"
+  }
+]

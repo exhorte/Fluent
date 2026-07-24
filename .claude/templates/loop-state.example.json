@@ -1,0 +1,10 @@
+{
+  "phaseId": "FV-P00",
+  "taskId": "FV-P00-T001",
+  "state": "IMPLEMENTING",
+  "repairCycle": 0,
+  "lastEvent": "bootstrap-started",
+  "updatedAt": "2026-07-12T00:00:00Z",
+  "evidence": [],
+  "openFindings": []
+}

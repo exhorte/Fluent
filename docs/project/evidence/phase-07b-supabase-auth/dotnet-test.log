@@ -1,0 +1,16 @@
+Command: `dotnet test Fluent.sln -c Release --no-build -m:1 --disable-build-servers -v:minimal`
+
+Result: PASS — 271 passed, 0 failed, 0 skipped.
+
+| Project | Passed |
+| --- | ---: |
+| Fluent.Core.Tests | 11 |
+| Fluent.Windows.Tests | 6 |
+| Fluent.Audio.Tests | 6 |
+| Fluent.Speech.Tests | 9 |
+| Fluent.Rewrite.Tests | 164 |
+| Fluent.Persistence.Tests | 19 |
+| Fluent.IntegrationTests | 24 |
+| Fluent.Backend.Tests | 32 |
+
+The integration coverage includes PKCE S256, public configuration rejection, browser/callback composition, single-flight refresh, refresh rejection/offline behavior, cancellation, loopback callback and source security scans. The backend coverage includes valid RS256 handling, issuer/audience/role/expiry/nbf/subject rejection, HS256 rejection, missing configuration, a forced single JWKS refresh for an unknown `kid`, and validated-subject quota partitioning.

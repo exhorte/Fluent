@@ -1,0 +1,14 @@
+Command: dotnet test Fluent.sln -c Release --no-build -m:1 --disable-build-servers
+Date: 2026-07-22
+Exit code: 0
+
+Fluent.Core.Tests: 11 passed
+Fluent.Windows.Tests: 6 passed
+Fluent.Audio.Tests: 6 passed
+Fluent.Speech.Tests: 9 passed
+Fluent.Rewrite.Tests: 164 passed
+Fluent.Persistence.Tests: 19 passed
+Fluent.IntegrationTests: 32 passed
+Fluent.Backend.Tests: 54 passed
+
+Total: 301 passed, 0 failed, 0 skipped

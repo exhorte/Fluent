@@ -1,0 +1,5 @@
+Command: `dotnet build Fluent.sln -c Release -m:1 --disable-build-servers --no-restore -v:minimal`
+
+Result: PASS
+
+Release build completed on 2026-07-21 with 0 warnings and 0 errors. `Fluent.App` output remains `Fluent.dll` / `Fluent.exe`; all production and test projects compiled.

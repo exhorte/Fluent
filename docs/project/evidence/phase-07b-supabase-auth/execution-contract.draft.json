@@ -1,0 +1,205 @@
+{
+  "taskId": "FV-P07-T002",
+  "phaseId": "FV-P07B",
+  "title": "Fluent native Supabase authentication",
+  "objective": "Implement native Windows Google sign-in through Supabase Auth with OAuth PKCE S256, system browser and secure loopback callback; validate Supabase JWTs cryptographically on the backend; and unlock the already-gated Gemini Cloud rewrite only for an authenticated, enabled and consented session while preserving the local default and keeping DeepSeek disabled.",
+  "status": "implemented_awaiting_user_review",
+  "createdAt": "2026-07-21T00:00:00+02:00",
+  "updatedAt": "2026-07-21T00:30:00+02:00",
+  "expiresAt": "2026-08-21T00:00:00Z",
+  "approvedByJudge": true,
+  "scope": {
+    "included": [
+      "Desktop Supabase public configuration read only from FLUENT_SUPABASE_URL and FLUENT_SUPABASE_PUBLISHABLE_KEY process environment variables, never from .env",
+      "Google OAuth authorization-code PKCE S256 through the system browser with a TcpListener bound only to 127.0.0.1 port 0, exact /callback path, random state, 8 KiB request cap, single terminal callback, timeout, cancellation and exact callback validation",
+      "Code exchange, session refresh, in-memory-only access tokens, Windows Credential Manager storage for refresh tokens, sign-out and single-flight refresh state",
+      "WPF sign-in, loading, cancel, signed-in identity, offline, expired, sign-out and truthful Cloud-mode presentation; consent remains separate and session-only",
+      "Desktop config validation requiring an HTTPS *.supabase.co URL plus nonempty publishable key before any browser, listener or network action",
+      "Backend cryptographic Supabase JWT validation through trusted-issuer OIDC discovery/JWKS cache and one-refresh retry, restricted to RS256/ES256 with exact configured issuer, exact authenticated audience, exp, nbf, role and subject validation",
+      "Backend migration of POST /v1/rewrite from the static FLUENT_BACKEND_TOKEN authenticator to default-deny Supabase JWT authentication, with fixed 503, 401, 403, 429, 400 and provider-503 ordering and per-validated-subject rate limiting",
+      "The sole direct dependency Microsoft.IdentityModel.Protocols.OpenIdConnect 8.19.2 in Fluent.Backend, central package version and dependency review evidence",
+      "Focused PKCE, callback, session, secret-store abstraction, Cloud gating, backend token/rate-limit, UI-state, no-secret, no-WebView and DeepSeek-inert tests",
+      "Architecture, ADR, privacy, phase, evidence, manual checklist, project state, roadmap and risk documentation"
+    ],
+    "excluded": [
+      "Any Supabase, Google Cloud, GitHub, provider or deployment account mutation, login, payment, publication or production deployment",
+      "Reading, modifying, printing, committing or loading .env, .env.*, secrets, credentials, keys, certificates, service-role values, JWT secrets, OAuth client secrets or provider API keys",
+      "WebView, embedded browser, OAuth confidential-client secret, password sign-in, account administration, user data synchronization, telemetry, live provider calls or automatic Cloud enablement",
+      "DeepSeek V4 Pro activation, selector, transport, model use, endpoint use or key use",
+      "Any change to local transcription, local rewriting, dictionary, insertion, hotkey, capsule, target identity, password protection or existing Fluent local data",
+      "Git add, commit, push, pull, reset, clean, checkout, switch, force action, registry edit or administrator installation"
+    ]
+  },
+  "allowedPaths": [
+    "Fluent.sln",
+    "Directory.Packages.props",
+    "src/Fluent.App/Fluent.App.csproj",
+    "src/Fluent.App/App.xaml.cs",
+    "src/Fluent.App/MainWindow.xaml",
+    "src/Fluent.App/MainWindow.xaml.cs",
+    "src/Fluent.App/Auth/**",
+    "src/Fluent.App/Cloud/**",
+    "src/Fluent.App/Views/ProfilesPage.xaml",
+    "src/Fluent.App/Views/ProfilesPage.xaml.cs",
+    "src/Fluent.Cloud/**",
+    "src/Fluent.Backend/Fluent.Backend.csproj",
+    "src/Fluent.Backend/Program.cs",
+    "src/Fluent.Backend/Auth/**",
+    "tests/Fluent.App.Tests/**",
+    "tests/Fluent.Backend.Tests/**",
+    "tests/Fluent.IntegrationTests/**",
+    "tests/Fluent.Rewrite.Tests/**",
+    "docs/architecture/decisions/ADR-0005-optional-cloud-rewrite.md",
+    "docs/architecture/decisions/ADR-0006-native-supabase-auth.md",
+    "docs/architecture/component-boundaries.md",
+    "docs/product/privacy-principles.md",
+    "docs/product/user-flows.md",
+    "docs/project/phases/phase-07b-supabase-auth.md",
+    "docs/project/evidence/phase-07b-supabase-auth/**",
+    "docs/project/project-state.md",
+    "docs/project/roadmap.md",
+    "docs/project/risk-register.md",
+    ".claude/runtime/active-task.json"
+  ],
+  "readOnlyPaths": [
+    "CLAUDE.md",
+    ".claude/judge/**",
+    ".claude/hooks/**",
+    ".claude/schemas/**",
+    "src/Fluent.Core/**",
+    "src/Fluent.Windows/**",
+    "src/Fluent.Audio/**",
+    "src/Fluent.Speech/**",
+    "src/Fluent.Persistence/**",
+    "src/Fluent.Rewrite/**",
+    "docs/project/evidence/phase-07a-fluent-rebrand/**"
+  ],
+  "forbiddenPaths": [
+    ".git/**",
+    ".env",
+    ".env.*",
+    "secrets/**",
+    "credentials/**",
+    "*.key",
+    "*.pem",
+    "*.pfx",
+    "*.p12",
+    "C:/Users/exhorte/AppData/Local/Fluent/**",
+    "%LOCALAPPDATA%/Fluent/**"
+  ],
+  "allowedCommandFamilies": [
+    "rg",
+    "powershell read-only inspection",
+    "dotnet restore",
+    "dotnet build",
+    "dotnet test",
+    "git status",
+    "git diff",
+    "git rev-parse",
+    "pwsh -File .claude/hooks/tests/Invoke-AllHookTests.ps1"
+  ],
+  "forbiddenCommandFamilies": [
+    "git add",
+    "git commit",
+    "git push",
+    "git pull",
+    "git reset",
+    "git clean",
+    "git checkout",
+    "git switch",
+    "curl",
+    "Invoke-WebRequest",
+    "clerk",
+    "supabase login",
+    "supabase link",
+    "supabase db",
+    "ollama",
+    "winget",
+    "choco",
+    "reg add",
+    "reg delete"
+  ],
+  "acceptanceCriteria": [
+    "A desktop public client executes Google sign-in through the system browser with a one-time PKCE S256 verifier, constant-time random state, a TcpListener bound to ephemeral 127.0.0.1 /callback only, bounded request parsing, cancellation and no embedded OAuth secret.",
+    "Access tokens never persist; only refresh tokens are stored via an abstraction backed by Windows Credential Manager, and they are cleared on sign-out or definitive refresh rejection.",
+    "Desktop Cloud calls remain impossible unless authentication, Cloud enablement, session-only consent, backend availability and Gemini provider eligibility are all true; DeepSeek remains disabled, unselected and never called.",
+    "The backend uses only explicit valid FLUENT_BACKEND_SUPABASE_ISSUER and FLUENT_BACKEND_SUPABASE_AUDIENCE process configuration, binds OIDC metadata and JWKS to that trusted issuer, cryptographically validates Supabase asymmetric JWTs before dispatch, rejects missing, malformed, none/HS256/confused, invalid-signature, wrong-issuer, wrong-audience, expired, not-yet-valid, wrong-role and subjectless tokens, and rate-limits only valid subjects.",
+    "POST /v1/rewrite has documented default-deny response ordering: unavailable trusted verifier 503; missing/invalid token 401; valid token with wrong role 403; valid-subject quota denial 429; malformed rewrite 400; unavailable Gemini 503; success 200. The former static-token mechanism is removed from this route.",
+    "No secret, token, authorization code, verifier, user dictation or audio is logged, surfaced, committed or included in a distributed desktop configuration. .env is untouched and never read.",
+    "Focused adversarial tests cover state/code replay, duplicate/late/cancelled callbacks, callback size/path/state limits, malicious metadata/JWKS origin, kid rotation, cache outage, algorithm confusion, all required claims, refresh wipe, logging redaction and no-cloud-without-all-gates; full Release build, full suite, security/privacy/desktop/backend/adversarial reviews and final Development Judge evidence verdict pass; the result remains IMPLEMENTED_AWAITING_USER_REVIEW.",
+    "The live Supabase/Google smoke is documented but not attempted without explicit user authority and externally supplied public configuration."
+  ],
+  "requiredTests": [
+    "PKCE verifier/challenge/state tests, constant-time state comparison, code/state replay rejection, callback listener 127.0.0.1-only/path/8-KiB/single-callback/duplicate/late/timeout/cancel tests and token exchange/refresh HTTP seam tests",
+    "Session single-flight, persistent refresh-token abstraction, access-token memory-only, sign-out, definitive-refresh wipe, offline-retention and expired-session tests",
+    "Cloud authorization gate and DeepSeek non-invocation regressions",
+    "JWT validation tests for missing/invalid trusted backend config, issuer/audience/JWKS-origin binding, RS256/ES256 allow-list, none/HS256/algorithm-confusion rejection, signature, exp, nbf, sub, role, unknown kid refresh-once, cache outage and fail-closed configuration",
+    "Backend POST /v1/rewrite 503, 401, 403, 429, 400 and provider-503 ordering plus per-validated-user rate-limit tests that prove no unvalidated header, raw token or address partitioning",
+    "Desktop presentation-state tests for sign-in, loading, cancel, signed-in identity, offline, expired and signed-out states",
+    "Repository scan tests for secrets, access-token persistence, token/code/verifier logging, WebView, static-token authentication and DeepSeek activation",
+    "dotnet restore Fluent.sln --disable-build-servers",
+    "dotnet build Fluent.sln -c Release -m:1 --disable-build-servers",
+    "dotnet test Fluent.sln -c Release --no-build -m:1 --disable-build-servers"
+  ],
+  "requiredReviews": [
+    "Development Judge plan verdict",
+    "Architecture review",
+    "Security and privacy review",
+    "Desktop OAuth/PKCE and Windows credential-storage review",
+    "Backend JWT/JWKS and rate-limit review",
+    "Test review",
+    "Adversarial auth and Cloud-gating review",
+    "Development Judge final evidence verdict"
+  ],
+  "requiredEvidence": [
+    "docs/project/evidence/phase-07b-supabase-auth/plan-judge-verdict.json",
+    "docs/project/evidence/phase-07b-supabase-auth/implementation-summary.md",
+    "docs/project/evidence/phase-07b-supabase-auth/dotnet-restore.log",
+    "docs/project/evidence/phase-07b-supabase-auth/dotnet-build.log",
+    "docs/project/evidence/phase-07b-supabase-auth/dotnet-test.log",
+    "docs/project/evidence/phase-07b-supabase-auth/security-review.md",
+    "docs/project/evidence/phase-07b-supabase-auth/adversarial-review.md",
+    "docs/project/evidence/phase-07b-supabase-auth/manual-supabase-google-smoke-checklist.md",
+    "docs/project/evidence/phase-07b-supabase-auth/development-judge-verdict.json"
+  ],
+  "risks": [
+    "OAuth callback interception, CSRF, authorization-code replay or PKCE verifier leakage.",
+    "Token persistence, logging or configuration could expose a credential.",
+    "An incorrect JWT verifier could accept forged, stale, symmetric or wrong-project tokens.",
+    "Rate limiting before authentication could let untrusted headers choose a partition.",
+    "Authentication work could accidentally relax the existing local-first, consent, exact-fallback or DeepSeek-disabled controls.",
+    "Missing external Supabase/Google settings can prevent live sign-in even if local verification passes."
+  ],
+  "rollbackPlan": [
+    "Keep the existing default unauthenticated behavior available and revert the new authentication composition so RewriteContext remains LocalOnly.",
+    "Delete only the dedicated stored refresh credential through the application sign-out path; do not alter dictionary data or existing Fluent local data.",
+    "Remove the IdentityModel dependency and authentication code only after the full suite again proves the original local default."
+  ],
+  "dependencies": [
+    "User Phase 07B specification supplied on 2026-07-21.",
+    "Phase 06B Cloud gate and Phase 07A Fluent rebrand remain implemented awaiting separate user reviews; neither is closed by this work.",
+    "Supabase project public URL/publishable key, Google provider enablement, loopback redirect allow-list and asymmetric signing keys are external prerequisites for a manual live smoke only.",
+    "Microsoft.IdentityModel.Protocols.OpenIdConnect 8.19.2 is the current supported OIDC/JWKS verification package evaluated for .NET 10; restore requires ordinary package-network availability."
+  ],
+  "humanApprovals": [
+    "The user explicitly directed Phase 07B Native Authentication with Supabase, selected Google sign-in, required PKCE S256 and system browser, and explicitly excluded Clerk and DeepSeek activation.",
+    "No authorization is present for account login, Supabase/Google configuration, deployment, live provider invocation or Git publication."
+  ],
+  "maxRepairCycles": 2,
+  "verification": {
+    "baseline": "Before Phase 07B code, the Release suite passed 256/256 tests; current Cloud code defaults to DefaultAuthenticationState=false and DeepSeek is disabled on Desktop and backend.",
+    "planJudge": "ALLOW on 2026-07-21 after repair cycle 1, for offline implementation only. External Supabase/Google configuration, login, deployment and live smoke remain excluded.",
+    "finalJudge": "ALLOW on 2026-07-21 to present the offline implementation as IMPLEMENTED_AWAITING_USER_REVIEW only; no closure or external authority is inferred.",
+    "releaseVerification": "Restore PASS; Release build 0 warnings, 0 errors; full Release suite 271 passed, 0 failed, 0 skipped; governance hooks 33/33 PASS; git diff --check found no whitespace errors.",
+    "supabaseSources": [
+      "https://supabase.com/docs/guides/auth/sessions/pkce-flow",
+      "https://supabase.com/docs/guides/auth/social-login/auth-google",
+      "https://supabase.com/docs/guides/auth/jwts",
+      "https://supabase.com/docs/guides/auth/oauth-server/oauth-flows"
+    ]
+  },
+  "openFindings": [
+    "No external Supabase project configuration or Google provider setup has been supplied; local code and tests must remain configuration-free and no live smoke may be inferred.",
+    "No live Supabase/Google smoke is authorized until the user separately authorizes external configuration and provides the required public configuration."
+  ]
+}

@@ -1,0 +1,72 @@
+[
+  {
+    "name": "code-reviewer",
+    "path": ".claude/agents/code-reviewer.md",
+    "tools": "Read, Glob, Grep",
+    "permissionMode": "plan",
+    "readOnly": "yes"
+  },
+  {
+    "name": "development-judge",
+    "path": ".claude/agents/development-judge.md",
+    "tools": "Read, Glob, Grep",
+    "permissionMode": "plan",
+    "readOnly": "yes"
+  },
+  {
+    "name": "documentation-curator",
+    "path": ".claude/agents/documentation-curator.md",
+    "tools": "Read, Glob, Grep, Edit, Write",
+    "permissionMode": "acceptEdits",
+    "readOnly": "no"
+  },
+  {
+    "name": "lead-engineer",
+    "path": ".claude/agents/lead-engineer.md",
+    "tools": "Read, Glob, Grep, Edit, Write, Bash, PowerShell",
+    "permissionMode": "acceptEdits",
+    "readOnly": "no"
+  },
+  {
+    "name": "principal-architect",
+    "path": ".claude/agents/principal-architect.md",
+    "tools": "Read, Glob, Grep",
+    "permissionMode": "plan",
+    "readOnly": "yes"
+  },
+  {
+    "name": "security-reviewer",
+    "path": ".claude/agents/security-reviewer.md",
+    "tools": "Read, Glob, Grep",
+    "permissionMode": "plan",
+    "readOnly": "yes"
+  },
+  {
+    "name": "speech-ai-engineer",
+    "path": ".claude/agents/speech-ai-engineer.md",
+    "tools": "Read, Glob, Grep, Edit, Write, Bash, PowerShell",
+    "permissionMode": "acceptEdits",
+    "readOnly": "no"
+  },
+  {
+    "name": "test-engineer",
+    "path": ".claude/agents/test-engineer.md",
+    "tools": "Read, Glob, Grep, Edit, Write, Bash, PowerShell",
+    "permissionMode": "acceptEdits",
+    "readOnly": "no"
+  },
+  {
+    "name": "windows-platform-engineer",
+    "path": ".claude/agents/windows-platform-engineer.md",
+    "tools": "Read, Glob, Grep, Edit, Write, Bash, PowerShell",
+    "permissionMode": "acceptEdits",
+    "readOnly": "no"
+  },
+  {
+    "name": "wpf-ui-engineer",
+    "path": ".claude/agents/wpf-ui-engineer.md",
+    "tools": "Read, Glob, Grep, Edit, Write, Bash, PowerShell",
+    "permissionMode": "acceptEdits",
+    "readOnly": "no"
+  }
+]

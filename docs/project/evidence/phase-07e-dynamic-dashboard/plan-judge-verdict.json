@@ -1,0 +1,29 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T016",
+  "action": "Activate Phase 07E for the local dynamic dashboard presentation only",
+  "toolName": "development-judge",
+  "riskLevel": "medium",
+  "reason": "The plan is sufficiently bounded to existing in-memory/local sources and a pure presentation layer. It explicitly excludes history, telemetry, persistence, dictated text, account identity, network activity, Cloud activation, provider behavior, and external configuration. Phase 07D may remain open because 07E depends only on its accepted offline configuration state for truthful Cloud labels, not on live backend or Gemini availability.",
+  "rules": [
+    "Every displayed value must map to an existing local source documented in the source-to-metric matrix; no inferred counts, activity history, service health, or provider availability may be invented.",
+    "Do not display dictated/transcribed/rewrite text, account display name, email, subject identifier, token, endpoint, key, secret, or dictionary entry content. Current local profile name and aggregate dictionary entry count are permitted.",
+    "Dashboard state must remain ephemeral and presentation-only: no database schema, file, registry, preference, telemetry, timer-based history, or new retention mechanism.",
+    "Cloud labels must use a deterministic precedence matrix distinguishing configuration, authentication, enablement, consent, and authorization. “Autorisé” may describe local permission only and must never imply backend reachability, Gemini availability, or successful Cloud execution.",
+    "The dashboard must not invoke authentication, enable Cloud, grant consent, select a provider, access the network, or mutate dictionary/profile state.",
+    "MainWindow changes must be limited to reading existing state, invoking the pure presentation mapper, updating UI text, and correctly managing any existing-event subscriptions.",
+    "Phase 07D remains open with only its offline slice accepted; no other phase status may change."
+  ],
+  "evidence": [
+    "docs/project/evidence/phase-07e-dynamic-dashboard/execution-contract.draft.json",
+    "docs/project/phases/phase-07e-dynamic-dashboard.md",
+    "docs/project/evidence/phase-07-planning-audit/page-function-matrix.md",
+    "src/Fluent.App/MainWindow.xaml",
+    "src/Fluent.App/MainWindow.xaml.cs",
+    "src/Fluent.App/Cloud/FluentBackendPublicConfiguration.cs",
+    "docs/engineering/quality-gates.md"
+  ],
+  "saferAlternative": "Keep the existing partially dynamic Overview and update only its static wording to state that no history or live Cloud availability is shown.",
+  "requiredNextStep": "Record this verdict and activate the contract. Implement the pure DashboardStatusPresentation mapping with exhaustive deterministic tests for loading, empty, fallback, error, authentication, configuration, enablement, consent, and locally authorized states. Add explicit scans proving no dictated content, account identity, persistence, network call, or misleading Cloud-availability claim. Update the stale page matrix factually, prepare—but do not invent—the visual smoke result, then run restore, Release build, full tests, hooks, diff check, required reviews, and final Judge review before user presentation.",
+  "timestamp": "2026-07-22T00:00:00+02:00"
+}

@@ -1,0 +1,29 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P05-T002",
+  "action": "Implement the bounded Phase 05B persistent local dictionary plan and contract.",
+  "toolName": "development-judge",
+  "riskLevel": "high",
+  "reason": "The plan is narrowly scoped, reversible, testable, and technically adequate. The two dependencies are centrally pinned and isolated to Fluent.Persistence; the single authorized restore is bounded. Production storage uses an injectable LocalAppData path while development and automated tests explicitly forbid the real user database. Schema v1 migration is transactional, idempotent, non-destructive, and refuses unsupported newer versions without mutation. Corrupt, inaccessible, invalid, duplicate, or over-capacity databases remain untouched and trigger a truthful empty session-only fallback. Persistence stays behind a Core boundary, SQLite work is serialized and kept off the WPF dispatcher, and in-memory state changes only after successful persistent transactions while fallback retains safe dictation behavior. Rollback restores the accepted Phase 05A behavior without deleting any user database. Focused persistence, coordinator, integration, full-suite, build, architecture, privacy, WPF, final-Judge, and user restart-smoke gates adequately cover the identified risks.",
+  "rules": [
+    "User authority explicitly approved continuation to the identified Phase 05B scope.",
+    "High-risk dependency, network, multi-project, and local-migration work requires a precise approved contract, bounded commands, evidence, and reversibility.",
+    "Real LocalAppData data must not be accessed or mutated by development commands or automated tests.",
+    "Protected assets, Git mutation, publication, deployment, installers, registry changes, destructive migration, downgrade, quarantine, repair, and database deletion remain forbidden.",
+    "Only Microsoft.Data.Sqlite 10.0.10 and Dapper 2.1.79 may be added through central package pinning; dotnet add package is forbidden.",
+    "Phase closure requires complete evidence, a final Judge verdict, and explicit user restart-smoke validation."
+  ],
+  "evidence": [
+    "Contract FV-P05-T002 defines exact included, excluded, allowed, read-only, and forbidden paths and operations.",
+    "ADR-0001 accepts SQLite with Microsoft.Data.Sqlite and Dapper, and the Fluent.Persistence project boundary already exists.",
+    "The production database path is injectable and automated tests require unique temporary databases.",
+    "Migration v1 is specified as transactional, idempotent, parameterized, non-destructive, and fail-closed for newer schemas.",
+    "Failure behavior preserves the database unchanged and exposes an explicit session-only fallback without blocking dictation.",
+    "SQLite I/O must execute asynchronously off the WPF dispatcher and writes must be serialized.",
+    "Required gates include one authorized restore, focused tests, Release build, full tests, specialist reviews, final Judge review, and user restart smoke.",
+    "Rollback explicitly forbids deleting the user database and restores the previously accepted Phase 05A behavior."
+  ],
+  "saferAlternative": "If the authorized package restore fails or the exact dependency versions cannot be resolved, stop without substituting packages or broadening network access, preserve Phase 05A session-only behavior, and report the dependency evidence failure.",
+  "requiredNextStep": "Record this plan verdict, mark FV-P05-T002 approved, capture the dependency baseline, perform only the single authorized solution restore, then implement and verify Phase 05B strictly within the contract before requesting final Judge and user restart-smoke approval.",
+  "timestamp": "2026-07-16T00:00:00+02:00"
+}

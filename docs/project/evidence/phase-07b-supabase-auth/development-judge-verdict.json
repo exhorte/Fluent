@@ -1,0 +1,28 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T002",
+  "action": "Present the offline Phase 07B Supabase-auth implementation to the user for review; do not close the phase",
+  "riskLevel": "high",
+  "reason": "The final offline evidence satisfies the approved high-risk contract. Public Desktop configuration is constrained without .env access; PKCE, loopback, refresh-token storage, session lifecycle, consent boundaries, trusted-config-bound backend validation, route ordering and validated-subject limiting are implemented and verified. DeepSeek remains disabled. The result may be presented as IMPLEMENTED_AWAITING_USER_REVIEW only, not as accepted or closed.",
+  "rules": [
+    ".claude/judge/constitution.md: user acceptance remains distinct from technical approval.",
+    "docs/project/evidence/phase-07b-supabase-auth/execution-contract.draft.json: the offline-only scope, security restrictions, exclusions and required verification are satisfied.",
+    ".claude/judge/risk-classification.md: high-risk authentication work requires complete security, adversarial, build, test and final-review evidence.",
+    ".claude/judge/escalation-policy.md: external Supabase/Google setup, login and live smoke remain excluded pending separate explicit user authority.",
+    ".claude/judge/protected-assets.md: no protected environment, credential, secret, certificate or governance asset was modified."
+  ],
+  "evidence": [
+    "docs/project/evidence/phase-07b-supabase-auth/dotnet-restore.log: PASS.",
+    "docs/project/evidence/phase-07b-supabase-auth/dotnet-build.log: Release build completed with 0 warnings and 0 errors.",
+    "docs/project/evidence/phase-07b-supabase-auth/dotnet-test.log: 271 passed, 0 failed, 0 skipped.",
+    "docs/project/evidence/phase-07b-supabase-auth/implementation-summary.md",
+    "docs/project/evidence/phase-07b-supabase-auth/security-review.md",
+    "docs/project/evidence/phase-07b-supabase-auth/adversarial-review.md",
+    "docs/project/evidence/phase-07b-supabase-auth/review-summary.md",
+    "docs/project/evidence/phase-07b-supabase-auth/manual-supabase-google-smoke-checklist.md",
+    "docs/architecture/decisions/ADR-0006-native-supabase-auth.md"
+  ],
+  "saferAlternative": "Keep the feature offline and default-deny until the user separately authorizes Supabase/Google project configuration and a controlled live smoke test.",
+  "requiredNextStep": "Present Phase 07B as IMPLEMENTED_AWAITING_USER_REVIEW with the manual Supabase/Google smoke checklist. Request explicit user authority in a new task before external redirect registration, account login, credentials/configuration, or live provider validation; do not close Phase 07B without explicit user acceptance.",
+  "timestamp": "2026-07-21T00:00:00+02:00"
+}

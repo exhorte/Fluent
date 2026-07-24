@@ -1,0 +1,27 @@
+{
+  "verdict": "DENY",
+  "taskId": "FV-P07-T018",
+  "action": "Create the publication branch, stage all confirmed changes, commit, push, and open a draft GitHub pull request",
+  "toolName": "development-judge",
+  "riskLevel": "critical",
+  "reason": "The governance-authority and publication-authority blockers are resolved, and the added branch, secret, remote-SHA, rename-reconciliation, non-force, and draft-PR controls are appropriate. However, the contract requires publication of exactly 308 changes while the current unstaged inventory already contains 309 status entries before this verdict is recorded. The final verdict artifact may increase that inventory again. git add -A would therefore violate the contract's exact confirmed scope. Critical publication must fail closed on an inventory mismatch.",
+  "rules": [
+    "Do not create a branch, stage, commit, push, or open a PR while the contract count differs from the actual publication manifest.",
+    "Separate the user-confirmed product/rebrand set from publication-governance artifacts generated after the original 308-item inventory.",
+    "Freeze an exact NUL-safe path/status manifest and digest after all pre-commit verdict/contract files exist; no working-tree write may occur between that freeze and staging.",
+    "After git add -A, require the staged manifest to match the frozen authorized manifest exactly; any added, missing, or status-changed path must stop publication.",
+    "Retain the amended remote-SHA equality check, staged path/content secret scan, NyxVoice-delete-to-Fluent-add reconciliation, dedicated branch, one commit, non-forced push, and draft-PR controls.",
+    "Post-commit SHA/push/PR evidence cannot be added to the promised single commit after that commit exists; record it outside the commit or explicitly authorize a separate follow-up mechanism."
+  ],
+  "evidence": [
+    "docs/project/evidence/git-publication-2026-07-22/execution-contract.draft.json",
+    "git status inventory: 308 confirmed changes, including large NyxVoice deletion/Fluent addition sets.",
+    "Protected changed path: CLAUDE.md.",
+    "Protected changed path: .claude/agents/development-judge.md.",
+    "docs/project/project-state.md: Phase 07C remains BLOCKED/TO_RECONCILE.",
+    "Git context: current branch main; origin https://github.com/exhorte/Fluent.git."
+  ],
+  "saferAlternative": "Publish from a frozen, hashed manifest that contains the original user-confirmed changes plus an explicitly enumerated set of publication-contract/verdict artifacts, rather than relying on a stale fixed count and unconstrained git add -A.",
+  "requiredNextStep": "Amend the contract to define the authorized set as an exact frozen manifest generated after this verdict is stored, distinguishing the original user-confirmed changes from named publication artifacts. Update the expected count and manifest digest, specify that staging must exactly match it, and state where post-commit/push/PR evidence will be recorded without violating the single-commit rule. Revalidate JSON and resubmit the publication plan. Until then, perform no branch creation, staging, commit, push, or PR action.",
+  "timestamp": "2026-07-22T00:00:00+02:00"
+}

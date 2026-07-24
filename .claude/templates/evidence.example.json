@@ -1,0 +1,12 @@
+{
+  "type": "hook-test-report",
+  "taskId": "FV-P00-T001",
+  "method": ".claude/hooks/tests/Invoke-AllHookTests.ps1",
+  "startedAt": "2026-07-12T00:00:00Z",
+  "finishedAt": "2026-07-12T00:00:01Z",
+  "exitCode": 0,
+  "status": "PASS",
+  "summary": "All hook tests passed.",
+  "logPath": "docs/project/evidence/phase-00/hook-tests.log",
+  "hash": ""
+}

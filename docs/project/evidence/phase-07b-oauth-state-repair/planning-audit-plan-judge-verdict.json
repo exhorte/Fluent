@@ -1,0 +1,25 @@
+{
+  "verdict": "ALLOW",
+  "taskId": "FV-P07-T007",
+  "action": "Activate the docs-only Phase 07B planning audit and state-reconciliation contract",
+  "toolName": "development-judge",
+  "riskLevel": "medium",
+  "reason": "The task is bounded to documentation, evidence reconciliation and draft planning. It records the successful core OAuth retest while keeping restart refresh, offline behavior and effective sign-out unverified. It does not close Phase 07B, activate a product phase, repair the stale Phase 07C rebrand, alter the 301-change worktree, or authorize source, external, secret, deployment or Git operations.",
+  "rules": [
+    "Phase 07B remains awaiting review or closure evidence; the core live retest alone does not prove restart refresh, offline behavior or effective sign-out.",
+    "Phase 07C remains explicitly blocked/stale; this task may document its state but may not continue, repair, discard, stage or commit its 301 working-tree changes.",
+    "Future phase and closure documents remain non-active drafts and cannot imply user acceptance.",
+    "The audit stays within the exact documentation/evidence paths of the approved contract.",
+    "No source, tests, project files, secrets, .env files, external services, deployment, protected governance assets or Git state may be modified."
+  ],
+  "evidence": [
+    "docs/project/evidence/phase-07b-oauth-state-repair/planning-audit-contract.draft.json",
+    "Sanitized user retest: loopback callback succeeded, SigningIn terminated, profile connected, Cloud remained disabled, and sign-out action became visible.",
+    "Deterministic rerun: restore PASS; Release build 0 warnings and 0 errors; full suite 301 passed; governance hooks 33 passed.",
+    "Working-tree audit: 301 pre-existing technical-rebrand changes comprising 117 modified, 155 deleted, and 29 untracked paths.",
+    "Existing Phase 07C technical rebrand remains blocked/stale."
+  ],
+  "saferAlternative": "Limit the work to a factual Phase 07B evidence addendum and defer closure and future-phase drafts until restart refresh, offline behavior, sign-out and the stale Phase 07C worktree have separate decisions.",
+  "requiredNextStep": "Perform only the contract-listed documentation audit. Preserve the successful core retest and each unchecked scenario as separate facts, inventory the 301-change baseline without modifying it, keep Phase 07C blocked, and create closure or future-phase material only as non-active drafts. Submit the resulting Phase 07B closure contract for a separate Judge review; obtain user evidence or acceptance for restart refresh, offline behavior and effective sign-out before closure.",
+  "timestamp": "2026-07-22T00:00:00+02:00"
+}

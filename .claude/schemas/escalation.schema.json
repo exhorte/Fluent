@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "NyxVoice Human Escalation",
+  "type": "object",
+  "required": ["taskId", "operation", "category", "whyJudgeCannotDecide", "options", "recommendedOption", "risks", "refusalConsequence", "singleQuestion"],
+  "properties": {
+    "taskId": { "type": "string" },
+    "operation": { "type": "string" },
+    "category": { "type": "string", "pattern": "^E-[0-9]{3}$" },
+    "whyJudgeCannotDecide": { "type": "string" },
+    "options": { "type": "array", "items": { "type": "string" } },
+    "recommendedOption": { "type": "string" },
+    "risks": { "type": "array", "items": { "type": "string" } },
+    "refusalConsequence": { "type": "string" },
+    "singleQuestion": { "type": "string" }
+  },
+  "additionalProperties": false
+}
