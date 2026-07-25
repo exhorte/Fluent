@@ -16,4 +16,9 @@ public interface IAppSettingsStore
     Task SetPreferredProfileAsync(
         string? profileId,
         CancellationToken cancellationToken);
+
+    /// <summary>Persists the application language (normalised to a supported code).</summary>
+    Task SetLanguageAsync(
+        string language,
+        CancellationToken cancellationToken);
 }

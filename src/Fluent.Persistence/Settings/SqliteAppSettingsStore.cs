@@ -8,36 +8,50 @@ namespace Fluent.Persistence.Settings;
 /// Local SQLite store for reversible application preferences. Uses a dedicated
 /// database file, isolated from the dictionary and history databases. No secret
 /// and no Cloud consent is ever stored.
+/// Schema v2 adds the application language; v1 databases are migrated in place.
 /// </summary>
 public sealed class SqliteAppSettingsStore : IAppSettingsStore
 {
-    private const int SupportedSchemaVersion = 1;
+    private const int CurrentSchemaVersion = 2;
     private const int BusyTimeoutMilliseconds = 3000;
     private const int CommandTimeoutSeconds = 3;
     private const int MaximumStoredProfileIdBytes =
         AppSettingsLimits.MaximumProfileIdLength * 4;
+    private const int MaximumStoredLanguageBytes = 32;
 
     private const string CreateSchemaSql =
         """
         CREATE TABLE app_settings
         (
             id INTEGER PRIMARY KEY,
-            preferred_profile_id TEXT
+            preferred_profile_id TEXT,
+            language TEXT NOT NULL
         );
-        INSERT INTO app_settings (id, preferred_profile_id) VALUES (1, NULL);
+        INSERT INTO app_settings (id, preferred_profile_id, language) VALUES (1, NULL, 'en');
+        """;
+
+    private const string MigrateV1ToV2Sql =
+        """
+        ALTER TABLE app_settings ADD COLUMN language TEXT;
+        UPDATE app_settings SET language = 'en' WHERE language IS NULL;
         """;
 
     private const string LoadSql =
         """
         SELECT
             preferred_profile_id AS PreferredProfileId,
-            length(CAST(COALESCE(preferred_profile_id, '') AS BLOB)) AS PreferredProfileIdByteCount
+            language AS Language,
+            length(CAST(COALESCE(preferred_profile_id, '') AS BLOB)) AS PreferredProfileIdByteCount,
+            length(CAST(COALESCE(language, '') AS BLOB)) AS LanguageByteCount
         FROM app_settings
         WHERE id = 1;
         """;
 
     private const string SetPreferredProfileSql =
         "UPDATE app_settings SET preferred_profile_id = @ProfileId WHERE id = 1;";
+
+    private const string SetLanguageSql =
+        "UPDATE app_settings SET language = @Language WHERE id = 1;";
 
     private readonly Lazy<string> _databasePath;
 
@@ -76,6 +90,15 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
             cancellationToken);
     }
 
+    public Task SetLanguageAsync(
+        string language,
+        CancellationToken cancellationToken)
+    {
+        return Task.Run(
+            () => SetLanguage(language, cancellationToken),
+            cancellationToken);
+    }
+
     private AppPreferences InitializeAndLoad(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -103,20 +126,7 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
         using SqliteConnection connection = OpenConnection(
             databasePath,
             SqliteOpenMode.ReadWriteCreate);
-
-        int schemaVersion = ReadSchemaVersion(connection);
-        EnsureSupportedSchemaVersion(schemaVersion);
-
-        if (schemaVersion == 0)
-        {
-            EnsureVersionZeroDatabaseIsEmpty(connection);
-            CreateVersionOneSchema(connection, cancellationToken);
-        }
-        else
-        {
-            ValidateVersionOneSchema(connection);
-        }
-
+        BringToCurrentSchema(connection, cancellationToken);
         return Load(connection);
     }
 
@@ -131,13 +141,20 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
             int schemaVersion = ReadSchemaVersion(readOnlyConnection);
             EnsureSupportedSchemaVersion(schemaVersion);
 
-            if (schemaVersion == SupportedSchemaVersion)
+            if (schemaVersion == CurrentSchemaVersion)
             {
-                ValidateVersionOneSchema(readOnlyConnection);
+                ValidateVersionTwoSchema(readOnlyConnection);
                 return Load(readOnlyConnection);
             }
 
-            EnsureVersionZeroDatabaseIsEmpty(readOnlyConnection);
+            if (schemaVersion == 1)
+            {
+                ValidateVersionOneSchema(readOnlyConnection);
+            }
+            else
+            {
+                EnsureVersionZeroDatabaseIsEmpty(readOnlyConnection);
+            }
         }
 
         cancellationToken.ThrowIfCancellationRequested();
@@ -145,9 +162,31 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
         using SqliteConnection writableConnection = OpenConnection(
             databasePath,
             SqliteOpenMode.ReadWrite);
-        EnsureVersionZeroDatabaseIsEmpty(writableConnection);
-        CreateVersionOneSchema(writableConnection, cancellationToken);
+        BringToCurrentSchema(writableConnection, cancellationToken);
         return Load(writableConnection);
+    }
+
+    private static void BringToCurrentSchema(
+        SqliteConnection connection,
+        CancellationToken cancellationToken)
+    {
+        int schemaVersion = ReadSchemaVersion(connection);
+        EnsureSupportedSchemaVersion(schemaVersion);
+
+        switch (schemaVersion)
+        {
+            case 0:
+                EnsureVersionZeroDatabaseIsEmpty(connection);
+                CreateVersionTwoSchema(connection, cancellationToken);
+                break;
+            case 1:
+                ValidateVersionOneSchema(connection);
+                MigrateVersionOneToTwo(connection, cancellationToken);
+                break;
+            default:
+                ValidateVersionTwoSchema(connection);
+                break;
+        }
     }
 
     private void SetPreferredProfile(
@@ -160,12 +199,29 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
         using SqliteConnection connection = OpenConnection(
             DatabasePath,
             SqliteOpenMode.ReadWrite);
-        EnsureWritableVersionOneDatabase(connection);
+        EnsureWritableCurrentDatabase(connection);
         cancellationToken.ThrowIfCancellationRequested();
 
         connection.Execute(
             SetPreferredProfileSql,
             new { ProfileId = normalized },
+            commandTimeout: CommandTimeoutSeconds);
+    }
+
+    private void SetLanguage(string language, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        string normalized = AppSettingsLimits.NormalizeLanguage(language);
+
+        using SqliteConnection connection = OpenConnection(
+            DatabasePath,
+            SqliteOpenMode.ReadWrite);
+        EnsureWritableCurrentDatabase(connection);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        connection.Execute(
+            SetLanguageSql,
+            new { Language = normalized },
             commandTimeout: CommandTimeoutSeconds);
     }
 
@@ -177,21 +233,22 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
 
         if (row is null)
         {
-            throw new InvalidDataException(
-                "The stored settings row is missing.");
+            throw new InvalidDataException("The stored settings row is missing.");
         }
 
-        if (row.PreferredProfileIdByteCount > MaximumStoredProfileIdBytes)
+        if (row.PreferredProfileIdByteCount > MaximumStoredProfileIdBytes ||
+            row.LanguageByteCount > MaximumStoredLanguageBytes)
         {
-            throw new InvalidDataException(
-                "The stored settings contain invalid data.");
+            throw new InvalidDataException("The stored settings contain invalid data.");
         }
 
         string? preferredProfileId = string.IsNullOrEmpty(row.PreferredProfileId)
             ? null
             : row.PreferredProfileId;
 
-        return new AppPreferences(preferredProfileId);
+        return new AppPreferences(
+            preferredProfileId,
+            AppSettingsLimits.NormalizeLanguage(row.Language));
     }
 
     private static string? NormalizeProfileId(string? profileId)
@@ -260,32 +317,30 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
 
     private static void EnsureSupportedSchemaVersion(int schemaVersion)
     {
-        if (schemaVersion is 0 or SupportedSchemaVersion)
+        if (schemaVersion is 0 or 1 or CurrentSchemaVersion)
         {
             return;
         }
 
         throw new NotSupportedException(
             $"Database schema version {schemaVersion} is not supported. " +
-            $"Supported versions are 0 and {SupportedSchemaVersion}.");
+            $"Supported versions are 0, 1 and {CurrentSchemaVersion}.");
     }
 
-    private static void EnsureWritableVersionOneDatabase(
-        SqliteConnection connection)
+    private static void EnsureWritableCurrentDatabase(SqliteConnection connection)
     {
         int schemaVersion = ReadSchemaVersion(connection);
-        if (schemaVersion != SupportedSchemaVersion)
+        if (schemaVersion != CurrentSchemaVersion)
         {
             throw new NotSupportedException(
                 $"Database schema version {schemaVersion} is not writable. " +
-                $"Expected version {SupportedSchemaVersion}.");
+                $"Expected version {CurrentSchemaVersion}.");
         }
 
-        ValidateVersionOneSchema(connection);
+        ValidateVersionTwoSchema(connection);
     }
 
-    private static void EnsureVersionZeroDatabaseIsEmpty(
-        SqliteConnection connection)
+    private static void EnsureVersionZeroDatabaseIsEmpty(SqliteConnection connection)
     {
         long existingUserObjectCount = connection.ExecuteScalar<long>(
             """
@@ -303,6 +358,22 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
     }
 
     private static void ValidateVersionOneSchema(SqliteConnection connection)
+    {
+        ValidateSchema(connection, ["id", "preferred_profile_id"], "version-one");
+    }
+
+    private static void ValidateVersionTwoSchema(SqliteConnection connection)
+    {
+        ValidateSchema(
+            connection,
+            ["id", "preferred_profile_id", "language"],
+            "version-two");
+    }
+
+    private static void ValidateSchema(
+        SqliteConnection connection,
+        string[] expectedColumns,
+        string label)
     {
         long tableCount = connection.ExecuteScalar<long>(
             """
@@ -324,19 +395,17 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
 
         bool hasExpectedSchema =
             tableCount == 1 &&
-            columns.SequenceEqual(
-                ["id", "preferred_profile_id"],
-                StringComparer.Ordinal) &&
+            columns.SequenceEqual(expectedColumns, StringComparer.Ordinal) &&
             settingsRowCount == 1;
 
         if (!hasExpectedSchema)
         {
             throw new InvalidDataException(
-                "The version-one settings schema is invalid.");
+                $"The {label} settings schema is invalid.");
         }
     }
 
-    private static void CreateVersionOneSchema(
+    private static void CreateVersionTwoSchema(
         SqliteConnection connection,
         CancellationToken cancellationToken)
     {
@@ -350,7 +419,29 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
         cancellationToken.ThrowIfCancellationRequested();
 
         connection.Execute(
-            $"PRAGMA user_version = {SupportedSchemaVersion};",
+            $"PRAGMA user_version = {CurrentSchemaVersion};",
+            transaction: transaction,
+            commandTimeout: CommandTimeoutSeconds);
+
+        cancellationToken.ThrowIfCancellationRequested();
+        transaction.Commit();
+    }
+
+    private static void MigrateVersionOneToTwo(
+        SqliteConnection connection,
+        CancellationToken cancellationToken)
+    {
+        using SqliteTransaction transaction = connection.BeginTransaction();
+
+        connection.Execute(
+            MigrateV1ToV2Sql,
+            transaction: transaction,
+            commandTimeout: CommandTimeoutSeconds);
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        connection.Execute(
+            $"PRAGMA user_version = {CurrentSchemaVersion};",
             transaction: transaction,
             commandTimeout: CommandTimeoutSeconds);
 
@@ -362,6 +453,10 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
     {
         public string? PreferredProfileId { get; set; }
 
+        public string? Language { get; set; }
+
         public long PreferredProfileIdByteCount { get; set; }
+
+        public long LanguageByteCount { get; set; }
     }
 }

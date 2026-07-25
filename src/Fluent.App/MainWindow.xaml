@@ -46,30 +46,6 @@
                                FontWeight="SemiBold" />
                 </StackPanel>
 
-                <TextBlock Grid.Column="1"
-                           Text="Fluent  ·  local  ·  sur l'appareil"
-                           VerticalAlignment="Center"
-                           Foreground="{StaticResource Nyx.MutedTextBrush}"
-                           FontSize="11" />
-
-                <StackPanel Grid.Column="2"
-                            Orientation="Horizontal"
-                            VerticalAlignment="Center">
-                    <TextBlock x:Name="HeaderProfileText"
-                               Text="Profil · Français professionnel"
-                               Margin="0,0,14,0"
-                               Foreground="{StaticResource Nyx.SecondaryTextBrush}"
-                               FontFamily="Cascadia Mono"
-                               FontSize="10" />
-                    <Ellipse Width="6"
-                             Height="6"
-                             Fill="{StaticResource Nyx.CyanBrush}" />
-                    <TextBlock Text="Moteur Base Q8 · CPU"
-                               Margin="7,0,0,0"
-                               Foreground="{StaticResource Nyx.SecondaryTextBrush}"
-                               FontFamily="Cascadia Mono"
-                               FontSize="10" />
-                </StackPanel>
             </Grid>
         </Border>
 
@@ -90,26 +66,18 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel>
-                        <TextBlock Text="ESPACE LOCAL"
+                        <TextBlock x:Name="NavSectionLabel"
+                                   Text="{Binding [nav.section], Source={StaticResource Loc}}"
                                    Margin="10,0,0,10"
                                    Style="{StaticResource Nyx.LabelTextStyle}" />
 
-                        <Button Padding="0"
-                                BorderThickness="0"
-                                Background="Transparent"
-                                Foreground="{StaticResource Nyx.PrimaryTextBrush}"
-                                HorizontalContentAlignment="Stretch"
-                                Cursor="Hand"
-                                AutomationProperties.Name="Vue d'ensemble"
-                                AutomationProperties.HelpText="Afficher la vue d'ensemble locale"
+                        <Button Style="{StaticResource Nyx.NavButtonStyle}"
+                                AutomationProperties.Name="Home"
+                                AutomationProperties.HelpText="Afficher l'accueil local"
                                 TabIndex="0"
                                 Click="OnOverviewNavigationClick">
                             <Border x:Name="OverviewNavigationSurface"
-                                    Background="{StaticResource Nyx.SelectedBrush}"
-                                    BorderBrush="{StaticResource Nyx.BorderBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="8"
-                                    Padding="10,9">
+                                    Style="{StaticResource Nyx.NavSurfaceStyle}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="22" />
@@ -119,8 +87,9 @@
                                                Foreground="{StaticResource Nyx.CyanBrush}"
                                                FontSize="15"
                                                VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1"
-                                               Text="Vue d'ensemble"
+                                    <TextBlock x:Name="NavHomeLabel"
+                                               Grid.Column="1"
+                                               Text="{Binding [nav.home], Source={StaticResource Loc}}"
                                                VerticalAlignment="Center"
                                                FontSize="12"
                                                FontWeight="SemiBold" />
@@ -129,22 +98,13 @@
                         </Button>
 
                         <Button Margin="0,14,0,0"
-                                Padding="0"
-                                BorderThickness="0"
-                                Background="Transparent"
-                                Foreground="{StaticResource Nyx.PrimaryTextBrush}"
-                                HorizontalContentAlignment="Stretch"
-                                Cursor="Hand"
+                                Style="{StaticResource Nyx.NavButtonStyle}"
                                 AutomationProperties.Name="Historique"
                                 AutomationProperties.HelpText="Ouvrir l'historique local des dictées"
                                 TabIndex="1"
                                 Click="OnHistoryNavigationClick">
                             <Border x:Name="HistoryNavigationSurface"
-                                    Background="Transparent"
-                                    BorderBrush="{StaticResource Nyx.BorderBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="8"
-                                    Padding="10,9">
+                                    Style="{StaticResource Nyx.NavSurfaceStyle}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="22" />
@@ -155,8 +115,9 @@
                                                Foreground="{StaticResource Nyx.CyanBrush}"
                                                FontSize="13"
                                                VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1"
-                                               Text="Historique"
+                                    <TextBlock x:Name="NavHistoryLabel"
+                                               Grid.Column="1"
+                                               Text="{Binding [nav.history], Source={StaticResource Loc}}"
                                                VerticalAlignment="Center"
                                                FontSize="12"
                                                FontWeight="SemiBold" />
@@ -170,22 +131,13 @@
                         </Button>
 
                         <Button Margin="0,5,0,0"
-                                Padding="0"
-                                BorderThickness="0"
-                                Background="Transparent"
-                                Foreground="{StaticResource Nyx.PrimaryTextBrush}"
-                                HorizontalContentAlignment="Stretch"
-                                Cursor="Hand"
+                                Style="{StaticResource Nyx.NavButtonStyle}"
                                 AutomationProperties.Name="Dictionnaire"
                                 AutomationProperties.HelpText="Gérer le dictionnaire personnel local"
                                 TabIndex="2"
                                 Click="OnDictionaryNavigationClick">
                             <Border x:Name="DictionaryNavigationSurface"
-                                    Background="Transparent"
-                                    BorderBrush="{StaticResource Nyx.BorderBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="8"
-                                    Padding="10,9">
+                                    Style="{StaticResource Nyx.NavSurfaceStyle}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="22" />
@@ -196,8 +148,9 @@
                                                Foreground="{StaticResource Nyx.CyanBrush}"
                                                FontSize="10"
                                                FontWeight="Bold" />
-                                    <TextBlock Grid.Column="1"
-                                               Text="Dictionnaire"
+                                    <TextBlock x:Name="NavDictionaryLabel"
+                                               Grid.Column="1"
+                                               Text="{Binding [nav.dictionary], Source={StaticResource Loc}}"
                                                FontSize="12"
                                                FontWeight="SemiBold" />
                                     <TextBlock x:Name="DictionaryNavigationStatusText"
@@ -210,61 +163,47 @@
                         </Button>
 
                         <Button Margin="0,5,0,0"
-                                Padding="0"
-                                BorderThickness="0"
-                                Background="Transparent"
-                                Foreground="{StaticResource Nyx.PrimaryTextBrush}"
-                                HorizontalContentAlignment="Stretch"
-                                Cursor="Hand"
-                                AutomationProperties.Name="Profils"
-                                AutomationProperties.HelpText="Choisir le profil de réécriture et les options Cloud"
+                                Style="{StaticResource Nyx.NavButtonStyle}"
+                                AutomationProperties.Name="Subscription"
+                                AutomationProperties.HelpText="Gérer l'abonnement et passer à Pro"
                                 TabIndex="3"
-                                Click="OnProfilesNavigationClick">
-                            <Border x:Name="ProfilesNavigationSurface"
-                                    Background="Transparent"
-                                    BorderBrush="{StaticResource Nyx.BorderBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="8"
-                                    Padding="10,9">
+                                Click="OnSubscriptionNavigationClick">
+                            <Border x:Name="SubscriptionNavigationSurface"
+                                    Style="{StaticResource Nyx.NavSurfaceStyle}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="22" />
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="✦"
+                                    <TextBlock Text="◇"
                                                Foreground="{StaticResource Nyx.CyanBrush}"
-                                               FontSize="12" />
-                                    <TextBlock Grid.Column="1"
-                                               Text="Profils"
+                                               FontSize="12"
+                                               VerticalAlignment="Center" />
+                                    <TextBlock x:Name="NavSubscriptionLabel"
+                                               Grid.Column="1"
+                                               Text="{Binding [nav.subscription], Source={StaticResource Loc}}"
+                                               VerticalAlignment="Center"
                                                FontSize="12"
                                                FontWeight="SemiBold" />
-                                    <TextBlock x:Name="ProfilesNavigationStatusText"
+                                    <TextBlock x:Name="SubscriptionNavigationStatusText"
                                                Grid.Column="2"
-                                               Text="PRO"
+                                               Text="GRATUIT"
                                                Foreground="{StaticResource Nyx.MutedTextBrush}"
-                                               FontSize="8" />
+                                               FontSize="8"
+                                               VerticalAlignment="Center" />
                                 </Grid>
                             </Border>
                         </Button>
 
                         <Button Margin="0,14,0,0"
-                                Padding="0"
-                                BorderThickness="0"
-                                Background="Transparent"
-                                Foreground="{StaticResource Nyx.PrimaryTextBrush}"
-                                HorizontalContentAlignment="Stretch"
-                                Cursor="Hand"
+                                Style="{StaticResource Nyx.NavButtonStyle}"
                                 AutomationProperties.Name="Paramètres"
                                 AutomationProperties.HelpText="Ouvrir les paramètres locaux"
                                 TabIndex="4"
                                 Click="OnSettingsNavigationClick">
                             <Border x:Name="SettingsNavigationSurface"
-                                    Background="Transparent"
-                                    BorderBrush="{StaticResource Nyx.BorderBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="8"
-                                    Padding="10,9">
+                                    Style="{StaticResource Nyx.NavSurfaceStyle}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="22" />
@@ -274,8 +213,9 @@
                                                Foreground="{StaticResource Nyx.CyanBrush}"
                                                FontSize="12"
                                                VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1"
-                                               Text="Paramètres"
+                                    <TextBlock x:Name="NavSettingsLabel"
+                                               Grid.Column="1"
+                                               Text="{Binding [nav.settings], Source={StaticResource Loc}}"
                                                VerticalAlignment="Center"
                                                FontSize="12"
                                                FontWeight="SemiBold" />
@@ -284,29 +224,66 @@
                         </Button>
                     </StackPanel>
 
-                    <Border Grid.Row="2"
-                            Background="{StaticResource Nyx.CardBrush}"
-                            BorderBrush="{StaticResource Nyx.BorderBrush}"
-                            BorderThickness="1"
-                            CornerRadius="9"
-                            Padding="11">
-                        <StackPanel>
-                            <TextBlock Text="100 % LOCAL"
-                                       Style="{StaticResource Nyx.LabelTextStyle}"
-                                       Foreground="{StaticResource Nyx.CyanBrush}" />
-                            <TextBlock Text="Audio en mémoire uniquement"
-                                       Margin="0,5,0,0"
-                                       TextWrapping="Wrap"
+                    <StackPanel Grid.Row="2">
+                        <Button Style="{StaticResource Nyx.NavButtonStyle}"
+                                AutomationProperties.Name="Profils"
+                                AutomationProperties.HelpText="Ouvrir le profil et les options de réécriture"
+                                TabIndex="5"
+                                Click="OnProfileChipClick">
+                            <Border x:Name="ProfileChipSurface"
+                                    Style="{StaticResource Nyx.NavSurfaceStyle}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="30"
+                                            Height="30"
+                                            CornerRadius="8"
+                                            Background="{StaticResource Nyx.SelectedBrush}"
+                                            BorderBrush="{StaticResource Nyx.BorderBrush}"
+                                            BorderThickness="1">
+                                        <TextBlock x:Name="ProfileAvatarText"
+                                                   Text="•"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="{StaticResource Nyx.PrimaryTextBrush}"
+                                                   FontFamily="Segoe UI Variable Display"
+                                                   FontSize="12"
+                                                   FontWeight="SemiBold" />
+                                    </Border>
+                                    <TextBlock x:Name="ProfileNameText"
+                                               Grid.Column="1"
+                                               Text="Utilisateur local"
+                                               Margin="10,0,0,0"
+                                               VerticalAlignment="Center"
+                                               Foreground="{StaticResource Nyx.PrimaryTextBrush}"
+                                               FontSize="12"
+                                               FontWeight="SemiBold"
+                                               TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                            </Border>
+                        </Button>
+                        <Button Style="{StaticResource Nyx.NavButtonStyle}"
+                                HorizontalAlignment="Left"
+                                Margin="12,4,0,0"
+                                AutomationProperties.Name="Upgrade plan"
+                                AutomationProperties.HelpText="Passer à Pro"
+                                TabIndex="6"
+                                Click="OnUpgradeNavigationClick">
+                            <TextBlock Text="{Binding [nav.upgrade], Source={StaticResource Loc}}"
+                                       Foreground="{StaticResource Nyx.PrimaryTextBrush}"
+                                       TextDecorations="Underline"
                                        FontSize="10"
-                                       Foreground="{StaticResource Nyx.SecondaryTextBrush}" />
-                        </StackPanel>
-                    </Border>
+                                       FontWeight="SemiBold" />
+                        </Button>
+                    </StackPanel>
                 </Grid>
             </Border>
 
             <ScrollViewer x:Name="OverviewPage"
                           Grid.Column="1"
-                          AutomationProperties.Name="Page Vue d'ensemble"
+                          AutomationProperties.Name="Page Home"
                           VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
                 <Grid Margin="28,26,28,30">
@@ -321,9 +298,9 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel>
-                        <TextBlock Text="Vue d'ensemble"
+                        <TextBlock Text="{Binding [home.title], Source={StaticResource Loc}}"
                                    Style="{StaticResource Nyx.PageTitleTextStyle}" />
-                        <TextBlock Text="Votre dictée locale, son état et ses protections en un coup d'œil."
+                        <TextBlock Text="{Binding [home.subtitle], Source={StaticResource Loc}}"
                                    Margin="0,6,0,0"
                                    Style="{StaticResource Nyx.BodyTextStyle}" />
                     </StackPanel>
@@ -341,13 +318,13 @@
 
                         <Border Style="{StaticResource Nyx.DashboardCardStyle}">
                             <StackPanel>
-                                <TextBlock Text="ÉTAT" Style="{StaticResource Nyx.LabelTextStyle}" />
+                                <TextBlock Text="{Binding [home.card.state], Source={StaticResource Loc}}" Style="{StaticResource Nyx.LabelTextStyle}" />
                                 <TextBlock x:Name="DictationStateText"
                                            Text="Idle"
                                            Margin="0,8,0,0"
                                            TextTrimming="CharacterEllipsis"
                                            Style="{StaticResource Nyx.MetricTextStyle}" />
-                                <TextBlock Text="Dictée courante"
+                                <TextBlock Text="{Binding [home.state.desc], Source={StaticResource Loc}}"
                                            Margin="0,5,0,0"
                                            Style="{StaticResource Nyx.BodyTextStyle}"
                                            FontSize="10" />
@@ -356,8 +333,8 @@
 
                         <Border Grid.Column="2" Style="{StaticResource Nyx.DashboardCardStyle}">
                             <StackPanel>
-                                <TextBlock Text="RACCOURCI" Style="{StaticResource Nyx.LabelTextStyle}" />
-                                <TextBlock Text="Ctrl + Espace"
+                                <TextBlock Text="{Binding [home.card.shortcut], Source={StaticResource Loc}}" Style="{StaticResource Nyx.LabelTextStyle}" />
+                                <TextBlock Text="{Binding [home.shortcut.value], Source={StaticResource Loc}}"
                                            Margin="0,8,0,0"
                                            Style="{StaticResource Nyx.MetricTextStyle}"
                                            FontSize="17" />
@@ -372,11 +349,11 @@
 
                         <Border Grid.Column="4" Style="{StaticResource Nyx.DashboardCardStyle}">
                             <StackPanel>
-                                <TextBlock Text="MOTEUR" Style="{StaticResource Nyx.LabelTextStyle}" />
+                                <TextBlock Text="{Binding [home.card.engine], Source={StaticResource Loc}}" Style="{StaticResource Nyx.LabelTextStyle}" />
                                 <TextBlock Text="Base Q8"
                                            Margin="0,8,0,0"
                                            Style="{StaticResource Nyx.MetricTextStyle}" />
-                                <TextBlock Text="Whisper local · CPU"
+                                <TextBlock Text="{Binding [home.engine.desc], Source={StaticResource Loc}}"
                                            Margin="0,5,0,0"
                                            Style="{StaticResource Nyx.BodyTextStyle}"
                                            FontSize="10" />
@@ -385,12 +362,12 @@
 
                         <Border Grid.Column="6" Style="{StaticResource Nyx.DashboardCardStyle}">
                             <StackPanel>
-                                <TextBlock Text="CONFIDENTIALITÉ" Style="{StaticResource Nyx.LabelTextStyle}" />
-                                <TextBlock Text="En mémoire"
+                                <TextBlock Text="{Binding [home.card.privacy], Source={StaticResource Loc}}" Style="{StaticResource Nyx.LabelTextStyle}" />
+                                <TextBlock Text="{Binding [home.privacy.value], Source={StaticResource Loc}}"
                                            Margin="0,8,0,0"
                                            Style="{StaticResource Nyx.MetricTextStyle}"
                                            FontSize="17" />
-                                <TextBlock Text="Aucun fichier audio"
+                                <TextBlock Text="{Binding [home.privacy.desc], Source={StaticResource Loc}}"
                                            Margin="0,5,0,0"
                                            Style="{StaticResource Nyx.BodyTextStyle}"
                                            FontSize="10" />
@@ -412,7 +389,7 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Dernière activité"
+                                    <TextBlock Text="{Binding [home.lastActivity], Source={StaticResource Loc}}"
                                                Style="{StaticResource Nyx.SectionTitleTextStyle}" />
                                     <Border Grid.Column="1"
                                             Background="#1430D1CB"
@@ -434,14 +411,14 @@
                                         CornerRadius="9"
                                         Padding="14">
                                     <TextBlock x:Name="LastResultText"
-                                               Text="Placez le curseur dans un champ texte, puis utilisez Ctrl+Espace pour démarrer et arrêter la dictée."
+                                               Text="{Binding [home.lastResult.default], Source={StaticResource Loc}}"
                                                TextWrapping="Wrap"
                                                LineHeight="20"
                                                Style="{StaticResource Nyx.BodyTextStyle}"
                                                Foreground="{StaticResource Nyx.PrimaryTextBrush}" />
                                 </Border>
 
-                                <TextBlock Text="Insertion seulement si la cible initiale reste valide ; sinon, copie explicite dans le presse-papiers. L'historique local est désactivé par défaut (opt-in)."
+                                <TextBlock Text="{Binding [home.insertion.note], Source={StaticResource Loc}}"
                                            Margin="0,12,0,0"
                                            TextWrapping="Wrap"
                                            Style="{StaticResource Nyx.BodyTextStyle}"
@@ -451,10 +428,10 @@
 
                         <Border Grid.Column="2" Style="{StaticResource Nyx.DashboardCardStyle}">
                             <StackPanel>
-                                <TextBlock Text="Cible sécurisée"
+                                <TextBlock Text="{Binding [home.target.title], Source={StaticResource Loc}}"
                                            Style="{StaticResource Nyx.SectionTitleTextStyle}" />
                                 <TextBlock x:Name="TargetStatusText"
-                                           Text="Aucune cible verrouillée"
+                                           Text="{Binding [home.target.none], Source={StaticResource Loc}}"
                                            Margin="0,14,0,0"
                                            TextWrapping="Wrap"
                                            LineHeight="18"
@@ -465,7 +442,7 @@
                                         BorderThickness="1"
                                         CornerRadius="8"
                                         Padding="10,7">
-                                    <TextBlock Text="Champ secret bloqué · cible revérifiée avant insertion"
+                                    <TextBlock Text="{Binding [home.target.note], Source={StaticResource Loc}}"
                                                TextWrapping="Wrap"
                                                FontSize="10"
                                                Foreground="{StaticResource Nyx.SuccessBrush}" />
@@ -481,9 +458,9 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <StackPanel>
-                                <TextBlock Text="Fondations du produit"
+                                <TextBlock Text="{Binding [home.foundations.title], Source={StaticResource Loc}}"
                                            Style="{StaticResource Nyx.SectionTitleTextStyle}" />
-                                <TextBlock Text="Le dashboard est prêt à accueillir les prochaines fonctions sans afficher de données fictives."
+                                <TextBlock Text="{Binding [home.foundations.subtitle], Source={StaticResource Loc}}"
                                            Margin="0,6,0,0"
                                            Style="{StaticResource Nyx.BodyTextStyle}" />
                             </StackPanel>
@@ -542,6 +519,11 @@
                                 Grid.Column="1"
                                 AutomationProperties.Name="Page Paramètres"
                                 Visibility="Collapsed" />
+
+            <views:SubscriptionPage x:Name="SubscriptionPage"
+                                    Grid.Column="1"
+                                    AutomationProperties.Name="Page Abonnement"
+                                    Visibility="Collapsed" />
         </Grid>
     </Grid>
 </Window>

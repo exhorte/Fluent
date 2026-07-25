@@ -39,10 +39,67 @@ public sealed class SqliteAppSettingsStoreTests
         AppPreferences second = await store.InitializeAndLoadAsync(CancellationToken.None);
 
         Assert.Null(first.PreferredProfileId);
+        Assert.Equal("en", first.Language);
         Assert.Null(second.PreferredProfileId);
+        Assert.Equal("en", second.Language);
 
         using SqliteConnection connection = OpenInspectionConnection(database.DatabasePath);
-        Assert.Equal(1L, ExecuteScalarInt64(connection, "PRAGMA user_version;"));
+        Assert.Equal(2L, ExecuteScalarInt64(connection, "PRAGMA user_version;"));
+    }
+
+    [Fact]
+    public async Task Language_defaults_to_english_and_persists()
+    {
+        using TemporaryDatabase database = new();
+        SqliteAppSettingsStore store = new(database.DatabasePath);
+        AppPreferences initial = await store.InitializeAndLoadAsync(CancellationToken.None);
+        Assert.Equal("en", initial.Language);
+
+        await store.SetLanguageAsync("fr", CancellationToken.None);
+
+        SqliteAppSettingsStore reopened = new(database.DatabasePath);
+        AppPreferences after = await reopened.InitializeAndLoadAsync(CancellationToken.None);
+        Assert.Equal("fr", after.Language);
+
+        await reopened.SetLanguageAsync("XX", CancellationToken.None);
+        AppPreferences normalized = await reopened.InitializeAndLoadAsync(CancellationToken.None);
+        Assert.Equal("en", normalized.Language);
+    }
+
+    [Fact]
+    public async Task Version_one_database_is_migrated_preserving_the_profile()
+    {
+        using TemporaryDatabase database = new();
+        Directory.CreateDirectory(database.RootPath);
+
+        // Build a legacy v1 database (no language column).
+        SqliteConnectionStringBuilder legacyBuilder = new()
+        {
+            DataSource = database.DatabasePath,
+            Mode = SqliteOpenMode.ReadWriteCreate,
+            Pooling = false
+        };
+        using (SqliteConnection connection = new(legacyBuilder.ToString()))
+        {
+            connection.Open();
+            using SqliteCommand command = connection.CreateCommand();
+            command.CommandText =
+                """
+                CREATE TABLE app_settings (id INTEGER PRIMARY KEY, preferred_profile_id TEXT);
+                INSERT INTO app_settings (id, preferred_profile_id) VALUES (1, 'developer');
+                PRAGMA user_version = 1;
+                """;
+            command.ExecuteNonQuery();
+        }
+
+        SqliteAppSettingsStore store = new(database.DatabasePath);
+        AppPreferences migrated = await store.InitializeAndLoadAsync(CancellationToken.None);
+
+        Assert.Equal("developer", migrated.PreferredProfileId);
+        Assert.Equal("en", migrated.Language);
+
+        using SqliteConnection check = OpenInspectionConnection(database.DatabasePath);
+        Assert.Equal(2L, ExecuteScalarInt64(check, "PRAGMA user_version;"));
     }
 
     [Fact]
@@ -145,7 +202,7 @@ public sealed class SqliteAppSettingsStoreTests
         using (SqliteConnection connection = OpenInspectionConnection(database.DatabasePath))
         {
             using SqliteCommand command = connection.CreateCommand();
-            command.CommandText = "PRAGMA user_version = 2;";
+            command.CommandText = "PRAGMA user_version = 3;";
             command.ExecuteNonQuery();
         }
 
@@ -156,7 +213,7 @@ public sealed class SqliteAppSettingsStoreTests
             await Assert.ThrowsAsync<NotSupportedException>(
                 () => newerStore.InitializeAndLoadAsync(CancellationToken.None));
 
-        Assert.Contains("version 2", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("version 3", exception.Message, StringComparison.Ordinal);
         Assert.Equal(before, File.ReadAllBytes(database.DatabasePath));
         AssertNoSQLiteSidecars(database.DatabasePath);
     }

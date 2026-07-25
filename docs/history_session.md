@@ -2202,3 +2202,42 @@ Sous le nouveau modèle, le Director clôture **07E** selon CG-001..CG-008 : les
 - Les comportements de tier (Director exécutant une boucle complète, escalade R3, changement de stratégie anti-boucle) sont gouvernés par le comportement d’agent et **revus**, non testés unitairement.
 - **Gemini n’est pas live** ; **07D** reste ouverte sans autorisation live ; le renommage **07C** reste **à réconcilier** dans Git.
 - Le lot de migration n’a touché **aucun code produit** de Fluent, conformément à la consigne. La tâche active `FV-P07-T018` (publication GitHub) reste `implementing`, inchangée.
+
+---
+
+## Boucle autonome des phases 07E → 08B (ADR-0007) — 2026-07-23
+
+Sous le nouveau modèle, le PROJECT_DIRECTOR a enchaîné les phases produit, chaque clôture confirmée par un smoke visuel de l’utilisateur (pas de phrase rituelle). État du dépôt vérifié en cours de route : l’arbre de travail (renommage + gouvernance) a été **aplati en un commit propre `66034b1` sur `main`, en phase avec `origin/main`** ; **07C** (renommage) est donc **résolu** (aucun résidu `NyxVoice` dans les sources suivies).
+
+- **07E — dashboard dynamique** : clôturée (preuves préexistantes).
+- **07F — Historique local** : opt-in OFF par défaut, store SQLite `fluent-history.db` dédié, politique de capture pure, page Historique WPF (recherche, suppression, effacement). Build 0/0, suite 367/367, smoke PASS. Clôturée.
+- **07G — Paramètres locaux** : store SQLite `fluent-settings.db` dédié, **profil préféré persistant** (restauré au démarrage), page Paramètres WPF. Suite 376/376, smoke PASS. Clôturée.
+- **07H — UX & résilience** : accessibilité (`AutomationProperties` + `TabIndex`), navigation clavier, présentation d’erreurs/récupération non techniques (`DictationErrorPresenter` Core). Suite 391/391, smoke PASS. Clôturée. Offline jugé intrinsèque (local-first).
+- **08A — contexte de réécriture** : **différée** sur décision produit E-001 de l’utilisateur (son consommateur est le chemin Cloud non live).
+- **08B — dictionnaire/glossaire étendu** : composant pur `DictionaryExchange` (export JSON déterministe, plan d’import avec validation existante, conflits explicites ignorer/écraser, bornage capacité, doublons) + application via le chemin d’upsert gaté ; boutons **Importer/Exporter** locaux. Suite 399/399, smoke PASS. Clôturée. Contenu importé traité comme donnée, jamais exécuté.
+
+Chaque phase a ses preuves sous `docs/project/evidence/phase-07f-history/`, `phase-07g-settings/`, `phase-07h-ux-resilience/`, `phase-08b-dictionary-glossary/`.
+
+## Consolidation et publication (branche + PR brouillon) — 2026-07-23
+
+Sur décision utilisateur (« consolider l’existant »), vérification complète : **build Release 0/0**, suite .NET **399/399**, gardes gouvernance **45/45**, `main` en phase avec `origin/main`. Instantané de readiness + audit packaging (`dotnet publish` framework-dependent propre, `Fluent.exe` + natifs Whisper/SQLite, ~93 Mo) sous `docs/project/evidence/consolidation-2026-07-23/`. Revalidation multi-applications de la **Phase 01** préparée (checklist mise à jour au comportement actuel ; correction : l’exécutable réel est **`Fluent.exe`**, pas `Fluent.App.exe`).
+
+Sur autorisation explicite, publication en **branche dédiée `chore/fluent-v1-consolidation`** : 6 commits atomiques (features 07F/07G/07H, dictionnaire 08B, tests, docs/preuves, revalidation Phase 01, audit packaging), scan de secrets **propre**, `git diff --check` propre, **push de la branche uniquement**, **PR brouillon #1** ouverte vers `main`. `main` intacte, PR non fusionnée. La gouvernance/Project Director était déjà sur `main` via le commit aplati.
+
+## Refonte UI monochrome + abonnement + internationalisation — 2026-07-23
+
+Travail dirigé par l’utilisateur, **postérieur à la PR #1** (donc **non inclus dans la PR #1**).
+
+- **Thème noir & blanc** : accents cyan/bleu → blanc/gris ; logo inversé ; navigation **sans bordure fixe** (outline blanc-transparent subtil au survol via `Nyx.NavButtonStyle`/`Nyx.NavSurfaceStyle` — corrige le halo bleu qui venait du chrome par défaut du `Button` WPF) ; outline blanc discret sur l’élément actif.
+- **En-tête épuré** : logo seul ; les infos profil/moteur déplacées vers une carte **« Session et moteur »** dans Paramètres.
+- **Profil utilisateur en bas de la barre** : puce **avatar (2 lettres) + prénom + initiale**, cliquable vers la page **Profils** ; lien souligné **« Upgrade plan »** vers **Abonnement**.
+- **Page & nav « Subscription »** (plan Local·Gratuit, compte, avantages Pro, CTA « Passer à Pro » sans paiement) ; **« Profils » retiré de la nav** (accessible via la puce).
+- **« Vue d’ensemble » → « Home »**.
+- **Internationalisation** : réglage **Langage** (Paramètres) **English/Français, défaut anglais**, **persisté** — store de paramètres migré en **schéma v2** (colonne `language`, migration v1→v2 testée). Mécanisme `Localizer` (indexeur observable exposé en ressource `Loc`, liaison `{Binding [clé], Source={StaticResource Loc}}` ; changement de langue = rafraîchissement global sans redémarrage). **Increment 1** : tout le **texte statique** des pages (Home/History/Dictionary/Subscription/Settings + nav) traduit en/fr. **Increment 2 (partiel)** : `DashboardStatusPresenter` rendu bilingue (badges de la Vue d’ensemble ; `Create` prend `language`, défaut `fr` pour garder les tests verts) + texte statique de la page Profils.
+
+### État de vérification (honnête)
+
+- Derniers points **vérifiés verts** : build Release **0/0** et suite **401/401** (après le store v2 langue + increment 1) ; puis `Fluent.App` **0/0** après le texte statique de Profils.
+- **Non revérifié par build** : la dernière édition (localisation de `DashboardStatusPresenter` + branchement `MainWindow`) — l’**environnement de build s’est figé** (build solution > 10 min, puis `Get-Process`, `dotnet build-server shutdown` et `taskkill` tous en timeout ; processus de build bloqué saturant la machine). Éditions C#/XAML simples, sans risque de boucle, mais **build/tests à reconfirmer** dès l’environnement rétabli.
+- **Reste à traduire (chaînes générées en code)** : statuts auth/cloud de la page Profils, messages runtime de dictée (`MainWindow`), messages code Dictionnaire/Historique/Paramètres (états vides, statuts), `DictationErrorPresenter` (Core), et les noms d’accessibilité de la nav (laissés statiques FR pour ne pas casser les tests markup).
+- Ce lot UI + i18n est **commité sur la branche `chore/fluent-v1-consolidation`** (hors PR #1 initiale) ; `main` reste intacte ; aucun secret ; aucune opération destructive.

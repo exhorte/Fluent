@@ -41,79 +41,94 @@ public sealed record DashboardStatusPresentation(
 
 public static class DashboardStatusPresenter
 {
-    public static DashboardStatusPresentation Create(DashboardStatusInput input)
+    public static DashboardStatusPresentation Create(
+        DashboardStatusInput input,
+        string language = "fr")
     {
         ArgumentNullException.ThrowIfNull(input);
         input.Validate();
+        bool fr = language != "en";
 
+        string profile = fr ? "Profil" : "Profile";
         return new DashboardStatusPresentation(
-            $"Profil · {input.ProfileDisplayName}",
-            DescribeDictionary(input.DictionaryStorageMode, input.DictionaryEntryCount),
-            DescribeAuthentication(input.AuthenticationStatus),
-            DescribeCloud(input));
+            $"{profile} · {input.ProfileDisplayName}",
+            DescribeDictionary(input.DictionaryStorageMode, input.DictionaryEntryCount, fr),
+            DescribeAuthentication(input.AuthenticationStatus, fr),
+            DescribeCloud(input, fr));
     }
 
-    private static string DescribeDictionary(DictionaryStorageMode storageMode, int entryCount)
+    private static string DescribeDictionary(
+        DictionaryStorageMode storageMode,
+        int entryCount,
+        bool fr)
     {
         return storageMode switch
         {
-            DictionaryStorageMode.Loading => "Dictionnaire · Chargement",
-            DictionaryStorageMode.Persistent when entryCount == 0 => "Dictionnaire · Vide (local)",
-            DictionaryStorageMode.Persistent when entryCount == 1 => "Dictionnaire · 1 entrée locale",
-            DictionaryStorageMode.Persistent => $"Dictionnaire · {entryCount} entrées locales",
+            DictionaryStorageMode.Loading =>
+                fr ? "Dictionnaire · Chargement" : "Dictionary · Loading",
+            DictionaryStorageMode.Persistent when entryCount == 0 =>
+                fr ? "Dictionnaire · Vide (local)" : "Dictionary · Empty (local)",
+            DictionaryStorageMode.Persistent when entryCount == 1 =>
+                fr ? "Dictionnaire · 1 entrée locale" : "Dictionary · 1 local entry",
+            DictionaryStorageMode.Persistent =>
+                fr ? $"Dictionnaire · {entryCount} entrées locales"
+                   : $"Dictionary · {entryCount} local entries",
             DictionaryStorageMode.SessionOnlyFallback when entryCount == 0 =>
-                "Dictionnaire · Vide (secours)",
+                fr ? "Dictionnaire · Vide (secours)" : "Dictionary · Empty (fallback)",
             DictionaryStorageMode.SessionOnlyFallback when entryCount == 1 =>
-                "Dictionnaire · 1 entrée de secours",
+                fr ? "Dictionnaire · 1 entrée de secours" : "Dictionary · 1 fallback entry",
             DictionaryStorageMode.SessionOnlyFallback =>
-                $"Dictionnaire · {entryCount} entrées de secours",
-            _ => "Dictionnaire · Indisponible"
+                fr ? $"Dictionnaire · {entryCount} entrées de secours"
+                   : $"Dictionary · {entryCount} fallback entries",
+            _ => fr ? "Dictionnaire · Indisponible" : "Dictionary · Unavailable"
         };
     }
 
-    private static string DescribeAuthentication(AuthenticationStatus status)
+    private static string DescribeAuthentication(AuthenticationStatus status, bool fr)
     {
         return status switch
         {
-            AuthenticationStatus.Unconfigured => "Compte · Non configuré",
-            AuthenticationStatus.SignedOut => "Compte · Déconnecté",
-            AuthenticationStatus.SigningIn => "Compte · Connexion en cours",
-            AuthenticationStatus.Authenticated => "Compte · Connecté",
-            AuthenticationStatus.Offline => "Compte · Hors ligne",
-            AuthenticationStatus.Expired => "Compte · Session expirée",
-            AuthenticationStatus.Cancelled => "Compte · Connexion annulée",
-            AuthenticationStatus.Failed => "Compte · Échec de connexion",
-            _ => "Compte · État inconnu"
+            AuthenticationStatus.Unconfigured => fr ? "Compte · Non configuré" : "Account · Not configured",
+            AuthenticationStatus.SignedOut => fr ? "Compte · Déconnecté" : "Account · Signed out",
+            AuthenticationStatus.SigningIn => fr ? "Compte · Connexion en cours" : "Account · Signing in",
+            AuthenticationStatus.Authenticated => fr ? "Compte · Connecté" : "Account · Signed in",
+            AuthenticationStatus.Offline => fr ? "Compte · Hors ligne" : "Account · Offline",
+            AuthenticationStatus.Expired => fr ? "Compte · Session expirée" : "Account · Session expired",
+            AuthenticationStatus.Cancelled => fr ? "Compte · Connexion annulée" : "Account · Sign-in cancelled",
+            AuthenticationStatus.Failed => fr ? "Compte · Échec de connexion" : "Account · Sign-in failed",
+            _ => fr ? "Compte · État inconnu" : "Account · Unknown state"
         };
     }
 
-    private static string DescribeCloud(DashboardStatusInput input)
+    private static string DescribeCloud(DashboardStatusInput input, bool fr)
     {
         if (!input.HasConfiguredBackendOrigin)
         {
-            return "Cloud · Non configuré";
+            return fr ? "Cloud · Non configuré" : "Cloud · Not configured";
         }
 
         if (!input.IsAuthenticated)
         {
-            return "Cloud · Local (connexion requise)";
+            return fr ? "Cloud · Local (connexion requise)" : "Cloud · Local (sign-in required)";
         }
 
         if (!input.IsCloudEnabled)
         {
-            return "Cloud · Désactivé";
+            return fr ? "Cloud · Désactivé" : "Cloud · Disabled";
         }
 
         if (!input.HasCloudConsent)
         {
-            return "Cloud · Consentement requis";
+            return fr ? "Cloud · Consentement requis" : "Cloud · Consent required";
         }
 
         return input.SelectedProvider switch
         {
-            RewriteProviderId.Gemini => "Cloud · Autorisé localement (Gemini)",
-            RewriteProviderId.DeepSeek => "Cloud · Autorisé localement (DeepSeek)",
-            _ => "Cloud · Autorisé localement"
+            RewriteProviderId.Gemini =>
+                fr ? "Cloud · Autorisé localement (Gemini)" : "Cloud · Locally authorized (Gemini)",
+            RewriteProviderId.DeepSeek =>
+                fr ? "Cloud · Autorisé localement (DeepSeek)" : "Cloud · Locally authorized (DeepSeek)",
+            _ => fr ? "Cloud · Autorisé localement" : "Cloud · Locally authorized"
         };
     }
 }

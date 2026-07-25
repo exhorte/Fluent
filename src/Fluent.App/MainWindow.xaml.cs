@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net.Http;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
 using Fluent.App.Auth;
@@ -8,6 +9,7 @@ using Fluent.App.Cloud;
 using Fluent.App.Dashboard;
 using Fluent.App.Phase01;
 using Fluent.Audio.Capture;
+using Fluent.App.Localization;
 using Fluent.Core.Diagnostics;
 using Fluent.Core.History;
 using Fluent.Core.Interaction;
@@ -57,6 +59,8 @@ public partial class MainWindow : Window
     private readonly IAppSettingsStore _appSettingsStore =
         new SqliteAppSettingsStore();
     private readonly PersonalDictionaryProcessor _dictionaryProcessor = new();
+    private readonly Localizer _localizer =
+        (Localizer)Application.Current.Resources["Loc"];
     private int _historyEntryCount;
     private readonly CancellationTokenSource _shutdown = new();
     private GlobalHotKey? _hotKey;
@@ -98,6 +102,7 @@ public partial class MainWindow : Window
         HistoryPage.Initialize(_dictationHistoryStore, _shutdown.Token);
         SettingsPage.DefaultProfileChangeRequested += OnSettingsDefaultProfileChangeRequested;
         SettingsPage.OpenHistoryRequested += OnSettingsOpenHistoryRequested;
+        SettingsPage.LanguageChangeRequested += OnLanguageChangeRequested;
         SettingsPage.SetProfiles(RewriteProfiles.All, _profileSelection.Current);
         ProfilesPage.SelectionChanged += OnProfileSelectionChanged;
         ProfilesPage.CloudStateChanged += OnCloudStateChanged;
@@ -123,7 +128,7 @@ public partial class MainWindow : Window
         {
             await DictionaryPage.LoadAsync();
             await HistoryPage.LoadAsync();
-            await RestorePreferredProfileAsync();
+            await RestorePreferencesAsync();
         }
         catch (OperationCanceledException) when (_shutdown.IsCancellationRequested)
         {
@@ -148,6 +153,8 @@ public partial class MainWindow : Window
         {
             return;
         }
+
+        UpdateUserProfileChip();
 
         try
         {
@@ -175,6 +182,7 @@ public partial class MainWindow : Window
         HistoryPage.EnabledChanged -= OnHistoryEnabledChanged;
         SettingsPage.DefaultProfileChangeRequested -= OnSettingsDefaultProfileChangeRequested;
         SettingsPage.OpenHistoryRequested -= OnSettingsOpenHistoryRequested;
+        SettingsPage.LanguageChangeRequested -= OnLanguageChangeRequested;
         ProfilesPage.SelectionChanged -= OnProfileSelectionChanged;
         ProfilesPage.CloudStateChanged -= OnCloudStateChanged;
         _authenticationState.Changed -= OnAuthenticationStateChanged;
@@ -494,9 +502,19 @@ public partial class MainWindow : Window
         ShowDashboardPage(DashboardPage.Dictionary);
     }
 
-    private void OnProfilesNavigationClick(object sender, RoutedEventArgs e)
+    private void OnProfileChipClick(object sender, RoutedEventArgs e)
     {
         ShowDashboardPage(DashboardPage.Profiles);
+    }
+
+    private void OnSubscriptionNavigationClick(object sender, RoutedEventArgs e)
+    {
+        ShowDashboardPage(DashboardPage.Subscription);
+    }
+
+    private void OnUpgradeNavigationClick(object sender, RoutedEventArgs e)
+    {
+        ShowDashboardPage(DashboardPage.Subscription);
     }
 
     private void OnHistoryNavigationClick(object sender, RoutedEventArgs e)
@@ -516,13 +534,89 @@ public partial class MainWindow : Window
         ProfilesPage.Visibility = page == DashboardPage.Profiles ? Visibility.Visible : Visibility.Collapsed;
         HistoryPage.Visibility = page == DashboardPage.History ? Visibility.Visible : Visibility.Collapsed;
         SettingsPage.Visibility = page == DashboardPage.Settings ? Visibility.Visible : Visibility.Collapsed;
+        SubscriptionPage.Visibility = page == DashboardPage.Subscription ? Visibility.Visible : Visibility.Collapsed;
 
-        Brush selected = (Brush)FindResource("Nyx.SelectedBrush");
-        OverviewNavigationSurface.Background = page == DashboardPage.Overview ? selected : Brushes.Transparent;
-        DictionaryNavigationSurface.Background = page == DashboardPage.Dictionary ? selected : Brushes.Transparent;
-        ProfilesNavigationSurface.Background = page == DashboardPage.Profiles ? selected : Brushes.Transparent;
-        HistoryNavigationSurface.Background = page == DashboardPage.History ? selected : Brushes.Transparent;
-        SettingsNavigationSurface.Background = page == DashboardPage.Settings ? selected : Brushes.Transparent;
+        SetNavActive(OverviewNavigationSurface, page == DashboardPage.Overview);
+        SetNavActive(DictionaryNavigationSurface, page == DashboardPage.Dictionary);
+        SetNavActive(HistoryNavigationSurface, page == DashboardPage.History);
+        SetNavActive(SubscriptionNavigationSurface, page == DashboardPage.Subscription);
+        SetNavActive(SettingsNavigationSurface, page == DashboardPage.Settings);
+        SetNavActive(ProfileChipSurface, page == DashboardPage.Profiles);
+    }
+
+    private void SetNavActive(Border surface, bool active)
+    {
+        if (active)
+        {
+            surface.BorderBrush = (Brush)FindResource("Nyx.NavActiveOutlineBrush");
+        }
+        else
+        {
+            // Clear the local value so the style default (transparent) and the
+            // hover outline trigger apply again.
+            surface.ClearValue(Border.BorderBrushProperty);
+        }
+    }
+
+    private void UpdateUserProfileChip()
+    {
+        AuthenticatedUser? user = _authenticationState.User;
+        if (user is null)
+        {
+            ProfileAvatarText.Text = "•";
+            ProfileNameText.Text = _localizer["chip.localUser"];
+            SubscriptionPage.SetAccount(_localizer["subscription.account.local"]);
+            return;
+        }
+
+        string display = !string.IsNullOrWhiteSpace(user.DisplayName)
+            ? user.DisplayName!
+            : user.Email ?? "Utilisateur";
+        (string initials, string shortName) = FormatUserIdentity(display);
+        ProfileAvatarText.Text = initials;
+        ProfileNameText.Text = shortName;
+        SubscriptionPage.SetAccount(
+            user.Email is null
+                ? _localizer["subscription.account.connectedNoEmail"]
+                : $"{_localizer["subscription.account.connected"]}{user.Email}");
+    }
+
+    private static (string Initials, string ShortName) FormatUserIdentity(string display)
+    {
+        string trimmed = display.Trim();
+        int atIndex = trimmed.IndexOf('@');
+        if (atIndex > 0 && !trimmed.Contains(' '))
+        {
+            trimmed = trimmed[..atIndex];
+        }
+
+        string[] parts = trimmed.Split(
+            new[] { ' ', '.', '_', '-' },
+            StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 0)
+        {
+            return ("•", "Utilisateur");
+        }
+
+        if (parts.Length == 1)
+        {
+            string one = parts[0];
+            string ini = one.Length >= 2 ? one[..2] : one;
+            return (ini.ToUpperInvariant(), Capitalize(one));
+        }
+
+        string first = parts[0];
+        string last = parts[^1];
+        string initials = $"{first[0]}{last[0]}".ToUpperInvariant();
+        string shortName = $"{Capitalize(first)} {char.ToUpperInvariant(last[0])}";
+        return (initials, shortName);
+    }
+
+    private static string Capitalize(string value)
+    {
+        return value.Length == 0
+            ? value
+            : char.ToUpperInvariant(value[0]) + value[1..];
     }
 
     private void OnHistoryEntryCountChanged(object? sender, int count)
@@ -574,10 +668,14 @@ public partial class MainWindow : Window
     /// Restores the user's persisted preferred rewrite profile on launch. Absent
     /// or unknown values leave the canonical default in place.
     /// </summary>
-    private async Task RestorePreferredProfileAsync()
+    private async Task RestorePreferencesAsync()
     {
         AppPreferences preferences =
             await _appSettingsStore.InitializeAndLoadAsync(_shutdown.Token);
+
+        ApplyLanguage(preferences.Language);
+        SettingsPage.SetLanguageSelection(preferences.Language);
+
         if (preferences.PreferredProfileId is null)
         {
             return;
@@ -593,6 +691,38 @@ public partial class MainWindow : Window
         ProfilesPage.Initialize(_profileSelection);
         SettingsPage.SetProfiles(RewriteProfiles.All, _profileSelection.Current);
         UpdateProfilePresentation(_profileSelection.Current);
+    }
+
+    /// <summary>
+    /// Applies the interface language to the navigation chrome. First slice:
+    /// navigation labels; other page text is localised incrementally.
+    /// </summary>
+    private void ApplyLanguage(string language)
+    {
+        // All localized text is bound to the Localizer; changing its language
+        // refreshes every bound string across every page at once.
+        _localizer.Language = language == "fr" ? "fr" : "en";
+        UpdateUserProfileChip();
+        RefreshDashboardStatusPresentation();
+    }
+
+    private async void OnLanguageChangeRequested(object? sender, string language)
+    {
+        string normalized = AppSettingsLimits.NormalizeLanguage(language);
+        ApplyLanguage(normalized);
+        SettingsPage.SetLanguageSelection(normalized);
+
+        try
+        {
+            await _appSettingsStore.SetLanguageAsync(normalized, _shutdown.Token);
+        }
+        catch (OperationCanceledException) when (_shutdown.IsCancellationRequested)
+        {
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Language persistence failed: {ex.GetBaseException().Message}");
+        }
     }
 
     /// <summary>
@@ -633,6 +763,7 @@ public partial class MainWindow : Window
         }
 
         UpdateProfilePresentation(_profileSelection.Current);
+        UpdateUserProfileChip();
     }
 
     /// <summary>
@@ -670,14 +801,8 @@ public partial class MainWindow : Window
         string modeLabel = context.IsCloudEligible
             ? $"Cloud · {ProviderDisplayName(context.Provider)}"
             : "Local";
-        HeaderProfileText.Text = $"Profil · {profile.DisplayName} · {modeLabel}";
+        SettingsPage.SetSessionInfo(profile.DisplayName, modeLabel, "Base Q8 · CPU");
         ProfileSummaryText.Text = $"Profil · {profile.DisplayName}";
-        ProfilesNavigationStatusText.Text = profile.Id switch
-        {
-            "professional-fr" => "PRO",
-            "developer" => "DÉV",
-            _ => profile.DisplayName.ToUpperInvariant()
-        };
         RefreshDashboardStatusPresentation();
     }
 
@@ -734,7 +859,8 @@ public partial class MainWindow : Window
                 _cloudBackendConfiguration is not null,
                 _cloudRewriteSettings.CloudRewriteEnabled,
                 _cloudRewriteSettings.CloudConsentGranted,
-                _cloudRewriteSettings.SelectedProvider));
+                _cloudRewriteSettings.SelectedProvider),
+            _localizer.Language);
 
         ProfileSummaryText.Text = presentation.ProfileSummary;
         DictionarySummaryText.Text = presentation.DictionarySummary;
@@ -868,6 +994,7 @@ public partial class MainWindow : Window
         Dictionary,
         Profiles,
         History,
-        Settings
+        Settings,
+        Subscription
     }
 }

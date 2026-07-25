@@ -152,9 +152,9 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Dictionnaire"
+                    <TextBlock Text="{Binding [dictionary.title], Source={StaticResource Loc}}"
                                Style="{StaticResource Nyx.PageTitleTextStyle}" />
-                    <TextBlock Text="Gérez les corrections personnelles appliquées à la transcription."
+                    <TextBlock Text="{Binding [dictionary.subtitle], Source={StaticResource Loc}}"
                                Margin="0,6,0,0"
                                Style="{StaticResource Nyx.BodyTextStyle}" />
                 </StackPanel>
@@ -216,9 +216,9 @@
             <Border Grid.Row="4"
                     Style="{StaticResource Nyx.DashboardCardStyle}">
                 <StackPanel x:Name="EditorPanel" IsEnabled="False">
-                    <TextBlock Text="Ajouter une correction"
+                    <TextBlock Text="{Binding [dictionary.add.title], Source={StaticResource Loc}}"
                                Style="{StaticResource Nyx.SectionTitleTextStyle}" />
-                    <TextBlock Text="La forme reconnue sera remplacée par le texte indiqué lors de la réécriture."
+                    <TextBlock Text="{Binding [dictionary.add.desc], Source={StaticResource Loc}}"
                                Margin="0,5,0,0"
                                Style="{StaticResource Nyx.BodyTextStyle}"
                                FontSize="11" />
@@ -233,7 +233,7 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel>
-                            <TextBlock Text="FORME RECONNUE"
+                            <TextBlock Text="{Binding [dictionary.spokenForm], Source={StaticResource Loc}}"
                                        Margin="1,0,0,7"
                                        Style="{StaticResource Nyx.LabelTextStyle}" />
                             <TextBox x:Name="SpokenFormTextBox"
@@ -241,7 +241,7 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="2">
-                            <TextBlock Text="REMPLACEMENT"
+                            <TextBlock Text="{Binding [dictionary.replacement], Source={StaticResource Loc}}"
                                        Margin="1,0,0,7"
                                        Style="{StaticResource Nyx.LabelTextStyle}" />
                             <TextBox x:Name="ReplacementTextBox"
@@ -250,7 +250,7 @@
 
                         <Button Grid.Column="4"
                                 Margin="0,23,0,0"
-                                Content="Ajouter / mettre à jour"
+                                Content="{Binding [dictionary.addUpdate], Source={StaticResource Loc}}"
                                 Click="AddOrUpdateButton_Click"
                                 Style="{StaticResource Dictionary.PrimaryButtonStyle}" />
                     </Grid>
@@ -266,24 +266,24 @@
             <Border Grid.Row="6"
                     Style="{StaticResource Nyx.DashboardCardStyle}">
                 <StackPanel x:Name="ImportExportPanel" IsEnabled="False">
-                    <TextBlock Text="Importer / Exporter"
+                    <TextBlock Text="{Binding [dictionary.exchange.title], Source={StaticResource Loc}}"
                                Style="{StaticResource Nyx.SectionTitleTextStyle}" />
-                    <TextBlock Text="Sauvegardez vos corrections dans un fichier local, ou importez-en un. Le contenu importé est validé et n’écrase rien sans votre choix. Aucune donnée n’est envoyée à l’extérieur."
+                    <TextBlock Text="{Binding [dictionary.exchange.desc], Source={StaticResource Loc}}"
                                Margin="0,5,0,0"
                                TextWrapping="Wrap"
                                LineHeight="18"
                                Style="{StaticResource Nyx.BodyTextStyle}"
                                FontSize="11" />
                     <StackPanel Orientation="Horizontal" Margin="0,14,0,0" VerticalAlignment="Center">
-                        <Button Content="Exporter…"
+                        <Button Content="{Binding [dictionary.export], Source={StaticResource Loc}}"
                                 Click="ExportButton_Click"
                                 Style="{StaticResource Dictionary.SecondaryButtonStyle}" />
-                        <Button Content="Importer…"
+                        <Button Content="{Binding [dictionary.import], Source={StaticResource Loc}}"
                                 Margin="10,0,0,0"
                                 Click="ImportButton_Click"
                                 Style="{StaticResource Dictionary.PrimaryButtonStyle}" />
                         <CheckBox x:Name="OverwriteConflictsCheckBox"
-                                  Content="Écraser les entrées existantes en cas de conflit"
+                                  Content="{Binding [dictionary.overwriteConflicts], Source={StaticResource Loc}}"
                                   Margin="16,0,0,0"
                                   VerticalAlignment="Center"
                                   Foreground="{StaticResource Nyx.SecondaryTextBrush}"
@@ -307,7 +307,7 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel>
-                            <TextBlock Text="Corrections locales"
+                            <TextBlock Text="{Binding [dictionary.local.title], Source={StaticResource Loc}}"
                                        Style="{StaticResource Nyx.SectionTitleTextStyle}" />
                             <TextBlock x:Name="EntryCountTextBlock"
                                        Text="Chargement du dictionnaire local"
@@ -317,7 +317,7 @@
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Width="240">
-                            <TextBlock Text="RECHERCHER"
+                            <TextBlock Text="{Binding [dictionary.search], Source={StaticResource Loc}}"
                                        Margin="1,0,0,7"
                                        Style="{StaticResource Nyx.LabelTextStyle}" />
                             <TextBox x:Name="SearchTextBox"
@@ -347,7 +347,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="FORME RECONNUE"
+                                                <TextBlock Text="{Binding [dictionary.spokenForm], Source={StaticResource Loc}}"
                                                            Style="{StaticResource Nyx.LabelTextStyle}" />
                                                 <TextBlock Text="{Binding SpokenForm}"
                                                            Margin="0,5,0,0"
@@ -364,7 +364,7 @@
                                                        FontSize="13" />
 
                                             <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                                <TextBlock Text="REMPLACEMENT"
+                                                <TextBlock Text="{Binding [dictionary.replacement], Source={StaticResource Loc}}"
                                                            Style="{StaticResource Nyx.LabelTextStyle}" />
                                                 <TextBlock Text="{Binding Replacement}"
                                                            Margin="0,5,0,0"
@@ -376,12 +376,12 @@
                                             <StackPanel Grid.Column="4"
                                                         Orientation="Horizontal"
                                                         VerticalAlignment="Center">
-                                                <Button Content="Modifier"
+                                                <Button Content="{Binding [common.edit], Source={StaticResource Loc}}"
                                                         Margin="0,0,7,0"
                                                         Tag="{Binding}"
                                                         Click="EditButton_Click"
                                                         Style="{StaticResource Dictionary.SecondaryButtonStyle}" />
-                                                <Button Content="Supprimer"
+                                                <Button Content="{Binding [common.delete], Source={StaticResource Loc}}"
                                                         Tag="{Binding}"
                                                         Click="DeleteButton_Click"
                                                         Style="{StaticResource Dictionary.DeleteButtonStyle}" />

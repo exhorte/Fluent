@@ -8,7 +8,7 @@ namespace Fluent.IntegrationTests;
 public sealed class AccessibilityMarkupTests
 {
     [Theory]
-    [InlineData("AutomationProperties.Name=\"Vue d'ensemble\"")]
+    [InlineData("AutomationProperties.Name=\"Home\"")]
     [InlineData("AutomationProperties.Name=\"Historique\"")]
     [InlineData("AutomationProperties.Name=\"Dictionnaire\"")]
     [InlineData("AutomationProperties.Name=\"Profils\"")]
@@ -20,7 +20,7 @@ public sealed class AccessibilityMarkupTests
     }
 
     [Theory]
-    [InlineData("AutomationProperties.Name=\"Page Vue d'ensemble\"")]
+    [InlineData("AutomationProperties.Name=\"Page Home\"")]
     [InlineData("AutomationProperties.Name=\"Page Dictionnaire\"")]
     [InlineData("AutomationProperties.Name=\"Page Profils\"")]
     [InlineData("AutomationProperties.Name=\"Page Historique\"")]

@@ -21,6 +21,8 @@ public partial class SettingsPage : UserControl
 
     public event EventHandler? OpenHistoryRequested;
 
+    public event EventHandler<string>? LanguageChangeRequested;
+
     public void SetProfiles(IReadOnlyList<RewriteProfile> profiles, RewriteProfile current)
     {
         ArgumentNullException.ThrowIfNull(profiles);
@@ -41,6 +43,30 @@ public partial class SettingsPage : UserControl
 
         DefaultProfileItemsControl.ItemsSource = options;
         CurrentProfileText.Text = current.DisplayName;
+    }
+
+    public void SetSessionInfo(string profileName, string modeLabel, string engine)
+    {
+        SessionProfileText.Text = profileName;
+        SessionModeText.Text = modeLabel;
+        SessionEngineText.Text = engine;
+    }
+
+    public void SetLanguageSelection(string language)
+    {
+        bool fr = language == "fr";
+        EnglishLanguageButton.Content = fr ? "English" : "✓ English";
+        FrenchLanguageButton.Content = fr ? "✓ Français" : "Français";
+    }
+
+    private void EnglishLanguageButton_Click(object sender, RoutedEventArgs e)
+    {
+        LanguageChangeRequested?.Invoke(this, "en");
+    }
+
+    private void FrenchLanguageButton_Click(object sender, RoutedEventArgs e)
+    {
+        LanguageChangeRequested?.Invoke(this, "fr");
     }
 
     public void SetHistorySummary(bool enabled, int count)
