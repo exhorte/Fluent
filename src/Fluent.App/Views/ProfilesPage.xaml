@@ -18,8 +18,8 @@
             <Setter Property="Padding" Value="13,7" />
             <Setter Property="Background" Value="{StaticResource Nyx.SelectedBrush}" />
             <Setter Property="Foreground" Value="{StaticResource Nyx.SecondaryTextBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Nyx.BorderBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="FontSize" Value="10" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Cursor" Value="Hand" />
@@ -89,9 +89,7 @@
                         Padding="10,5"
                         VerticalAlignment="Top"
                         Background="#141E8E89"
-                        BorderBrush="#4D30D1CB"
-                        BorderThickness="1"
-                        CornerRadius="9">
+                        CornerRadius="6">
                     <StackPanel Orientation="Horizontal">
                         <Ellipse Width="6"
                                  Height="6"
@@ -111,9 +109,7 @@
             <Border Grid.Row="2"
                     Padding="14,12"
                     Background="#0E639BFA"
-                    BorderBrush="#30639BFA"
-                    BorderThickness="1"
-                    CornerRadius="9">
+                    CornerRadius="6">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="22" />
@@ -156,8 +152,6 @@
                                                     Padding="8,3"
                                                     VerticalAlignment="Center"
                                                     Background="{Binding BadgeBackground}"
-                                                    BorderBrush="{Binding BadgeBorder}"
-                                                    BorderThickness="1"
                                                     CornerRadius="8">
                                                 <TextBlock Text="{Binding BadgeText}"
                                                            FontSize="9"
@@ -217,9 +211,7 @@
                                     Padding="8,3"
                                     VerticalAlignment="Center"
                                     Background="{StaticResource Nyx.SelectedBrush}"
-                                    BorderBrush="{StaticResource Nyx.BorderBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="8">
+                                    CornerRadius="6">
                                 <TextBlock x:Name="AuthenticationBadgeText"
                                            Text="MODE LOCAL"
                                            FontSize="9"
@@ -284,9 +276,7 @@
                                     Padding="8,3"
                                     VerticalAlignment="Center"
                                     Background="{StaticResource Nyx.SelectedBrush}"
-                                    BorderBrush="{StaticResource Nyx.BorderBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="8">
+                                    CornerRadius="6">
                                 <TextBlock x:Name="CloudBadgeText"
                                            Text="MODE LOCAL"
                                            FontSize="9"

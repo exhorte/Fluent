@@ -1,15 +1,19 @@
 using System.Diagnostics;
+using System.IO;
 using System.Net.Http;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Fluent.App.Auth;
 using Fluent.App.Cloud;
 using Fluent.App.Dashboard;
 using Fluent.App.Phase01;
 using Fluent.Audio.Capture;
 using Fluent.App.Localization;
+using Fluent.Core.Transcription;
 using Fluent.Core.Diagnostics;
 using Fluent.Core.History;
 using Fluent.Core.Interaction;
@@ -68,6 +72,13 @@ public partial class MainWindow : Window
     private RecordingCapsuleWindow? _capsule;
     private TargetSnapshot? _lockedTarget;
     private RewriteProfile? _activeDictationProfile;
+    private TranscriptionLanguageMode _currentTranscriptionLanguageMode =
+        TranscriptionLanguageMode.Auto;
+    private TranscriptionLanguageMode _activeTranscriptionLanguageMode =
+        TranscriptionLanguageMode.Auto;
+    private TranscriptionLanguage? _lastDetectedLanguage;
+    private TranscriptionLanguage _resolvedDictationLanguage =
+        TranscriptionLanguage.French;
     private DictationState _state;
     private DictationFailureStage _dictationStage = DictationFailureStage.Unknown;
     private bool _isBusy;
@@ -103,6 +114,8 @@ public partial class MainWindow : Window
         SettingsPage.DefaultProfileChangeRequested += OnSettingsDefaultProfileChangeRequested;
         SettingsPage.OpenHistoryRequested += OnSettingsOpenHistoryRequested;
         SettingsPage.LanguageChangeRequested += OnLanguageChangeRequested;
+        SettingsPage.TranscriptionLanguageChangeRequested +=
+            OnTranscriptionLanguageChangeRequested;
         SettingsPage.SetProfiles(RewriteProfiles.All, _profileSelection.Current);
         ProfilesPage.SelectionChanged += OnProfileSelectionChanged;
         ProfilesPage.CloudStateChanged += OnCloudStateChanged;
@@ -123,6 +136,17 @@ public partial class MainWindow : Window
         nint handle = new WindowInteropHelper(this).Handle;
         _source = HwndSource.FromHwnd(handle);
         _source?.AddHook(WndProc);
+
+        // Dark grey title bar via DWM.
+        DarkenTitleBar(handle);
+
+        // Set the window icon from the local asset.
+        string iconPath = Path.Combine(AppContext.BaseDirectory, "Assets", "Fluent.ico");
+        if (File.Exists(iconPath))
+        {
+            Icon = new System.Windows.Media.Imaging.BitmapImage(
+                new Uri(iconPath, UriKind.Absolute));
+        }
 
         try
         {
@@ -160,13 +184,13 @@ public partial class MainWindow : Window
         {
             _hotKey = new GlobalHotKey(handle);
             _hotKey.RegisterCtrlSpace();
-            HotkeyStatusText.Text = "Actif";
-            DictationStateText.Text = "Prêt";
+            HotkeyStatusText.Text = _localizer["dictation.status.active"];
+            DictationStateText.Text = _localizer["dictation.status.ready"];
             ShowIdleCapsule();
         }
         catch (Exception ex)
         {
-            HotkeyStatusText.Text = "Indisponible";
+            HotkeyStatusText.Text = _localizer["dictation.status.unavailable"];
             LastResultText.Text = ex.Message;
         }
     }
@@ -183,6 +207,8 @@ public partial class MainWindow : Window
         SettingsPage.DefaultProfileChangeRequested -= OnSettingsDefaultProfileChangeRequested;
         SettingsPage.OpenHistoryRequested -= OnSettingsOpenHistoryRequested;
         SettingsPage.LanguageChangeRequested -= OnLanguageChangeRequested;
+        SettingsPage.TranscriptionLanguageChangeRequested -=
+            OnTranscriptionLanguageChangeRequested;
         ProfilesPage.SelectionChanged -= OnProfileSelectionChanged;
         ProfilesPage.CloudStateChanged -= OnCloudStateChanged;
         _authenticationState.Changed -= OnAuthenticationStateChanged;
@@ -209,7 +235,7 @@ public partial class MainWindow : Window
     {
         if (_isBusy)
         {
-            LastResultText.Text = "Fluent traite déjà la dictée en cours.";
+            LastResultText.Text = _localizer["dictation.busy"];
             return;
         }
 
@@ -240,7 +266,7 @@ public partial class MainWindow : Window
             }
 
             UserFacingMessage message = DictationErrorPresenter.Describe(stage);
-            DictationStateText.Text = "Échec";
+            DictationStateText.Text = _localizer["dictation.status.failed"];
             LastResultText.Text = message.Combined;
             // Technical detail stays in the debug log only, never in the UI.
             Debug.WriteLine($"Dictation failure ({stage}): {ex}");
@@ -252,37 +278,37 @@ public partial class MainWindow : Window
         _lockedTarget = _targetDetector.CaptureActiveTarget();
         if (_lockedTarget is null)
         {
-            DictationStateText.Text = "Blocked";
-            LastResultText.Text = "No active target could be captured.";
+            DictationStateText.Text = _localizer["dictation.status.blocked"];
+            LastResultText.Text = _localizer["dictation.guard.noTarget"];
             return;
         }
 
         if (_lockedTarget.IsPasswordTarget)
         {
-            DictationStateText.Text = "Blocked";
+            DictationStateText.Text = _localizer["dictation.status.blocked"];
             TargetStatusText.Text = DescribeTarget(_lockedTarget);
-            LastResultText.Text = "Password target blocked. Nothing was recorded, pasted, or copied.";
+            LastResultText.Text = _localizer["dictation.guard.passwordBlocked"];
             _lockedTarget = null;
             return;
         }
 
         if (!_lockedTarget.IsUsable)
         {
-            DictationStateText.Text = "Blocked";
+            DictationStateText.Text = _localizer["dictation.status.blocked"];
             TargetStatusText.Text = DescribeTarget(_lockedTarget);
-            LastResultText.Text =
-                "Target safety or focused-field identity could not be verified. Nothing was recorded, pasted, or copied.";
+            LastResultText.Text = _localizer["dictation.guard.unverifiable"];
             _lockedTarget = null;
             return;
         }
 
         _activeDictationProfile = _profileSelection.Current;
+        _activeTranscriptionLanguageMode = _currentTranscriptionLanguageMode;
         _dictationStage = DictationFailureStage.Microphone;
         _audioRecorder.Start();
         _state = DictationState.Recording;
-        DictationStateText.Text = "Recording";
+        DictationStateText.Text = _localizer["dictation.status.recording"];
         TargetStatusText.Text = DescribeTarget(_lockedTarget);
-        LastResultText.Text = "Recording in memory. Press Ctrl+Space again to transcribe and insert.";
+        LastResultText.Text = _localizer["dictation.recording.started"];
         ShowCapsule();
         _capsule?.ShowRecordingState();
         _ = PrepareModelForRecordingAsync();
@@ -292,7 +318,7 @@ public partial class MainWindow : Window
     {
         _isBusy = true;
         _state = DictationState.Transcribing;
-        DictationStateText.Text = "Stopping microphone";
+        DictationStateText.Text = _localizer["dictation.status.stoppingMic"];
 
         try
         {
@@ -304,18 +330,23 @@ public partial class MainWindow : Window
                 return;
             }
 
-            _capsule?.ShowProcessingState("Préparation audio…");
+            _capsule?.ShowProcessingState(_localizer["dictation.audio.preparing"]);
             if (audio.Duration < MinimumRecordingDuration)
             {
-                DictationStateText.Text = "No speech";
-                LastResultText.Text = "Recording was too short. Nothing was pasted or copied.";
+                DictationStateText.Text = _localizer["dictation.status.noSpeech"];
+                LastResultText.Text = _localizer["dictation.tooShort"];
                 return;
             }
 
+            // ── Language resolution (Auto detection) ─────────────────
+            _resolvedDictationLanguage = await ResolveTranscriptionLanguageAsync(
+                audio, _activeTranscriptionLanguageMode, _shutdown.Token);
+
             _dictationStage = DictationFailureStage.Transcription;
             Progress<SpeechTranscriptionStage> progress = new(UpdateTranscriptionStage);
-            string transcript = await _speechTranscriber.TranscribeFrenchAsync(
+            string transcript = await _speechTranscriber.TranscribeAsync(
                 audio.Samples,
+                _resolvedDictationLanguage.ToWhisperCode(),
                 progress,
                 _shutdown.Token);
             if (_isClosing || _shutdown.IsCancellationRequested)
@@ -325,8 +356,8 @@ public partial class MainWindow : Window
 
             if (string.IsNullOrWhiteSpace(transcript))
             {
-                DictationStateText.Text = "No speech";
-                LastResultText.Text = "No speech was recognized. Nothing was pasted or copied.";
+                DictationStateText.Text = _localizer["dictation.status.noSpeech"];
+                LastResultText.Text = _localizer["dictation.noSpeechRecognized"];
                 return;
             }
 
@@ -345,21 +376,22 @@ public partial class MainWindow : Window
 
             RewriteProfile dictationProfile = _activeDictationProfile ?? RewriteProfiles.Default;
             _state = DictationState.Rewriting;
-            DictationStateText.Text = "Réécriture";
+            DictationStateText.Text = _localizer["dictation.status.rewriting"];
             LastResultText.Text = dictionaryResult.ReplacementCount switch
             {
-                0 => $"Application locale du profil {dictationProfile.DisplayName}.",
-                1 => $"1 correction du dictionnaire appliquée avant le profil {dictationProfile.DisplayName}.",
-                _ => $"{dictionaryResult.ReplacementCount} corrections du dictionnaire appliquées avant le profil {dictationProfile.DisplayName}."
+                0 => string.Format(_localizer["dictation.rewriting.profileApplied.zero"], dictationProfile.DisplayName),
+                1 => string.Format(_localizer["dictation.rewriting.profileApplied.one"], dictationProfile.DisplayName),
+                _ => string.Format(_localizer["dictation.rewriting.profileApplied.many"], dictionaryResult.ReplacementCount, dictationProfile.DisplayName)
             };
-            _capsule?.ShowProcessingState("Réécriture…");
+            _capsule?.ShowProcessingState(_localizer["dictation.rewriting.capsule"]);
 
             _dictationStage = DictationFailureStage.Rewriting;
             OrchestrationRewriteResult rewriteResult = await _rewriteOrchestrator.RewriteAsync(
                 new OrchestrationRewriteRequest(
                     dictionaryResult.Text,
                     dictationProfile,
-                    BuildRewriteContext()),
+                    BuildRewriteContext(),
+                    _resolvedDictationLanguage.ToWhisperCode()),
                 _shutdown.Token);
             if (_isClosing || _shutdown.IsCancellationRequested)
             {
@@ -403,20 +435,20 @@ public partial class MainWindow : Window
         string rewriteStatus = rewriteResult.Status switch
         {
             RewriteStatus.CloudApplied =>
-                $" Profil {dictationProfile.DisplayName} appliqué via {rewriteResult.ProviderUsed}.",
+                string.Format(_localizer["dictation.insert.profileVia"], dictationProfile.DisplayName, rewriteResult.ProviderUsed),
             RewriteStatus.LocalFallback =>
-                $" Service Cloud indisponible ({rewriteResult.FailureReason}) : texte local exact conservé.",
-            _ => $" Profil {dictationProfile.DisplayName} appliqué localement."
+                string.Format(_localizer["dictation.insert.cloudUnavailable"], rewriteResult.FailureReason),
+            _ => string.Format(_localizer["dictation.insert.profileLocal"], dictationProfile.DisplayName)
         };
         string dictionaryScope =
             _personalDictionary.StorageMode == DictionaryStorageMode.Persistent
-                ? "local dictionary"
-                : "session-only dictionary";
+                ? _localizer["dictation.scope.local"]
+                : _localizer["dictation.scope.session"];
         string dictionaryStatus = dictionaryReplacementCount switch
         {
             0 => string.Empty,
-            1 => $" 1 {dictionaryScope} correction applied.",
-            _ => $" {dictionaryReplacementCount} {dictionaryScope} corrections applied."
+            1 => " " + string.Format(_localizer["dictation.dictionary.one"], dictionaryScope),
+            _ => " " + string.Format(_localizer["dictation.dictionary.many"], dictionaryReplacementCount, dictionaryScope)
         };
 
         bool delivered = false;
@@ -430,23 +462,22 @@ public partial class MainWindow : Window
                 if (sendResult.Succeeded)
                 {
                     string timing = FinishTiming(stopToTextTimer, audioDuration);
-                    DictationStateText.Text = "Inserted";
+                    DictationStateText.Text = _localizer["dictation.status.inserted"];
                     LastResultText.Text =
-                        "French speech transcribed locally and inserted into the locked target." +
+                        _localizer["dictation.paste.success"] +
                         dictionaryStatus +
-                        rewriteStatus +
+                        " " + rewriteStatus +
                         timing;
                 }
                 else
                 {
                     string timing = FinishTiming(stopToTextTimer, audioDuration);
-                    DictationStateText.Text = "Clipboard fallback";
+                    DictationStateText.Text = _localizer["dictation.status.clipboardFallback"];
                     LastResultText.Text =
-                        $"Paste shortcut could not be sent " +
-                        $"({sendResult.SentInputCount}/{sendResult.RequestedInputCount} inputs, " +
-                        $"Windows error {sendResult.ErrorCode}). The transcript remains on the clipboard." +
+                        string.Format(_localizer["dictation.paste.keyboardFailed"],
+                            sendResult.SentInputCount, sendResult.RequestedInputCount, sendResult.ErrorCode) +
                         dictionaryStatus +
-                        rewriteStatus +
+                        " " + rewriteStatus +
                         timing;
                 }
 
@@ -455,41 +486,41 @@ public partial class MainWindow : Window
                 delivered = true;
                 Clipboard.SetText(rewriteResult.Text);
                 string changedTargetTiming = FinishTiming(stopToTextTimer, audioDuration);
-                DictationStateText.Text = "Clipboard fallback";
+                DictationStateText.Text = _localizer["dictation.status.clipboardFallback"];
                 LastResultText.Text =
-                    "Target changed during dictation. Transcript copied to clipboard, not pasted." +
+                    _localizer["dictation.paste.targetChanged"] +
                     dictionaryStatus +
-                    rewriteStatus +
+                    " " + rewriteStatus +
                     changedTargetTiming;
                 break;
             case InsertionDecisionKind.BlockedPasswordTarget:
                 string passwordTiming = FinishTiming(stopToTextTimer, audioDuration);
-                DictationStateText.Text = "Blocked";
+                DictationStateText.Text = _localizer["dictation.status.blocked"];
                 LastResultText.Text =
-                    "Password target blocked. Transcript was not pasted or copied." + passwordTiming;
+                    _localizer["dictation.paste.passwordBlocked"] + passwordTiming;
                 break;
             case InsertionDecisionKind.BlockedUnverifiedTarget:
                 string unverifiedTiming = FinishTiming(stopToTextTimer, audioDuration);
-                DictationStateText.Text = "Blocked";
+                DictationStateText.Text = _localizer["dictation.status.blocked"];
                 LastResultText.Text =
-                    "Target safety could not be verified. Transcript was not pasted or copied." + unverifiedTiming;
+                    _localizer["dictation.paste.unverified"] + unverifiedTiming;
                 break;
             case InsertionDecisionKind.BlockedMissingTarget:
                 string missingTiming = FinishTiming(stopToTextTimer, audioDuration);
-                DictationStateText.Text = "Blocked";
+                DictationStateText.Text = _localizer["dictation.status.blocked"];
                 LastResultText.Text =
-                    "Target missing. Transcript was not pasted or copied." + missingTiming;
+                    _localizer["dictation.paste.missing"] + missingTiming;
                 break;
         }
 
-        TargetStatusText.Text = currentTarget is null ? "No current target" : DescribeTarget(currentTarget);
+        TargetStatusText.Text = currentTarget is null ? _localizer["dictation.paste.noTarget"] : DescribeTarget(currentTarget);
         return delivered;
     }
 
-    private static string FinishTiming(Stopwatch stopToTextTimer, TimeSpan audioDuration)
+    private string FinishTiming(Stopwatch stopToTextTimer, TimeSpan audioDuration)
     {
         stopToTextTimer.Stop();
-        return $" Stop-to-text: {stopToTextTimer.Elapsed.TotalSeconds:F1}s for {audioDuration.TotalSeconds:F1}s of audio.";
+        return " " + string.Format(_localizer["dictation.timing"], stopToTextTimer.Elapsed.TotalSeconds, audioDuration.TotalSeconds);
     }
 
     private void OnOverviewNavigationClick(object sender, RoutedEventArgs e)
@@ -548,13 +579,13 @@ public partial class MainWindow : Window
     {
         if (active)
         {
-            surface.BorderBrush = (Brush)FindResource("Nyx.NavActiveOutlineBrush");
+            surface.Background = (Brush)FindResource("Nyx.NavActiveBackgroundBrush");
         }
         else
         {
             // Clear the local value so the style default (transparent) and the
-            // hover outline trigger apply again.
-            surface.ClearValue(Border.BorderBrushProperty);
+            // hover background trigger apply again.
+            surface.ClearValue(Border.BackgroundProperty);
         }
     }
 
@@ -571,7 +602,7 @@ public partial class MainWindow : Window
 
         string display = !string.IsNullOrWhiteSpace(user.DisplayName)
             ? user.DisplayName!
-            : user.Email ?? "Utilisateur";
+            : user.Email ?? _localizer["dictation.user.fallback"];
         (string initials, string shortName) = FormatUserIdentity(display);
         ProfileAvatarText.Text = initials;
         ProfileNameText.Text = shortName;
@@ -581,7 +612,7 @@ public partial class MainWindow : Window
                 : $"{_localizer["subscription.account.connected"]}{user.Email}");
     }
 
-    private static (string Initials, string ShortName) FormatUserIdentity(string display)
+    private (string Initials, string ShortName) FormatUserIdentity(string display)
     {
         string trimmed = display.Trim();
         int atIndex = trimmed.IndexOf('@');
@@ -595,7 +626,7 @@ public partial class MainWindow : Window
             StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length == 0)
         {
-            return ("•", "Utilisateur");
+            return ("•", _localizer["dictation.user.fallback"]);
         }
 
         if (parts.Length == 1)
@@ -634,7 +665,7 @@ public partial class MainWindow : Window
     {
         HistoryNavigationStatusText.Text = HistoryPage.HistoryEnabled
             ? _historyEntryCount.ToString()
-            : "OFF";
+            : _localizer["dictation.history.off"];
         SettingsPage.SetHistorySummary(HistoryPage.HistoryEnabled, _historyEntryCount);
     }
 
@@ -675,6 +706,13 @@ public partial class MainWindow : Window
 
         ApplyLanguage(preferences.Language);
         SettingsPage.SetLanguageSelection(preferences.Language);
+
+        _currentTranscriptionLanguageMode =
+            TranscriptionLanguageCatalog.ParseModeOrDefault(
+                preferences.TranscriptionLanguageId);
+        SettingsPage.SetTranscriptionLanguageSelection(
+            TranscriptionLanguageCatalog.PersistMode(
+                _currentTranscriptionLanguageMode));
 
         if (preferences.PreferredProfileId is null)
         {
@@ -722,6 +760,30 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             Debug.WriteLine($"Language persistence failed: {ex.GetBaseException().Message}");
+        }
+    }
+
+    private async void OnTranscriptionLanguageChangeRequested(
+        object? sender, string languageId)
+    {
+        string normalized =
+            AppSettingsLimits.NormalizeTranscriptionLanguage(languageId);
+        _currentTranscriptionLanguageMode =
+            TranscriptionLanguageCatalog.ParseModeOrDefault(normalized);
+        SettingsPage.SetTranscriptionLanguageSelection(normalized);
+
+        try
+        {
+            await _appSettingsStore.SetTranscriptionLanguageAsync(
+                normalized, _shutdown.Token);
+        }
+        catch (OperationCanceledException) when (_shutdown.IsCancellationRequested)
+        {
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(
+                $"Transcription language persistence failed: {ex.GetBaseException().Message}");
         }
     }
 
@@ -799,10 +861,10 @@ public partial class MainWindow : Window
     {
         RewriteContext context = BuildRewriteContext();
         string modeLabel = context.IsCloudEligible
-            ? $"Cloud · {ProviderDisplayName(context.Provider)}"
-            : "Local";
-        SettingsPage.SetSessionInfo(profile.DisplayName, modeLabel, "Base Q8 · CPU");
-        ProfileSummaryText.Text = $"Profil · {profile.DisplayName}";
+            ? string.Format(_localizer["dictation.profile.cloudWith"], ProviderDisplayName(context.Provider))
+            : _localizer["dictation.profile.local"];
+        SettingsPage.SetSessionInfo(profile.DisplayName, modeLabel, _localizer["dictation.engine.label"]);
+        ProfileSummaryText.Text = _localizer["dictation.profile.prefix"] + profile.DisplayName;
         RefreshDashboardStatusPresentation();
     }
 
@@ -830,13 +892,13 @@ public partial class MainWindow : Window
         switch (_personalDictionary.StorageMode)
         {
             case DictionaryStorageMode.Persistent:
-                DictionaryNavigationStatusText.Text = "LOCAL";
+                DictionaryNavigationStatusText.Text = _localizer["dictation.nav.local"];
                 break;
             case DictionaryStorageMode.SessionOnlyFallback:
-                DictionaryNavigationStatusText.Text = "SESSION";
+                DictionaryNavigationStatusText.Text = _localizer["dictation.nav.session"];
                 break;
             default:
-                DictionaryNavigationStatusText.Text = "CHARGEMENT";
+                DictionaryNavigationStatusText.Text = _localizer["dictation.nav.loading"];
                 break;
         }
 
@@ -877,19 +939,19 @@ public partial class MainWindow : Window
 
         (string state, string capsuleText) = stage switch
         {
-            SpeechTranscriptionStage.PreparingModel => ("Préparation", "Préparation…"),
-            SpeechTranscriptionStage.DownloadingModel => ("Téléchargement", "Modèle ~80 Mo…"),
-            SpeechTranscriptionStage.LoadingModel => ("Chargement", "Chargement…"),
-            SpeechTranscriptionStage.WarmingModel => ("Optimisation", "Optimisation…"),
-            SpeechTranscriptionStage.Transcribing => ("Transcription", "Transcription…"),
-            _ => ("Transcription", "Transcription…")
+            SpeechTranscriptionStage.PreparingModel => (_localizer["dictation.status.preparing"], _localizer["dictation.status.preparing"] + "…"),
+            SpeechTranscriptionStage.DownloadingModel => (_localizer["dictation.status.downloading"], _localizer["dictation.model.downloading"]),
+            SpeechTranscriptionStage.LoadingModel => (_localizer["dictation.status.loading"], _localizer["dictation.status.loading"] + "…"),
+            SpeechTranscriptionStage.WarmingModel => (_localizer["dictation.status.optimizing"], _localizer["dictation.status.optimizing"] + "…"),
+            SpeechTranscriptionStage.Transcribing => (_localizer["dictation.status.transcribing"], _localizer["dictation.status.transcribing"] + "…"),
+            _ => (_localizer["dictation.status.transcribing"], _localizer["dictation.status.transcribing"] + "…")
         };
 
         DictationStateText.Text = state;
         _capsule?.ShowProcessingState(capsuleText);
         LastResultText.Text = stage == SpeechTranscriptionStage.DownloadingModel
-            ? "First use only: downloading the multilingual Whisper model. Audio remains local."
-            : "Processing locally. Audio is held in memory only.";
+            ? _localizer["dictation.model.firstUse"]
+            : _localizer["dictation.model.processing"];
     }
 
     private async Task PrepareModelForRecordingAsync()
@@ -901,9 +963,8 @@ public partial class MainWindow : Window
 
             if (!_isClosing && _state == DictationState.Recording)
             {
-                DictationStateText.Text = "Recording";
-                LastResultText.Text =
-                    "Recording in memory. The local transcription model is ready; press Ctrl+Space to finish.";
+                DictationStateText.Text = _localizer["dictation.status.recording"];
+                LastResultText.Text = _localizer["dictation.model.ready"];
                 _capsule?.ShowRecordingState();
             }
         }
@@ -914,9 +975,9 @@ public partial class MainWindow : Window
         {
             if (!_isClosing && _state == DictationState.Recording)
             {
-                DictationStateText.Text = "Recording";
+                DictationStateText.Text = _localizer["dictation.status.recording"];
                 LastResultText.Text =
-                    $"Recording continues. Model preparation will retry after stop: {ex.GetBaseException().Message}";
+                    string.Format(_localizer["dictation.model.retryAfterStop"], ex.GetBaseException().Message);
                 _capsule?.ShowRecordingState();
             }
         }
@@ -929,10 +990,10 @@ public partial class MainWindow : Window
             return;
         }
 
-        DictationStateText.Text = "Enregistrement";
+        DictationStateText.Text = _localizer["dictation.status.recording"];
         LastResultText.Text = stage == SpeechTranscriptionStage.DownloadingModel
-            ? "Premier usage : téléchargement du modèle local pendant l'enregistrement. L'audio reste local."
-            : "Enregistrement en cours. Préparation locale du moteur en arrière-plan.";
+            ? _localizer["dictation.prep.firstUseDownload"]
+            : _localizer["dictation.prep.background"];
         _capsule?.ShowRecordingState();
     }
 
@@ -950,8 +1011,9 @@ public partial class MainWindow : Window
         if (_capsule is null)
         {
             _capsule = new RecordingCapsuleWindow { Owner = this };
-            _capsule.Left = SystemParameters.WorkArea.Right - _capsule.Width - 24;
-            _capsule.Top = SystemParameters.WorkArea.Top + 24;
+            _capsule.Left = (SystemParameters.WorkArea.Width - _capsule.Width) / 2
+                + SystemParameters.WorkArea.Left;
+            _capsule.Top = SystemParameters.WorkArea.Bottom - _capsule.Height - 24;
         }
 
         if (!_capsule.IsVisible)
@@ -971,10 +1033,10 @@ public partial class MainWindow : Window
         _capsule?.ShowIdleState();
     }
 
-    private static string DescribeTarget(TargetSnapshot target)
+    private string DescribeTarget(TargetSnapshot target)
     {
         string element = string.IsNullOrWhiteSpace(target.FocusedElementControlType)
-            ? "unknown focused element"
+            ? _localizer["dictation.target.unknown"]
             : target.FocusedElementControlType;
 
         return $"{target.WindowTitle} [{target.WindowClassName}], pid {target.ProcessId}, {element}";
@@ -997,4 +1059,74 @@ public partial class MainWindow : Window
         Settings,
         Subscription
     }
+
+    private async Task<TranscriptionLanguage> ResolveTranscriptionLanguageAsync(
+        RecordedAudio audio,
+        TranscriptionLanguageMode mode,
+        CancellationToken cancellationToken)
+    {
+        // Manual modes bypass detection entirely.
+        if (mode == TranscriptionLanguageMode.French)
+        {
+            return TranscriptionLanguage.French;
+        }
+
+        if (mode == TranscriptionLanguageMode.English)
+        {
+            return TranscriptionLanguage.English;
+        }
+
+        // Auto mode: run detection.
+        try
+        {
+            float[] samples = audio.Duration.TotalSeconds > 5
+                ? audio.Samples[..Math.Min(audio.Samples.Length, 16000 * 5)]
+                : audio.Samples;
+
+            (string? detectedCode, float probability) =
+                await _speechTranscriber.DetectLanguageAsync(
+                    samples, cancellationToken);
+
+            TranscriptionLanguage? detected =
+                TranscriptionLanguageCatalog.ParseConcreteLanguageOrNull(detectedCode);
+
+            if (detected is not null && probability >= DetectionThresholds.MinimumConfidence)
+            {
+                _lastDetectedLanguage = detected.Value;
+                return detected.Value;
+            }
+
+            // Fallback: use last detected language or French.
+            if (_lastDetectedLanguage is not null)
+            {
+                return _lastDetectedLanguage.Value;
+            }
+
+            return TranscriptionLanguage.French;
+        }
+        catch (OperationCanceledException)
+        {
+            return TranscriptionLanguage.French;
+        }
+        catch
+        {
+            return TranscriptionLanguage.French;
+        }
+    }
+
+    private static void DarkenTitleBar(nint handle)
+    {
+        // DWMWA_USE_IMMERSIVE_DARK_MODE = 20 (Windows 10 20H1+)
+        // DWMWA_CAPTION_COLOR = 35 (Windows 11)
+        int useDarkMode = 1;
+        DwmSetWindowAttribute(handle, 20, ref useDarkMode, sizeof(int));
+
+        // Dark grey caption: #18181C → 0x001C1818 (ABGR)
+        int captionColor = 0x001C1818;
+        DwmSetWindowAttribute(handle, 35, ref captionColor, sizeof(int));
+    }
+
+    [DllImport("dwmapi.dll")]
+    private static extern int DwmSetWindowAttribute(
+        nint hwnd, int attr, ref int attrValue, int attrSize);
 }

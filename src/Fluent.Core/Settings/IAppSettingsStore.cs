@@ -21,4 +21,9 @@ public interface IAppSettingsStore
     Task SetLanguageAsync(
         string language,
         CancellationToken cancellationToken);
+
+    /// <summary>Persists the transcription language (stable id: "fr" or "en").</summary>
+    Task SetTranscriptionLanguageAsync(
+        string transcriptionLanguageId,
+        CancellationToken cancellationToken);
 }

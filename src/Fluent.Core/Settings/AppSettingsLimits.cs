@@ -17,4 +17,27 @@ public static class AppSettingsLimits
         string? normalized = language?.Trim().ToLowerInvariant();
         return normalized == "fr" ? "fr" : DefaultLanguage;
     }
+
+    // ── Transcription language mode ─────────────────────────────────────
+
+    public const string DefaultTranscriptionLanguage = "auto";
+
+    public static IReadOnlyList<string> SupportedTranscriptionLanguageModes { get; } =
+        ["auto", "fr", "en"];
+
+    /// <summary>
+    /// Normalizes a transcription language mode id.
+    /// Accepts "auto", "fr", "en". Falls back to "auto".
+    /// </summary>
+    public static string NormalizeTranscriptionLanguage(string? language)
+    {
+        string? normalized = language?.Trim().ToLowerInvariant();
+        return normalized switch
+        {
+            "fr" => "fr",
+            "en" => "en",
+            "auto" => "auto",
+            _ => DefaultTranscriptionLanguage
+        };
+    }
 }

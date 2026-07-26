@@ -23,6 +23,8 @@ public partial class SettingsPage : UserControl
 
     public event EventHandler<string>? LanguageChangeRequested;
 
+    public event EventHandler<string>? TranscriptionLanguageChangeRequested;
+
     public void SetProfiles(IReadOnlyList<RewriteProfile> profiles, RewriteProfile current)
     {
         ArgumentNullException.ThrowIfNull(profiles);
@@ -59,6 +61,17 @@ public partial class SettingsPage : UserControl
         FrenchLanguageButton.Content = fr ? "✓ Français" : "Français";
     }
 
+    public void SetTranscriptionLanguageSelection(string mode)
+    {
+        TranscriptionAutoButton.Content = mode == "auto" ? "✓ " + AutoLabel : AutoLabel;
+        TranscriptionFrButton.Content = mode == "fr" ? "✓ " + FrLabel : FrLabel;
+        TranscriptionEnButton.Content = mode == "en" ? "✓ " + EnLabel : EnLabel;
+    }
+
+    private string AutoLabel => "Auto"; // dynamically set in code-behind for now
+    private string FrLabel => "Français";
+    private string EnLabel => "English";
+
     private void EnglishLanguageButton_Click(object sender, RoutedEventArgs e)
     {
         LanguageChangeRequested?.Invoke(this, "en");
@@ -67,6 +80,21 @@ public partial class SettingsPage : UserControl
     private void FrenchLanguageButton_Click(object sender, RoutedEventArgs e)
     {
         LanguageChangeRequested?.Invoke(this, "fr");
+    }
+
+    private void TranscriptionAutoButton_Click(object sender, RoutedEventArgs e)
+    {
+        TranscriptionLanguageChangeRequested?.Invoke(this, "auto");
+    }
+
+    private void TranscriptionFrButton_Click(object sender, RoutedEventArgs e)
+    {
+        TranscriptionLanguageChangeRequested?.Invoke(this, "fr");
+    }
+
+    private void TranscriptionEnButton_Click(object sender, RoutedEventArgs e)
+    {
+        TranscriptionLanguageChangeRequested?.Invoke(this, "en");
     }
 
     public void SetHistorySummary(bool enabled, int count)

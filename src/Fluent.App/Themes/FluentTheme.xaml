@@ -20,6 +20,9 @@
     <!-- Subtle white-transparent navigation outlines (no solid visible border). -->
     <SolidColorBrush x:Key="Nyx.NavHoverOutlineBrush" Color="#20FFFFFF" />
     <SolidColorBrush x:Key="Nyx.NavActiveOutlineBrush" Color="#5CFFFFFF" />
+    <!-- Nav surface backgrounds: light grey fill on hover/focus instead of outline. -->
+    <SolidColorBrush x:Key="Nyx.NavHoverBackgroundBrush" Color="#14FFFFFF" />
+    <SolidColorBrush x:Key="Nyx.NavActiveBackgroundBrush" Color="#22FFFFFF" />
 
     <LinearGradientBrush x:Key="Nyx.AccentGradientBrush"
                          StartPoint="0,0"
@@ -64,25 +67,25 @@
         <Setter Property="Foreground" Value="{StaticResource Nyx.PrimaryTextBrush}" />
     </Style>
 
+    <!-- Borderless card: background-only, no visible border. Spacing carries the structure. -->
     <Style x:Key="Nyx.DashboardCardStyle" TargetType="{x:Type Border}">
         <Setter Property="Background" Value="{StaticResource Nyx.CardBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource Nyx.BorderBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="12" />
-        <Setter Property="Padding" Value="18" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="20,18" />
     </Style>
 
-    <!-- Sidebar navigation surface: no fixed border; outline on hover, and a
-         stronger outline when active (set from code) or keyboard-focused. -->
+    <!-- Sidebar navigation surface: background fill on hover/focus, no visible border. -->
     <Style x:Key="Nyx.NavSurfaceStyle" TargetType="{x:Type Border}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
-        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderThickness" Value="0" />
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Padding" Value="10,9" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderBrush" Value="{StaticResource Nyx.NavHoverOutlineBrush}" />
+                <Setter Property="Background" Value="{StaticResource Nyx.NavHoverBackgroundBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -104,22 +107,4 @@
         </Setter>
     </Style>
 
-    <ControlTemplate x:Key="Nyx.LogoMarkTemplate" TargetType="{x:Type Control}">
-        <Grid>
-            <Border Background="{StaticResource Nyx.AccentGradientBrush}"
-                    CornerRadius="9" />
-            <StackPanel Orientation="Horizontal"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center">
-                <Border Width="2" Height="6" Margin="1,0" CornerRadius="1" Background="#0A0A0A" />
-                <Border Width="2" Height="11" Margin="1,0" CornerRadius="1" Background="#0A0A0A" />
-                <Border Width="2" Height="16" Margin="1,0" CornerRadius="1" Background="#000000" />
-                <Border Width="2" Height="10" Margin="1,0" CornerRadius="1" Background="#0A0A0A" />
-                <Border Width="2" Height="5" Margin="1,0" CornerRadius="1" Background="#0A0A0A" />
-            </StackPanel>
-            <Border BorderBrush="#33FFFFFF"
-                    BorderThickness="1"
-                    CornerRadius="9" />
-        </Grid>
-    </ControlTemplate>
 </ResourceDictionary>

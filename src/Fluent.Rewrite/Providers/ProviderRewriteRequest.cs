@@ -8,4 +8,5 @@ namespace Fluent.Rewrite.Providers;
 /// </summary>
 public sealed record ProviderRewriteRequest(
     string Text,
-    RewriteProfile? Profile = null);
+    RewriteProfile? Profile = null,
+    string TranscriptionLanguage = "fr");

@@ -21,8 +21,8 @@
             <Setter Property="Foreground" Value="{StaticResource Nyx.PrimaryTextBrush}" />
             <Setter Property="CaretBrush" Value="{StaticResource Nyx.CyanBrush}" />
             <Setter Property="SelectionBrush" Value="{StaticResource Nyx.BlueBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Nyx.BorderBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="FontSize" Value="12" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -90,8 +90,8 @@
             <Setter Property="Padding" Value="11,6" />
             <Setter Property="Background" Value="{StaticResource Nyx.SelectedBrush}" />
             <Setter Property="Foreground" Value="{StaticResource Nyx.SecondaryTextBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Nyx.BorderBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="FontSize" Value="10" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Cursor" Value="Hand" />
@@ -164,8 +164,6 @@
                         Padding="10,5"
                         VerticalAlignment="Top"
                         Background="{StaticResource Nyx.SelectedBrush}"
-                        BorderBrush="{StaticResource Nyx.MutedTextBrush}"
-                        BorderThickness="1"
                         CornerRadius="9">
                     <StackPanel Orientation="Horizontal">
                         <Ellipse x:Name="StateBadgeDot"
@@ -265,8 +263,6 @@
                                     <Border Margin="0,0,0,8"
                                             Padding="13,11"
                                             Background="{StaticResource Nyx.SelectedBrush}"
-                                            BorderBrush="{StaticResource Nyx.BorderBrush}"
-                                            BorderThickness="1"
                                             CornerRadius="9">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -309,8 +305,6 @@
                         <Border x:Name="EmptyStateBorder"
                                 Padding="18,24"
                                 Background="{StaticResource Nyx.SelectedBrush}"
-                                BorderBrush="{StaticResource Nyx.BorderBrush}"
-                                BorderThickness="1"
                                 CornerRadius="9">
                             <StackPanel HorizontalAlignment="Center">
                                 <TextBlock x:Name="EmptyStateTitleTextBlock"

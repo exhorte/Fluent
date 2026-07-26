@@ -44,7 +44,8 @@ public sealed class SqliteAppSettingsStoreTests
         Assert.Equal("en", second.Language);
 
         using SqliteConnection connection = OpenInspectionConnection(database.DatabasePath);
-        Assert.Equal(2L, ExecuteScalarInt64(connection, "PRAGMA user_version;"));
+        Assert.Equal(3L, ExecuteScalarInt64(connection, "PRAGMA user_version;"));
+        Assert.Equal("auto", first.TranscriptionLanguageId);
     }
 
     [Fact]
@@ -97,9 +98,10 @@ public sealed class SqliteAppSettingsStoreTests
 
         Assert.Equal("developer", migrated.PreferredProfileId);
         Assert.Equal("en", migrated.Language);
+        Assert.Equal("fr", migrated.TranscriptionLanguageId);
 
         using SqliteConnection check = OpenInspectionConnection(database.DatabasePath);
-        Assert.Equal(2L, ExecuteScalarInt64(check, "PRAGMA user_version;"));
+        Assert.Equal(3L, ExecuteScalarInt64(check, "PRAGMA user_version;"));
     }
 
     [Fact]
@@ -202,7 +204,7 @@ public sealed class SqliteAppSettingsStoreTests
         using (SqliteConnection connection = OpenInspectionConnection(database.DatabasePath))
         {
             using SqliteCommand command = connection.CreateCommand();
-            command.CommandText = "PRAGMA user_version = 3;";
+            command.CommandText = "PRAGMA user_version = 99;";
             command.ExecuteNonQuery();
         }
 
@@ -213,9 +215,71 @@ public sealed class SqliteAppSettingsStoreTests
             await Assert.ThrowsAsync<NotSupportedException>(
                 () => newerStore.InitializeAndLoadAsync(CancellationToken.None));
 
-        Assert.Contains("version 3", exception.Message, StringComparison.Ordinal);
+        Assert.Contains("99", exception.Message, StringComparison.Ordinal);
         Assert.Equal(before, File.ReadAllBytes(database.DatabasePath));
         AssertNoSQLiteSidecars(database.DatabasePath);
+    }
+
+    [Fact]
+    public async Task Transcription_language_defaults_to_auto_and_persists()
+    {
+        using TemporaryDatabase database = new();
+        SqliteAppSettingsStore store = new(database.DatabasePath);
+        AppPreferences initial = await store.InitializeAndLoadAsync(CancellationToken.None);
+        Assert.Equal("auto", initial.TranscriptionLanguageId);
+
+        await store.SetTranscriptionLanguageAsync("en", CancellationToken.None);
+
+        SqliteAppSettingsStore reopened = new(database.DatabasePath);
+        AppPreferences after = await reopened.InitializeAndLoadAsync(CancellationToken.None);
+        Assert.Equal("en", after.TranscriptionLanguageId);
+
+        await reopened.SetTranscriptionLanguageAsync("XX", CancellationToken.None);
+        AppPreferences normalized = await reopened.InitializeAndLoadAsync(CancellationToken.None);
+        Assert.Equal("auto", normalized.TranscriptionLanguageId);
+    }
+
+    [Fact]
+    public async Task Version_two_database_is_migrated_to_three()
+    {
+        using TemporaryDatabase database = new();
+        Directory.CreateDirectory(database.RootPath);
+
+        // Build a v2 database (with language, without transcription_language).
+        SqliteConnectionStringBuilder builder = new()
+        {
+            DataSource = database.DatabasePath,
+            Mode = SqliteOpenMode.ReadWriteCreate,
+            Pooling = false
+        };
+        using (SqliteConnection connection = new(builder.ToString()))
+        {
+            connection.Open();
+            using SqliteCommand command = connection.CreateCommand();
+            command.CommandText =
+                """
+                CREATE TABLE app_settings
+                (
+                    id INTEGER PRIMARY KEY,
+                    preferred_profile_id TEXT,
+                    language TEXT NOT NULL
+                );
+                INSERT INTO app_settings (id, preferred_profile_id, language)
+                VALUES (1, 'developer', 'fr');
+                PRAGMA user_version = 2;
+                """;
+            command.ExecuteNonQuery();
+        }
+
+        SqliteAppSettingsStore store = new(database.DatabasePath);
+        AppPreferences migrated = await store.InitializeAndLoadAsync(CancellationToken.None);
+
+        Assert.Equal("developer", migrated.PreferredProfileId);
+        Assert.Equal("fr", migrated.Language);
+        Assert.Equal("fr", migrated.TranscriptionLanguageId);
+
+        using SqliteConnection check = OpenInspectionConnection(database.DatabasePath);
+        Assert.Equal(3L, ExecuteScalarInt64(check, "PRAGMA user_version;"));
     }
 
     [Fact]

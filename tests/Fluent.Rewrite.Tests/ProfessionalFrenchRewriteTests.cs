@@ -176,7 +176,7 @@ public sealed class SafeProfileRewriteServiceTests
             });
 
         await Assert.ThrowsAsync<OperationCanceledException>(
-            () => service.RewriteAsync("Bonjour", Profile, cancellation.Token));
+            () => service.RewriteAsync("Bonjour", Profile, cancellationToken: cancellation.Token));
     }
 
     [Fact]

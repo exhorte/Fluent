@@ -8,16 +8,17 @@ namespace Fluent.Persistence.Settings;
 /// Local SQLite store for reversible application preferences. Uses a dedicated
 /// database file, isolated from the dictionary and history databases. No secret
 /// and no Cloud consent is ever stored.
-/// Schema v2 adds the application language; v1 databases are migrated in place.
+/// Schema v3 adds the transcription language; v2 databases are migrated in place.
 /// </summary>
 public sealed class SqliteAppSettingsStore : IAppSettingsStore
 {
-    private const int CurrentSchemaVersion = 2;
+    private const int CurrentSchemaVersion = 3;
     private const int BusyTimeoutMilliseconds = 3000;
     private const int CommandTimeoutSeconds = 3;
     private const int MaximumStoredProfileIdBytes =
         AppSettingsLimits.MaximumProfileIdLength * 4;
     private const int MaximumStoredLanguageBytes = 32;
+    private const int MaximumStoredTranscriptionLanguageBytes = 32;
 
     private const string CreateSchemaSql =
         """
@@ -25,9 +26,11 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
         (
             id INTEGER PRIMARY KEY,
             preferred_profile_id TEXT,
-            language TEXT NOT NULL
+            language TEXT NOT NULL,
+            transcription_language TEXT NOT NULL
         );
-        INSERT INTO app_settings (id, preferred_profile_id, language) VALUES (1, NULL, 'en');
+        INSERT INTO app_settings (id, preferred_profile_id, language, transcription_language)
+        VALUES (1, NULL, 'en', 'auto');
         """;
 
     private const string MigrateV1ToV2Sql =
@@ -36,13 +39,21 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
         UPDATE app_settings SET language = 'en' WHERE language IS NULL;
         """;
 
+    private const string MigrateV2ToV3Sql =
+        """
+        ALTER TABLE app_settings ADD COLUMN transcription_language TEXT;
+        UPDATE app_settings SET transcription_language = 'fr' WHERE transcription_language IS NULL;
+        """;
+
     private const string LoadSql =
         """
         SELECT
             preferred_profile_id AS PreferredProfileId,
             language AS Language,
+            transcription_language AS TranscriptionLanguage,
             length(CAST(COALESCE(preferred_profile_id, '') AS BLOB)) AS PreferredProfileIdByteCount,
-            length(CAST(COALESCE(language, '') AS BLOB)) AS LanguageByteCount
+            length(CAST(COALESCE(language, '') AS BLOB)) AS LanguageByteCount,
+            length(CAST(COALESCE(transcription_language, '') AS BLOB)) AS TranscriptionLanguageByteCount
         FROM app_settings
         WHERE id = 1;
         """;
@@ -52,6 +63,9 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
 
     private const string SetLanguageSql =
         "UPDATE app_settings SET language = @Language WHERE id = 1;";
+
+    private const string SetTranscriptionLanguageSql =
+        "UPDATE app_settings SET transcription_language = @TranscriptionLanguage WHERE id = 1;";
 
     private readonly Lazy<string> _databasePath;
 
@@ -99,6 +113,15 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
             cancellationToken);
     }
 
+    public Task SetTranscriptionLanguageAsync(
+        string transcriptionLanguageId,
+        CancellationToken cancellationToken)
+    {
+        return Task.Run(
+            () => SetTranscriptionLanguage(transcriptionLanguageId, cancellationToken),
+            cancellationToken);
+    }
+
     private AppPreferences InitializeAndLoad(CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -143,11 +166,15 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
 
             if (schemaVersion == CurrentSchemaVersion)
             {
-                ValidateVersionTwoSchema(readOnlyConnection);
+                ValidateVersionThreeSchema(readOnlyConnection);
                 return Load(readOnlyConnection);
             }
 
-            if (schemaVersion == 1)
+            if (schemaVersion == 2)
+            {
+                ValidateVersionTwoSchema(readOnlyConnection);
+            }
+            else if (schemaVersion == 1)
             {
                 ValidateVersionOneSchema(readOnlyConnection);
             }
@@ -177,14 +204,18 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
         {
             case 0:
                 EnsureVersionZeroDatabaseIsEmpty(connection);
-                CreateVersionTwoSchema(connection, cancellationToken);
+                CreateVersionThreeSchema(connection, cancellationToken);
                 break;
             case 1:
                 ValidateVersionOneSchema(connection);
                 MigrateVersionOneToTwo(connection, cancellationToken);
+                goto case 2;
+            case 2:
+                ValidateVersionTwoSchema(connection);
+                MigrateVersionTwoToThree(connection, cancellationToken);
                 break;
             default:
-                ValidateVersionTwoSchema(connection);
+                ValidateVersionThreeSchema(connection);
                 break;
         }
     }
@@ -225,6 +256,25 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
             commandTimeout: CommandTimeoutSeconds);
     }
 
+    private void SetTranscriptionLanguage(
+        string transcriptionLanguageId, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        string normalized =
+            AppSettingsLimits.NormalizeTranscriptionLanguage(transcriptionLanguageId);
+
+        using SqliteConnection connection = OpenConnection(
+            DatabasePath,
+            SqliteOpenMode.ReadWrite);
+        EnsureWritableCurrentDatabase(connection);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        connection.Execute(
+            SetTranscriptionLanguageSql,
+            new { TranscriptionLanguage = normalized },
+            commandTimeout: CommandTimeoutSeconds);
+    }
+
     private static AppPreferences Load(SqliteConnection connection)
     {
         SettingsRow? row = connection.QuerySingleOrDefault<SettingsRow>(
@@ -237,7 +287,8 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
         }
 
         if (row.PreferredProfileIdByteCount > MaximumStoredProfileIdBytes ||
-            row.LanguageByteCount > MaximumStoredLanguageBytes)
+            row.LanguageByteCount > MaximumStoredLanguageBytes ||
+            row.TranscriptionLanguageByteCount > MaximumStoredTranscriptionLanguageBytes)
         {
             throw new InvalidDataException("The stored settings contain invalid data.");
         }
@@ -248,7 +299,8 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
 
         return new AppPreferences(
             preferredProfileId,
-            AppSettingsLimits.NormalizeLanguage(row.Language));
+            AppSettingsLimits.NormalizeLanguage(row.Language),
+            AppSettingsLimits.NormalizeTranscriptionLanguage(row.TranscriptionLanguage));
     }
 
     private static string? NormalizeProfileId(string? profileId)
@@ -317,14 +369,14 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
 
     private static void EnsureSupportedSchemaVersion(int schemaVersion)
     {
-        if (schemaVersion is 0 or 1 or CurrentSchemaVersion)
+        if (schemaVersion is 0 or 1 or 2 or CurrentSchemaVersion)
         {
             return;
         }
 
         throw new NotSupportedException(
             $"Database schema version {schemaVersion} is not supported. " +
-            $"Supported versions are 0, 1 and {CurrentSchemaVersion}.");
+            $"Supported versions are 0, 1, 2 and {CurrentSchemaVersion}.");
     }
 
     private static void EnsureWritableCurrentDatabase(SqliteConnection connection)
@@ -337,7 +389,7 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
                 $"Expected version {CurrentSchemaVersion}.");
         }
 
-        ValidateVersionTwoSchema(connection);
+        ValidateVersionThreeSchema(connection);
     }
 
     private static void EnsureVersionZeroDatabaseIsEmpty(SqliteConnection connection)
@@ -368,6 +420,14 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
             connection,
             ["id", "preferred_profile_id", "language"],
             "version-two");
+    }
+
+    private static void ValidateVersionThreeSchema(SqliteConnection connection)
+    {
+        ValidateSchema(
+            connection,
+            ["id", "preferred_profile_id", "language", "transcription_language"],
+            "version-three");
     }
 
     private static void ValidateSchema(
@@ -405,7 +465,7 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
         }
     }
 
-    private static void CreateVersionTwoSchema(
+    private static void CreateVersionThreeSchema(
         SqliteConnection connection,
         CancellationToken cancellationToken)
     {
@@ -441,6 +501,28 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
         cancellationToken.ThrowIfCancellationRequested();
 
         connection.Execute(
+            $"PRAGMA user_version = 2;",
+            transaction: transaction,
+            commandTimeout: CommandTimeoutSeconds);
+
+        cancellationToken.ThrowIfCancellationRequested();
+        transaction.Commit();
+    }
+
+    private static void MigrateVersionTwoToThree(
+        SqliteConnection connection,
+        CancellationToken cancellationToken)
+    {
+        using SqliteTransaction transaction = connection.BeginTransaction();
+
+        connection.Execute(
+            MigrateV2ToV3Sql,
+            transaction: transaction,
+            commandTimeout: CommandTimeoutSeconds);
+
+        cancellationToken.ThrowIfCancellationRequested();
+
+        connection.Execute(
             $"PRAGMA user_version = {CurrentSchemaVersion};",
             transaction: transaction,
             commandTimeout: CommandTimeoutSeconds);
@@ -455,8 +537,12 @@ public sealed class SqliteAppSettingsStore : IAppSettingsStore
 
         public string? Language { get; set; }
 
+        public string? TranscriptionLanguage { get; set; }
+
         public long PreferredProfileIdByteCount { get; set; }
 
         public long LanguageByteCount { get; set; }
+
+        public long TranscriptionLanguageByteCount { get; set; }
     }
 }

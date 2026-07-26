@@ -15,7 +15,8 @@
         Foreground="{StaticResource Nyx.PrimaryTextBrush}"
         FontFamily="Segoe UI Variable Text"
         UseLayoutRounding="True"
-        TextOptions.TextFormattingMode="Display">
+        TextOptions.TextFormattingMode="Display"
+        Icon="Assets\Fluent.ico">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="42" />
@@ -23,9 +24,7 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0"
-                Background="{StaticResource Nyx.WindowBrush}"
-                BorderBrush="{StaticResource Nyx.BorderBrush}"
-                BorderThickness="0,0,0,1">
+                Background="#121218">
             <Grid Margin="18,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="170" />
@@ -34,10 +33,11 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Control Width="24"
-                             Height="24"
-                             Focusable="False"
-                             Template="{StaticResource Nyx.LogoMarkTemplate}" />
+                    <Image Width="30"
+                           Height="30"
+                           Source="/Assets/Fluent-white-64x64.ico"
+                           RenderOptions.BitmapScalingMode="HighQuality"
+                           AutomationProperties.Name="Fluent" />
                     <TextBlock Text="Fluent"
                                Margin="9,0,0,0"
                                VerticalAlignment="Center"
@@ -55,9 +55,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Border Background="{StaticResource Nyx.SidebarBrush}"
-                    BorderBrush="{StaticResource Nyx.BorderBrush}"
-                    BorderThickness="0,0,1,0">
+            <Border Background="{StaticResource Nyx.SidebarBrush}">
                 <Grid Margin="14,22,14,18">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -83,10 +81,13 @@
                                         <ColumnDefinition Width="22" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="⌂"
+                                    <TextBlock Text="&#xE80F;"
+                                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                                Foreground="{StaticResource Nyx.CyanBrush}"
-                                               FontSize="15"
-                                               VerticalAlignment="Center" />
+                                               FontSize="16"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               Width="20" />
                                     <TextBlock x:Name="NavHomeLabel"
                                                Grid.Column="1"
                                                Text="{Binding [nav.home], Source={StaticResource Loc}}"
@@ -111,10 +112,13 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="◷"
+                                    <TextBlock Text="&#xE81C;"
+                                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                                Foreground="{StaticResource Nyx.CyanBrush}"
-                                               FontSize="13"
-                                               VerticalAlignment="Center" />
+                                               FontSize="16"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               Width="20" />
                                     <TextBlock x:Name="NavHistoryLabel"
                                                Grid.Column="1"
                                                Text="{Binding [nav.history], Source={StaticResource Loc}}"
@@ -144,10 +148,13 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="Aa"
+                                    <TextBlock Text="&#xE736;"
+                                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                                Foreground="{StaticResource Nyx.CyanBrush}"
-                                               FontSize="10"
-                                               FontWeight="Bold" />
+                                               FontSize="16"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               Width="20" />
                                     <TextBlock x:Name="NavDictionaryLabel"
                                                Grid.Column="1"
                                                Text="{Binding [nav.dictionary], Source={StaticResource Loc}}"
@@ -176,10 +183,13 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="◇"
+                                    <TextBlock Text="&#xE734;"
+                                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                                Foreground="{StaticResource Nyx.CyanBrush}"
-                                               FontSize="12"
-                                               VerticalAlignment="Center" />
+                                               FontSize="16"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               Width="20" />
                                     <TextBlock x:Name="NavSubscriptionLabel"
                                                Grid.Column="1"
                                                Text="{Binding [nav.subscription], Source={StaticResource Loc}}"
@@ -209,10 +219,13 @@
                                         <ColumnDefinition Width="22" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="⚙"
+                                    <TextBlock Text="&#xE713;"
+                                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                                Foreground="{StaticResource Nyx.CyanBrush}"
-                                               FontSize="12"
-                                               VerticalAlignment="Center" />
+                                               FontSize="16"
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               Width="20" />
                                     <TextBlock x:Name="NavSettingsLabel"
                                                Grid.Column="1"
                                                Text="{Binding [nav.settings], Source={StaticResource Loc}}"

@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Fluent.App.Auth;
 using Fluent.App.Cloud;
+using Fluent.App.Localization;
 using Fluent.Rewrite.Profiles;
 using Fluent.Rewrite.Providers;
 
@@ -14,11 +15,14 @@ public partial class ProfilesPage : UserControl
     private CloudRewriteSettings? _cloudSettings;
     private IAuthenticationState? _authenticationState;
     private bool _cloudBackendAvailable;
-    private string _cloudBackendUnavailableReason = "Le backend Cloud n’est pas configuré.";
+    private string _cloudBackendUnavailableReason;
+    private readonly Localizer _localizer =
+        (Localizer)Application.Current.Resources["Loc"];
 
     public ProfilesPage()
     {
         InitializeComponent();
+        _cloudBackendUnavailableReason = _localizer["profiles.cloud.backendNotConfigured"];
     }
 
     public event EventHandler<RewriteProfile>? SelectionChanged;
@@ -46,7 +50,7 @@ public partial class ProfilesPage : UserControl
         _authenticationState = authenticationState;
         _cloudBackendAvailable = cloudBackendAvailable;
         _cloudBackendUnavailableReason = string.IsNullOrWhiteSpace(cloudBackendUnavailableReason)
-            ? "Le backend Cloud n’est pas configuré."
+            ? _localizer["profiles.cloud.backendNotConfigured"]
             : cloudBackendUnavailableReason;
         _authenticationState.Changed += OnAuthenticationStateChanged;
         RefreshAuthenticationCard();
@@ -151,15 +155,12 @@ public partial class ProfilesPage : UserControl
 
     private bool RequestConsent()
     {
-        string separator = Environment.NewLine + Environment.NewLine;
-        string message =
-            "Le texte transcrit sera envoye au service Cloud afin d etre reformule." + separator +
-            "L audio reste toujours local et n est jamais envoye." + separator +
-            "Souhaitez-vous activer la reecriture Cloud ?";
+        string message = _localizer["profiles.cloud.consent.message"];
+        string caption = _localizer["profiles.cloud.consent.caption"];
 
         MessageBoxResult answer = MessageBox.Show(
             message,
-            "Consentement a la reecriture Cloud",
+            caption,
             MessageBoxButton.YesNo,
             MessageBoxImage.Question);
 
@@ -185,43 +186,50 @@ public partial class ProfilesPage : UserControl
         string providerName = ProviderDisplayName(provider);
         bool canSelectProvider = authenticated && _cloudBackendAvailable;
 
-        CloudToggleButton.Content = enabled ? "Désactiver le Cloud" : "Activer le Cloud";
+        CloudToggleButton.Content = enabled
+            ? _localizer["profiles.cloud.toggle.disable"]
+            : _localizer["profiles.cloud.toggle.enable"];
         CloudToggleButton.IsEnabled = CanActivateCloud(authenticated, _cloudBackendAvailable);
-        GeminiProviderButton.Content = provider == RewriteProviderId.Gemini ? "Gemini · actif" : "Gemini";
-        DeepSeekProviderButton.Content = provider == RewriteProviderId.DeepSeek ? "DeepSeek · actif" : "DeepSeek V4 Pro";
+        GeminiProviderButton.Content = provider == RewriteProviderId.Gemini
+            ? string.Format(_localizer["profiles.cloud.provider.active"], "Gemini")
+            : "Gemini";
+        DeepSeekProviderButton.Content = provider == RewriteProviderId.DeepSeek
+            ? string.Format(_localizer["profiles.cloud.provider.active"], "DeepSeek")
+            : "DeepSeek V4 Pro";
         GeminiProviderButton.IsEnabled = canSelectProvider && provider != RewriteProviderId.Gemini;
         DeepSeekProviderButton.IsEnabled = canSelectProvider && provider != RewriteProviderId.DeepSeek;
 
         if (!authenticated)
         {
-            CloudBadgeText.Text = "MODE LOCAL";
+            CloudBadgeText.Text = _localizer["profiles.cloud.badge.local"];
             CloudStatusText.Text = _authenticationState.Status == AuthenticationStatus.Unconfigured
-                ? "Le mode local est utilisé. Configurez l’authentification avant toute option Cloud."
-                : "Le mode local est utilisé. Une connexion valide est requise avant toute option Cloud.";
-            CloudConsentText.Text =
-                "Connexion requise. Tant que vous n'êtes pas connecté, aucun texte ne part vers le Cloud.";
+                ? _localizer["profiles.cloud.status.unauthenticated.unconfigured"]
+                : _localizer["profiles.cloud.status.unauthenticated.expired"];
+            CloudConsentText.Text = _localizer["profiles.cloud.consent.unauthenticated"];
             return;
         }
 
         if (!_cloudBackendAvailable)
         {
-            CloudBadgeText.Text = "SERVICE INDISPONIBLE";
+            CloudBadgeText.Text = _localizer["profiles.cloud.badge.unavailable"];
             CloudStatusText.Text = enabled
-                ? $"Cloud activé pour cette session avec {providerName}, mais {_cloudBackendUnavailableReason} Le mode local est utilisé."
-                : $"Le mode local est utilisé. {_cloudBackendUnavailableReason}";
+                ? string.Format(_localizer["profiles.cloud.status.backendUnavailable.enabled"], providerName, _cloudBackendUnavailableReason)
+                : string.Format(_localizer["profiles.cloud.status.backendUnavailable.disabled"], _cloudBackendUnavailableReason);
             CloudConsentText.Text = _cloudSettings.CloudConsentGranted
-                ? "Consentement accordé pour cette session. Aucun texte ne part tant que le backend est indisponible."
-                : "Le premier usage Cloud demande votre consentement explicite. L’audio reste toujours local.";
+                ? _localizer["profiles.cloud.consent.backendUnavailable.granted"]
+                : _localizer["profiles.cloud.consent.backendUnavailable.notGranted"];
             return;
         }
 
-        CloudBadgeText.Text = enabled ? $"CLOUD · {providerName.ToUpperInvariant()} ACTIF" : "MODE LOCAL";
+        CloudBadgeText.Text = enabled
+            ? string.Format(_localizer["profiles.cloud.badge.active"], providerName.ToUpperInvariant())
+            : _localizer["profiles.cloud.badge.local"];
         CloudStatusText.Text = enabled
-            ? $"Cloud activé : le texte transcrit est reformulé par {providerName}, avec repli local exact en cas d'échec."
-            : "Le mode local est utilisé. Aucune donnée n'est envoyée sur Internet.";
+            ? string.Format(_localizer["profiles.cloud.status.enabled"], providerName)
+            : _localizer["profiles.cloud.status.disabled"];
         CloudConsentText.Text = _cloudSettings.CloudConsentGranted
-            ? "Consentement accordé pour cette session. L'audio reste toujours local."
-            : "Le premier usage Cloud demande votre consentement explicite. L'audio reste toujours local.";
+            ? _localizer["profiles.cloud.consent.granted"]
+            : _localizer["profiles.cloud.consent.notGranted"];
     }
 
     private static string ProviderDisplayName(RewriteProviderId provider) => provider switch
@@ -253,26 +261,26 @@ public partial class ProfilesPage : UserControl
 
         AuthenticationBadgeText.Text = status switch
         {
-            AuthenticationStatus.Authenticated => "CONNECTÉ · GOOGLE",
-            AuthenticationStatus.SigningIn => "CONNEXION…",
-            AuthenticationStatus.Offline => "SERVICE INDISPONIBLE",
-            AuthenticationStatus.Expired => "SESSION EXPIRÉE",
-            AuthenticationStatus.Failed => "ÉCHEC DE CONNEXION",
-            AuthenticationStatus.Unconfigured => "NON CONFIGURÉ",
-            _ => "MODE LOCAL"
+            AuthenticationStatus.Authenticated => _localizer["profiles.auth.badge.connected"],
+            AuthenticationStatus.SigningIn => _localizer["profiles.auth.badge.signingIn"],
+            AuthenticationStatus.Offline => _localizer["profiles.auth.badge.offline"],
+            AuthenticationStatus.Expired => _localizer["profiles.auth.badge.expired"],
+            AuthenticationStatus.Failed => _localizer["profiles.auth.badge.failed"],
+            AuthenticationStatus.Unconfigured => _localizer["profiles.auth.badge.unconfigured"],
+            _ => _localizer["profiles.auth.badge.local"]
         };
         AuthenticationStatusText.Text = _authenticationState.StatusMessage;
         AuthenticationActionButton.Content = authenticated
-            ? "Se déconnecter"
+            ? _localizer["profiles.auth.signOut"]
             : signingIn
-                ? "Connexion en cours"
-                : "Se connecter avec Google";
+                ? _localizer["profiles.auth.signingIn"]
+                : _localizer["profiles.auth.signInGoogle"];
         AuthenticationActionButton.IsEnabled = !signingIn && status != AuthenticationStatus.Unconfigured;
         AuthenticationCancelButton.Visibility = signingIn ? Visibility.Visible : Visibility.Collapsed;
 
         AuthenticatedUser? user = _authenticationState.User;
         AuthenticatedUserPanel.Visibility = user is null ? Visibility.Collapsed : Visibility.Visible;
-        AuthenticatedUserNameText.Text = user?.DisplayName ?? user?.Email ?? "Compte connecté";
+        AuthenticatedUserNameText.Text = user?.DisplayName ?? user?.Email ?? _localizer["profiles.auth.connected"];
         AuthenticatedUserEmailText.Text = user?.Email ?? string.Empty;
     }
 
@@ -329,11 +337,11 @@ public partial class ProfilesPage : UserControl
                 profile.Id,
                 profile.DisplayName,
                 profile.Description,
-                BadgeText: "INDISPONIBLE",
+                BadgeText: _localizer["profiles.card.badge.unavailable"],
                 BadgeForeground: muted,
                 BadgeBackground: selectedSurface,
                 BadgeBorder: border,
-                ActionText: "Indisponible",
+                ActionText: _localizer["profiles.card.action.unavailable"],
                 IsActionEnabled: false,
                 UnavailableReason: profile.UnavailableReason,
                 UnavailableReasonVisibility: Visibility.Visible,
@@ -346,11 +354,11 @@ public partial class ProfilesPage : UserControl
                 profile.Id,
                 profile.DisplayName,
                 profile.Description,
-                BadgeText: "ACTIF · ENREGISTRÉ",
+                BadgeText: _localizer["profiles.card.badge.active"],
                 BadgeForeground: cyan,
                 BadgeBackground: new SolidColorBrush(Color.FromArgb(0x14, 0x30, 0xD1, 0xCB)),
                 BadgeBorder: new SolidColorBrush(Color.FromArgb(0x40, 0x30, 0xD1, 0xCB)),
-                ActionText: "Profil actif",
+                ActionText: _localizer["profiles.card.action.active"],
                 IsActionEnabled: false,
                 UnavailableReason: string.Empty,
                 UnavailableReasonVisibility: Visibility.Collapsed,
@@ -361,11 +369,11 @@ public partial class ProfilesPage : UserControl
             profile.Id,
             profile.DisplayName,
             profile.Description,
-            BadgeText: "DISPONIBLE",
+            BadgeText: _localizer["profiles.card.badge.available"],
             BadgeForeground: secondary,
             BadgeBackground: selectedSurface,
             BadgeBorder: border,
-            ActionText: "Utiliser ce profil",
+            ActionText: _localizer["profiles.card.action.use"],
             IsActionEnabled: true,
             UnavailableReason: string.Empty,
             UnavailableReasonVisibility: Visibility.Collapsed,

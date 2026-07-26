@@ -236,6 +236,6 @@ public sealed class ProfileRoutedSafeServiceTests
         cancellation.Cancel();
 
         await Assert.ThrowsAsync<OperationCanceledException>(
-            () => _service.RewriteAsync("Bonjour", RewriteProfiles.Developer, cancellation.Token));
+            () => _service.RewriteAsync("Bonjour", RewriteProfiles.Developer, cancellationToken: cancellation.Token));
     }
 }

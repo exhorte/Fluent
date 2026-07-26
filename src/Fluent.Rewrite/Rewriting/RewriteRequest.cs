@@ -4,4 +4,5 @@ namespace Fluent.Rewrite.Rewriting;
 
 public sealed record RewriteRequest(
     string Text,
-    RewriteProfile Profile);
+    RewriteProfile Profile,
+    string TranscriptionLanguage = "fr");
