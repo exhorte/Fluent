@@ -33,6 +33,7 @@ public sealed class LocalRewriteProvider : IRewriteProvider
         Rewriting.RewriteResult result = await _service.RewriteAsync(
             request.Text,
             profile,
+            request.TranscriptionLanguage,
             cancellationToken);
 
         return ProviderRewriteResult.Success(RewriteProviderId.Local, result.Text);

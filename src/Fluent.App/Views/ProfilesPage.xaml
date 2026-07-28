@@ -18,8 +18,8 @@
             <Setter Property="Padding" Value="13,7" />
             <Setter Property="Background" Value="{StaticResource Nyx.SelectedBrush}" />
             <Setter Property="Foreground" Value="{StaticResource Nyx.SecondaryTextBrush}" />
-            <Setter Property="BorderBrush" Value="{StaticResource Nyx.BorderBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="FontSize" Value="10" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Cursor" Value="Hand" />
@@ -77,9 +77,9 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock Text="Profils"
+                    <TextBlock Text="{Binding [profiles.title], Source={StaticResource Loc}}"
                                Style="{StaticResource Nyx.PageTitleTextStyle}" />
-                    <TextBlock Text="Choisissez la transformation locale appliquée après le dictionnaire, avant l'insertion."
+                    <TextBlock Text="{Binding [profiles.subtitle], Source={StaticResource Loc}}"
                                Margin="0,6,0,0"
                                Style="{StaticResource Nyx.BodyTextStyle}" />
                 </StackPanel>
@@ -89,16 +89,14 @@
                         Padding="10,5"
                         VerticalAlignment="Top"
                         Background="#141E8E89"
-                        BorderBrush="#4D30D1CB"
-                        BorderThickness="1"
-                        CornerRadius="9">
+                        CornerRadius="6">
                     <StackPanel Orientation="Horizontal">
                         <Ellipse Width="6"
                                  Height="6"
                                  Margin="0,0,7,0"
                                  VerticalAlignment="Center"
                                  Fill="{StaticResource Nyx.CyanBrush}" />
-                        <TextBlock Text="SESSION · NON ENREGISTRÉ"
+                        <TextBlock Text="{Binding [profiles.sessionBadge], Source={StaticResource Loc}}"
                                    VerticalAlignment="Center"
                                    Foreground="{StaticResource Nyx.CyanBrush}"
                                    FontFamily="Cascadia Mono"
@@ -111,9 +109,7 @@
             <Border Grid.Row="2"
                     Padding="14,12"
                     Background="#0E639BFA"
-                    BorderBrush="#30639BFA"
-                    BorderThickness="1"
-                    CornerRadius="9">
+                    CornerRadius="6">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="22" />
@@ -126,7 +122,7 @@
                                FontSize="12"
                                FontWeight="Bold" />
                     <TextBlock Grid.Column="1"
-                               Text="La sélection vaut pour cette session uniquement et n'est jamais enregistrée. Le profil utilisé par une dictée est celui choisi au démarrage de l'enregistrement ; un changement pendant l'enregistrement s'applique à la dictée suivante. Aucun profil n'invente de contenu."
+                               Text="{Binding [profiles.info], Source={StaticResource Loc}}"
                                TextWrapping="Wrap"
                                LineHeight="18"
                                Style="{StaticResource Nyx.BodyTextStyle}"
@@ -156,8 +152,6 @@
                                                     Padding="8,3"
                                                     VerticalAlignment="Center"
                                                     Background="{Binding BadgeBackground}"
-                                                    BorderBrush="{Binding BadgeBorder}"
-                                                    BorderThickness="1"
                                                     CornerRadius="8">
                                                 <TextBlock Text="{Binding BadgeText}"
                                                            FontSize="9"
@@ -210,16 +204,14 @@
 
                     <StackPanel VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Connexion"
+                            <TextBlock Text="{Binding [profiles.auth.title], Source={StaticResource Loc}}"
                                        Style="{StaticResource Nyx.SectionTitleTextStyle}" />
                             <Border x:Name="AuthenticationBadgeBorder"
                                     Margin="10,0,0,0"
                                     Padding="8,3"
                                     VerticalAlignment="Center"
                                     Background="{StaticResource Nyx.SelectedBrush}"
-                                    BorderBrush="{StaticResource Nyx.BorderBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="8">
+                                    CornerRadius="6">
                                 <TextBlock x:Name="AuthenticationBadgeText"
                                            Text="MODE LOCAL"
                                            FontSize="9"
@@ -277,16 +269,14 @@
 
                     <StackPanel VerticalAlignment="Center">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Réécriture Cloud"
+                            <TextBlock Text="{Binding [profiles.cloud.title], Source={StaticResource Loc}}"
                                        Style="{StaticResource Nyx.SectionTitleTextStyle}" />
                             <Border x:Name="CloudBadgeBorder"
                                     Margin="10,0,0,0"
                                     Padding="8,3"
                                     VerticalAlignment="Center"
                                     Background="{StaticResource Nyx.SelectedBrush}"
-                                    BorderBrush="{StaticResource Nyx.BorderBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="8">
+                                    CornerRadius="6">
                                 <TextBlock x:Name="CloudBadgeText"
                                            Text="MODE LOCAL"
                                            FontSize="9"

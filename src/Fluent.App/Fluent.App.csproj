@@ -19,6 +19,20 @@
     <AssemblyName>Fluent</AssemblyName>
     <Product>Fluent</Product>
     <Description>Application Windows locale de dictée française Fluent.</Description>
+    <ApplicationIcon>Assets\Fluent.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\Fluent.ico" />
+    <!-- Multi-resolution icon: embedded in the executable and copied out for the window icon. -->
+    <Content Include="Assets\Fluent.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <!-- Single-frame icons compiled as WPF resources so XAML Image sources always resolve. -->
+    <None Remove="Assets\Fluent-white-64x64.ico" />
+    <None Remove="Assets\Fluent-white-32x32.ico" />
+    <Resource Include="Assets\Fluent-white-64x64.ico" />
+    <Resource Include="Assets\Fluent-white-32x32.ico" />
+  </ItemGroup>
 
 </Project>

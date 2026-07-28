@@ -1,56 +1,75 @@
 # Project State
 
-Status: `GOVERNANCE_ADR_0007_ADOPTED` · `PHASE_07E_CLOSED` · active task `FV-P07-T018` (publication) inchangée
+Status: `GOVERNANCE_ADR_0007_ADOPTED` · `PHASES 01–08B CLÔTURÉES` · `UI MONOCHROME + SUBSCRIPTION + i18n LIVRÉ` · Branche `chore/fluent-v1-consolidation`, PR #1 ouverte vers `main`
 
-Date: 2026-07-23
+Date: 2026-07-26
 
-## Migration de gouvernance ADR-0007 (2026-07-23)
+## État vérifié (2026-07-26)
 
-Sous autorisation explicite de l'utilisateur, la gouvernance passe du modèle « Juge-gardien + contrat obligatoire par action » (ADR-0003) au modèle **autonome proportionné au risque** (ADR-0007). Le **PROJECT_DIRECTOR** devient l'autorité exécutive sous l'utilisateur ; le **Development Judge** devient auditeur indépendant (verdicts `ALLOW` / `ALLOW_WITH_DEBT` / `BLOCK_CRITICAL`) ; les niveaux **R0–R3** définissent les autorisations.
+**Build Release** : 0 avertissement, 0 erreur.
+**Suite complète** : **401/401** tests réussis.
+**Changement de langue** (English/Français) : fonctionnel, vérifié manuellement.
 
-- Plancher déterministe **préservé** : lecture de secrets, force-push, reset --hard, clean destructif, suppression récursive, format disque, écriture hors dépôt, bypass de permissions restent **DENY**. Registre et installation machine restent **ASK**. Le push non-forcé de branche de travail devient **R1 (ALLOW)** ; le déploiement externe est **contract-gated**.
-- Anti-auto-expansion préservé (P-018) : ni le Director ni le Juge ne peuvent modifier les frontières R0–R3, les hooks ou le plancher ; seul l'utilisateur le peut.
-- Vérification réelle : **suite hooks + gouvernance 45/45 PASS**. Preuve : `docs/project/evidence/governance-migration-2026-07-23/hook-tests.json` (dont G-001..G-007, non-force push R1, déploiement contract-gated, `.env` DENY, redaction secret).
-- ADR-0007 passé à **Accepted** après cette vérification. ADR-0003 marqué opérationnellement superseded.
+## Dernier livrable — UI monochrome + Abonnement + i18n (2026-07-23/26)
 
-**Première action du PROJECT_DIRECTOR** — clôture de la phase **07E** selon les critères CG-001..CG-008 : les preuves préexistaient (verdict Judge ALLOW de clôture consigné, smoke visuel PASS déjà rapporté par l'utilisateur). Le nouveau modèle supprime la seule chose qui manquait, la phrase rituelle ; aucune nouvelle preuve n'est inventée. Gemini **n'est pas** live ; 07D reste ouverte sans autorisation live ; le renommage 07C reste **à réconcilier**.
+Sur la branche `chore/fluent-v1-consolidation` (commit `ed1891b`, postérieur à la PR #1) :
 
-## Phase 07B clôturée
+- **Thème noir & blanc** : accents cyan/bleu → blanc/gris ; logo inversé ; navigation sans bordure fixe (outline blanc-transparent au survol, outline discret sur l'élément actif).
+- **En-tête épuré** : logo seul ; infos profil/moteur déplacées vers une carte « Session et moteur » dans Paramètres.
+- **Profil utilisateur en bas de la barre** : puce avatar (2 lettres) + prénom + initiale, cliquable vers Profils ; lien « Upgrade plan » vers Abonnement.
+- **Page & navigation « Subscription »** : plan Local·Gratuit, compte, avantages Pro, CTA « Passer à Pro » (sans paiement).
+- **« Profils » retiré de la nav** : accessible via la puce utilisateur.
+- **« Vue d'ensemble » → « Home »**.
+- **Internationalisation** : réglage Langage dans Paramètres (English/Français, défaut anglais), persisté via store de paramètres schéma v2 (colonne `language`, migration v1→v2). Mécanisme `Localizer` avec liaison `{Binding [clé], Source={StaticResource Loc}}`. **Increment 1** : tout le texte statique des pages (Home/History/Dictionary/Subscription/Settings + nav) traduit en/fr. **Increment 2 (partiel)** : `DashboardStatusPresenter` bilingue + texte statique page Profils.
 
-La Phase **07B — authentification native Supabase** est clôturée le 2026-07-22 sous autorité explicite de l'utilisateur. Le parcours OAuth Google principal et les contrôles de session sont PASS. Aucune valeur OAuth sensible n'est conservée dans les documents.
+### Reste à traduire (i18n increment 3)
 
-Les quatre contrôles manuels restants sont PASS : restauration après relance, comportement hors ligne, déconnexion effective après relance et réinitialisation de l'activation/consentement Cloud de session. Le verdict final du Judge est ALLOW et l'utilisateur a explicitement accepté la clôture.
+Chaînes générées en code :
+- Statuts auth/cloud de la page Profils
+- Messages runtime de dictée (`MainWindow`)
+- États vides et statuts Dictionnaire/Historique/Paramètres
+- `DictationErrorPresenter` (Core)
+- Noms d'accessibilité de la nav (laissés statiques FR pour ne pas casser les tests markup)
 
-## Phase active réelle
+## Phases clôturées
 
-**07E — tableau de bord dynamique local** est **clôturée le 2026-07-23** par le PROJECT_DIRECTOR sous le modèle ADR-0007. Le contrat FV-P07-T016, validé par le Judge, limitait le travail à la présentation éphémère de sources locales réelles : profil, dictionnaire, session et autorisation Cloud. Il n’introduit ni historique, ni persistance, ni contenu dicté, ni identité de compte, ni opération Cloud. Le smoke visuel est PASS (rapporté par l’utilisateur) et le verdict de clôture Judge est ALLOW. Sous CG-001..CG-008, ces preuves suffisent ; la phrase rituelle n’est plus requise.
+| Phase | Statut | Réalité |
+| --- | --- | --- |
+| 00 | Livrée | Harness, règles, preuves et tests de garde. |
+| 01 | Implémentée | Spike Windows ; vérification multi-applications préparée. |
+| 02 | Acceptée | Dictée française locale, Whisper, protections d'insertion. |
+| 03 | Acceptée | Capsule et Overview honnête. |
+| 04A | Livrée | Réécriture française déterministe sûre. |
+| 05A/05B | Acceptées | Dictionnaire session puis SQLite local persistant. |
+| 06A | Clôturée | Profils locaux session-only. |
+| 07B | Clôturée | Authentification native Supabase (Google OAuth PKCE). |
+| 07C | Résolue | Renommage technique NyxVoice→Fluent (aucun résidu dans les sources). |
+| 07E | Clôturée | Dashboard dynamique local. |
+| 07F | Clôturée | Historique local (opt-in OFF par défaut). |
+| 07G | Clôturée | Paramètres locaux + profil préféré persistant. |
+| 07H | Clôturée | UX & résilience (accessibilité, erreurs, recovery). |
+| 08B | Clôturée | Dictionnaire/glossaire étendu (import/export JSON). |
 
-**07D — préparation desktop Gemini authentifiée sans déploiement** reste ouverte, avec sa tranche locale explicitement acceptée par l’utilisateur. Elle ajoute seulement l'origine publique `FLUENT_BACKEND_URL`, validée comme HTTPS racine et passée au transport Desktop. Sans origine valide, l'activation Cloud est indisponible ; aucune requête, clé, `.env`, backend ou fournisseur n'est utilisé dans cette tranche. Aucune autorisation live n’a été donnée.
+## Phases en attente
 
-## Réalité fonctionnelle vérifiée
+- **06B** (Gemini) : `IMPLEMENTED_AWAITING_USER_REVIEW` — hors ligne, backend non déployé.
+- **06C** (DeepSeek) : `IMPLEMENTED_AWAITING_USER_REVIEW` — préparé hors ligne, aucune activation live.
+- **07D** (backend Cloud) : `IMPLEMENTED_OFFLINE_SLICE_USER_ACCEPTED` — origine backend HTTPS + gate UI validés ; activation live = infra + secret + autorisation distincte.
+- **08A** (contexte de réécriture) : **DIFFÉRÉE** (décision utilisateur E-001 ; consommateur = Cloud non live).
 
-- Dictée locale, insertion protégée, profils locaux et dictionnaire SQLite persistant sont implémentés ; le dictionnaire est la seule persistance inspectée dans le code.
-- L'Overview est partiellement dynamique ; Dictionnaire et Profils sont des pages réelles.
-- Historique et Paramètres sont explicitement `À venir` : aucune page, modèle ou base correspondante n'existe.
-- L'authentification Supabase utilise navigateur système, PKCE S256, callback éphémère `127.0.0.1`, access token en mémoire et refresh token Windows Credential Manager.
-- Cloud est sécurisé par session + origine backend valide + activation + consentement. Aucun backend n'est déployé par cette phase ; une origine configurée ne rend donc pas Gemini live et le fallback local exact reste obligatoire.
-- 06B (Gemini) et 06C (DeepSeek) sont implémentées hors ligne et `IMPLEMENTED_AWAITING_USER_REVIEW`. DeepSeek n'est pas une activation live et aucune conclusion ne dépend du contenu de `.env`.
+## Prochaines phases
 
-## Vérification de référence
-
-- Phase 07B : build Release 0/0, suite 301/301 et gardes 33/33.
-- Phase 07D : tests ciblés 17/17, build Release 0/0, suite complète 318/318 et gardes 33/33 PASS ; verdict final du Judge ALLOW, puis acceptation utilisateur de la tranche hors ligne. La phase reste ouverte, sans activation live.
-- Phase 07E : tests ciblés 28/28, build Release 0/0, suite complète 346/346 et gardes 33/33 PASS ; verdict du Judge ALLOW pour présentation puis pour clôture technique, smoke visuel PASS rapporté par l’utilisateur. En attente d’une décision utilisateur explicite de clôture.
+1. **i18n increment 3** — traduire les chaînes générées en code restantes (cf. ci-dessus).
+2. **08C** — apprentissage opt-in (décision produit E-001 en attente).
+3. **09A–09C** — registre fournisseurs, activation DeepSeek live, routage explicable.
+4. **10–12** — performance mesurée, packaging, readiness finale v1.
 
 ## Santé du dépôt
 
-- Branche `main`, remote `origin` vers `https://github.com/exhorte/Fluent.git`.
-- L'arbre comporte 301 changements préexistants de renommage technique : 117 modifiés, 155 supprimés, 29 non suivis. Aucun changement Git n'a été fait pendant l'audit.
-- Les chemins source et projets sont déjà nommés Fluent ; seuls des caches `.vs` et des identifiants internes de compatibilité contiennent encore Nyx/NyxVoice.
-- La phase 07C de renommage technique reste **BLOQUÉE / À RÉCONCILIER** : son document est obsolète et le renommage n'est pas réconcilié dans Git. Ce point doit être traité par un contrat distinct avant packaging ou publication.
-
-## Prochaine action recommandée
-
-Attendre l’acceptation explicite de clôture de 07E. Une activation Gemini réelle reste une démarche distincte : URL backend contrôlée, déploiement, secret serveur, coût éventuel et smoke externe.
-
-La matrice des pages, les dépendances et les brouillons sont dans `docs/project/evidence/phase-07-planning-audit/`.
+- Branche de travail : `chore/fluent-v1-consolidation`.
+- Branche `main` intacte, en phase avec `origin/main`.
+- PR #1 brouillon ouverte vers `main`.
+- Commit le plus récent : `ed1891b feat(ui): monochrome redesign, Subscription page, and i18n (English default)`.
+- 3 fichiers non suivis : `docs/templates/fluent.png`, `docs/templates/fluentx.png`, `docs/templates/model.png`.
+- Aucun secret, aucun `.env`, aucune donnée sensible.
+- Licence : All rights reserved.

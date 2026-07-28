@@ -2202,3 +2202,359 @@ Sous le nouveau modèle, le Director clôture **07E** selon CG-001..CG-008 : les
 - Les comportements de tier (Director exécutant une boucle complète, escalade R3, changement de stratégie anti-boucle) sont gouvernés par le comportement d’agent et **revus**, non testés unitairement.
 - **Gemini n’est pas live** ; **07D** reste ouverte sans autorisation live ; le renommage **07C** reste **à réconcilier** dans Git.
 - Le lot de migration n’a touché **aucun code produit** de Fluent, conformément à la consigne. La tâche active `FV-P07-T018` (publication GitHub) reste `implementing`, inchangée.
+
+---
+
+## Boucle autonome des phases 07E → 08B (ADR-0007) — 2026-07-23
+
+Sous le nouveau modèle, le PROJECT_DIRECTOR a enchaîné les phases produit, chaque clôture confirmée par un smoke visuel de l’utilisateur (pas de phrase rituelle). État du dépôt vérifié en cours de route : l’arbre de travail (renommage + gouvernance) a été **aplati en un commit propre `66034b1` sur `main`, en phase avec `origin/main`** ; **07C** (renommage) est donc **résolu** (aucun résidu `NyxVoice` dans les sources suivies).
+
+- **07E — dashboard dynamique** : clôturée (preuves préexistantes).
+- **07F — Historique local** : opt-in OFF par défaut, store SQLite `fluent-history.db` dédié, politique de capture pure, page Historique WPF (recherche, suppression, effacement). Build 0/0, suite 367/367, smoke PASS. Clôturée.
+- **07G — Paramètres locaux** : store SQLite `fluent-settings.db` dédié, **profil préféré persistant** (restauré au démarrage), page Paramètres WPF. Suite 376/376, smoke PASS. Clôturée.
+- **07H — UX & résilience** : accessibilité (`AutomationProperties` + `TabIndex`), navigation clavier, présentation d’erreurs/récupération non techniques (`DictationErrorPresenter` Core). Suite 391/391, smoke PASS. Clôturée. Offline jugé intrinsèque (local-first).
+- **08A — contexte de réécriture** : **différée** sur décision produit E-001 de l’utilisateur (son consommateur est le chemin Cloud non live).
+- **08B — dictionnaire/glossaire étendu** : composant pur `DictionaryExchange` (export JSON déterministe, plan d’import avec validation existante, conflits explicites ignorer/écraser, bornage capacité, doublons) + application via le chemin d’upsert gaté ; boutons **Importer/Exporter** locaux. Suite 399/399, smoke PASS. Clôturée. Contenu importé traité comme donnée, jamais exécuté.
+
+Chaque phase a ses preuves sous `docs/project/evidence/phase-07f-history/`, `phase-07g-settings/`, `phase-07h-ux-resilience/`, `phase-08b-dictionary-glossary/`.
+
+## Consolidation et publication (branche + PR brouillon) — 2026-07-23
+
+Sur décision utilisateur (« consolider l’existant »), vérification complète : **build Release 0/0**, suite .NET **399/399**, gardes gouvernance **45/45**, `main` en phase avec `origin/main`. Instantané de readiness + audit packaging (`dotnet publish` framework-dependent propre, `Fluent.exe` + natifs Whisper/SQLite, ~93 Mo) sous `docs/project/evidence/consolidation-2026-07-23/`. Revalidation multi-applications de la **Phase 01** préparée (checklist mise à jour au comportement actuel ; correction : l’exécutable réel est **`Fluent.exe`**, pas `Fluent.App.exe`).
+
+Sur autorisation explicite, publication en **branche dédiée `chore/fluent-v1-consolidation`** : 6 commits atomiques (features 07F/07G/07H, dictionnaire 08B, tests, docs/preuves, revalidation Phase 01, audit packaging), scan de secrets **propre**, `git diff --check` propre, **push de la branche uniquement**, **PR brouillon #1** ouverte vers `main`. `main` intacte, PR non fusionnée. La gouvernance/Project Director était déjà sur `main` via le commit aplati.
+
+## Refonte UI monochrome + abonnement + internationalisation — 2026-07-23
+
+Travail dirigé par l’utilisateur, **postérieur à la PR #1** (donc **non inclus dans la PR #1**).
+
+- **Thème noir & blanc** : accents cyan/bleu → blanc/gris ; logo inversé ; navigation **sans bordure fixe** (outline blanc-transparent subtil au survol via `Nyx.NavButtonStyle`/`Nyx.NavSurfaceStyle` — corrige le halo bleu qui venait du chrome par défaut du `Button` WPF) ; outline blanc discret sur l’élément actif.
+- **En-tête épuré** : logo seul ; les infos profil/moteur déplacées vers une carte **« Session et moteur »** dans Paramètres.
+- **Profil utilisateur en bas de la barre** : puce **avatar (2 lettres) + prénom + initiale**, cliquable vers la page **Profils** ; lien souligné **« Upgrade plan »** vers **Abonnement**.
+- **Page & nav « Subscription »** (plan Local·Gratuit, compte, avantages Pro, CTA « Passer à Pro » sans paiement) ; **« Profils » retiré de la nav** (accessible via la puce).
+- **« Vue d’ensemble » → « Home »**.
+- **Internationalisation** : réglage **Langage** (Paramètres) **English/Français, défaut anglais**, **persisté** — store de paramètres migré en **schéma v2** (colonne `language`, migration v1→v2 testée). Mécanisme `Localizer` (indexeur observable exposé en ressource `Loc`, liaison `{Binding [clé], Source={StaticResource Loc}}` ; changement de langue = rafraîchissement global sans redémarrage). **Increment 1** : tout le **texte statique** des pages (Home/History/Dictionary/Subscription/Settings + nav) traduit en/fr. **Increment 2 (partiel)** : `DashboardStatusPresenter` rendu bilingue (badges de la Vue d’ensemble ; `Create` prend `language`, défaut `fr` pour garder les tests verts) + texte statique de la page Profils.
+
+### État de vérification (honnête)
+
+- Derniers points **vérifiés verts** : build Release **0/0** et suite **401/401** (après le store v2 langue + increment 1) ; puis `Fluent.App` **0/0** après le texte statique de Profils.
+- **Non revérifié par build** : la dernière édition (localisation de `DashboardStatusPresenter` + branchement `MainWindow`) — l’**environnement de build s’est figé** (build solution > 10 min, puis `Get-Process`, `dotnet build-server shutdown` et `taskkill` tous en timeout ; processus de build bloqué saturant la machine). Éditions C#/XAML simples, sans risque de boucle, mais **build/tests à reconfirmer** dès l’environnement rétabli.
+- **Reste à traduire (chaînes générées en code)** : statuts auth/cloud de la page Profils, messages runtime de dictée (`MainWindow`), messages code Dictionnaire/Historique/Paramètres (états vides, statuts), `DictationErrorPresenter` (Core), et les noms d’accessibilité de la nav (laissés statiques FR pour ne pas casser les tests markup).
+- Ce lot UI + i18n est **commité sur la branche `chore/fluent-v1-consolidation`** (hors PR #1 initiale) ; `main` reste intacte ; aucun secret ; aucune opération destructive.
+
+---
+
+## Session Claude Code — 2026-07-26
+
+### Reprise et vérification
+
+Reprise après l'arrêt forcé de la session précédente (environnement de build figé). Vérification manuelle par l'utilisateur : **build Release 0/0, suite 401/401**, changement de langue English/Français fonctionnel. Aucune régression.
+
+- `project-state.md` et `roadmap.md` mis à jour avec l'état réel (UI monochrome, Subscription, i18n, branches).
+- Tâche `FV-P08B-T022` (08B dictionnaire/glossaire) officiellement clôturée : les deux slices étaient déjà `IMPLEMENTED_TESTED` à 399/399, le smoke visuel import/export était PASS.
+
+### i18n increment 3 — chaînes générées en code (partiel)
+
+Ajout de **~80 nouvelles clés en/fr** dans `LocalizedStrings.cs` couvrant tout le flux de dictée et les profils.
+
+| Fichier | Chaînes migrées | Statut |
+|---|---|---|
+| `LocalizedStrings.cs` | ~80 clés (dictation flow + profiles) | ✅ |
+| `ProfilesPage.xaml.cs` | ~46 chaînes (auth, cloud, cartes) → `_localizer["key"]` | ✅ |
+| `MainWindow.xaml.cs` | ~60 chaînes (dictée, insertion, timings) → `_localizer["key"]` | ✅ |
+| `DictionaryPage.xaml.cs` | ~25 chaînes | Reporté |
+| `HistoryPage.xaml.cs` | ~20 chaînes | Reporté |
+| `SettingsPage.xaml.cs` | ~10 chaînes | Reporté |
+| `DictationErrorPresenter` (Core) | 5 messages FR-only → bilingue | Reporté (décision d'architecture : Core ne référence pas App.Localization) |
+
+Build 0/0, tests 401/401 après ces modifications.
+
+### Refonte UI — thème borderless et icônes
+
+**Suppression de toutes les bordures de section** dans l'interface :
+
+| Fichier | Modifications |
+|---|---|
+| `FluentTheme.xaml` | `DashboardCardStyle` : `BorderThickness=0`, `Transparent`, `CornerRadius=10` |
+| `MainWindow.xaml` | Séparateurs header/sidebar retirés, bordures badges Home retirées, bordure chip avatar retirée |
+| `RecordingCapsuleWindow.xaml` | Bordure capsule retirée |
+| `DictionaryPage.xaml` | Styles input/bouton borderless, 2 bordures badges + 2 bordures contenu retirées |
+| `HistoryPage.xaml` | Styles toggle/search/bouton borderless, 1 bordure badge + 2 bordures contenu retirées |
+| `ProfilesPage.xaml` | Style section borderless, 4 bordures badges + 2 bordures auth/cloud retirées |
+| `SettingsPage.xaml` | Style bouton secondaire borderless, 1 bordure contenu retirée |
+
+**Navigation sidebar** — remplacement du outline hover par un fond gris clair :
+- Ajout de `Nyx.NavHoverBackgroundBrush` (`#14FFFFFF`) et `Nyx.NavActiveBackgroundBrush` (`#22FFFFFF`)
+- `Nyx.NavSurfaceStyle` : le trigger `IsMouseOver` change `Background` au lieu de `BorderBrush`
+- `SetNavActive` (code-behind) : change `Background` au lieu de `BorderBrush`
+
+**Icônes de navigation** — remplacement des caractères Unicode par Segoe Fluent Icons :
+
+| Nav | Avant | Après | Glyphe |
+|---|---|---|---|
+| Home | `⌂` (Unicode) | Icône Home | `` |
+| History | `◷` (Unicode) | Icône History | `` |
+| Dictionary | `Aa` (texte) | Icône Book | `` |
+| Subscription | `◇` (Unicode) | Icône Star | `` |
+| Settings | `⚙` (Unicode) | Icône Settings | `` |
+
+Toutes en `FontSize=16`, police `Segoe Fluent Icons, Segoe MDL2 Assets`.
+
+**Icône de fenêtre** — ajout de `Fluent-white.ico` (5 résolutions, PNG compressé) :
+- Copié dans `src/Fluent.App/Assets/Fluent.ico`
+- `ApplicationIcon` dans le `.csproj` (icône intégrée à l'exe)
+- `Content` avec `CopyToOutputDirectory` pour le chargement WPF
+- `Icon` chargé en code-behind dans `OnLoaded` via `BitmapImage`
+- `Window.Icon` également défini dans le XAML
+
+**Capsule flottante** :
+- Texte "Fluent" retiré de l'état idle (logo seul)
+- `Nyx.LogoMarkTemplate` remplacé par `Image Source="Assets/Fluent.ico"` dans les 3 états (idle, recording, processing)
+- Bordure retirée
+
+### Opérations Git
+
+- Un `git checkout` a restauré accidentellement `MainWindow.xaml`, `RecordingCapsuleWindow.xaml` et `Fluent.App.csproj` (perte des borderless + icônes Segoe). Les modifications ont été réappliquées intégralement. Les fichiers de thème et de pages (Dictionary/History/Profiles/Settings) n'ont pas été touchés.
+- Aucun commit ni push effectué.
+
+### État final
+
+- **Build Release** : 0 avertissement, 0 erreur.
+- **Tests** : 401/401.
+- **Branche** : `chore/fluent-v1-consolidation`.
+- **Fichiers non suivis** : `docs/templates/fluent.png`, `docs/templates/fluentx.png`, `docs/templates/model.png`, `docs/assets/ico-white/*`, `docs/assets/ico-black/*`, `src/Fluent.App/Assets/*`.
+- **Tâche active** : `active-task.json` (statut `completed`, hook satisfait).
+- **Reste à faire (i18n)** : DictionaryPage, HistoryPage, SettingsPage code-behind ; Core/Rewrite layer (décision d'architecture nécessaire).
+- **Reste à faire (UI)** : validation visuelle utilisateur de tous les changements borderless + icônes.
+
+---
+
+## Icônes de marque — en-tête et capsule flottante — 2026-07-26
+
+Demande utilisateur appuyée sur `docs/templates/fluentx.png` : mettre l'icône Fluent dans la **fenêtre flottante** et remplacer le logo en **haut à gauche, devant le texte « Fluent »**, en utilisant les fichiers de `docs/assets/ico-white/`.
+
+### Diagnostic
+
+À la reprise, la capsule référençait déjà `Assets/Fluent.ico`, mais l'icône déclarée en build action **`Content`** : la résolution de l'URI XAML dépend alors du fichier copié en sortie, et **une URI d'image incorrecte ne casse pas le build — elle échoue silencieusement à l'exécution**. C'est le mode d'échec cohérent avec la capsule vide visible sur la capture. Second point : un `.ico` **multi-résolutions** laisse WPF choisir parfois une frame 16 px, d'où un rendu flou une fois mis à l'échelle.
+
+### Corrections
+
+| Élément | Avant | Après |
+|---|---|---|
+| Logo d'en-tête (devant « Fluent ») | `Nyx.LogoMarkTemplate` (barres dessinées) | `Image` → `/Assets/Fluent-white-64x64.ico` |
+| Capsule flottante (3 états) | `Source="Assets/Fluent.ico"` (`Content`) | même icône en **`Resource`** + `BitmapScalingMode=HighQuality` |
+| `Fluent.App.csproj` | icône en `Content` seulement | ajout `<Resource Include>` pour `Fluent-white-64x64.ico` et `Fluent-white-32x32.ico` ; `ApplicationIcon` et `Content` conservés pour l'exe et `Window.Icon` |
+| `FluentTheme.xaml` | `Nyx.LogoMarkTemplate` devenu orphelin | supprimé (code mort) |
+
+Fichiers copiés depuis `docs/assets/ico-white/` vers `src/Fluent.App/Assets/` : `Fluent-white-64x64.ico`, `Fluent-white-32x32.ico`. Le choix d'un fichier **mono-frame 64×64** évite l'ambiguïté de sélection de frame et reste net une fois réduit.
+
+### Agrandissement des icônes
+
+| Emplacement | Avant | Après |
+|---|---|---|
+| Logo d'en-tête | 24 px | **30 px** |
+| Capsule — repos | 24 px | **30 px** |
+| Capsule — enregistrement | 26 px | **30 px** |
+| Capsule — traitement | 22 px | **28 px** |
+
+Contrainte géométrique traitée : la capsule faisait 130×40, soit seulement **~26 px de hauteur utile** (marge 2 + padding vertical 5) — une icône de 30 px aurait été **tronquée**. La fenêtre a donc été adaptée : **hauteur 40 → 48**, **largeur 130 → 140**, **`CornerRadius` 20 → 22** (forme de pilule conservée). Le positionnement reste correct, `MainWindow` calculant `WorkArea.Right - _capsule.Width - 24`.
+
+### Vérification réelle
+
+- **Build Release** : 0 avertissement, 0 erreur.
+- **Suite complète** : **401/401**.
+- **Ressources réellement embarquées** — vérifiées par énumération des ressources de `Fluent.dll` (et non par une simple lecture du code) : `assets/fluent-white-64x64.ico` et `assets/fluent-white-32x32.ico` sont présentes. Contrôle indispensable ici, puisqu'une URI erronée passe le build sans erreur.
+- Note de méthode : une première tentative de vérification par `grep` sur `Fluent.g.resources` a produit un **faux négatif** — les noms de ressources y sont encodés en UTF-16 et échappent à une recherche ASCII. La conclusion n'a pas été tirée de ce résultat trompeur.
+- Aucun test ne dépend des dimensions de la capsule ni du logo (vérifié avant modification).
+
+### Effet de bord utile
+
+Le build et la suite exécutés par la session précédente **valident rétroactivement** l'édition de `DashboardStatusPresenter` (localisation des badges) restée non vérifiée après le blocage de l'environnement de build.
+
+### État
+
+- **Non commité** : l'arbre de travail contient également le lot borderless + icônes Segoe de la session précédente, toujours **en attente de validation visuelle utilisateur**. Un commit maintenant l'embarquerait sans revue visuelle préalable.
+- **Branche** : `chore/fluent-v1-consolidation` ; `main` intacte ; PR #1 (brouillon) non mise à jour.
+- **Reste** : validation visuelle des icônes (en-tête + 3 états de la capsule, absence de rognage), puis commit du lot UI complet.
+
+---
+
+## Lot produit — transcription locale anglaise — 2026-07-26
+
+Sous spécification complète (mission, périmètre, domaine, persistance, snapshot, intégration Whisper, paramètres, réécriture, dictionnaire, historique, localisation, tests, smoke), le PROJECT_DIRECTOR a audité, implémenté, testé et documenté l'ajout de la transcription locale en anglais.
+
+### Audit initial
+
+- **Modèle** : `ggml-base-q8_0.bin` — multilingue, sans suffixe `.en`. Aucun téléchargement nécessaire.
+- **Whisper** : `WhisperFrenchTranscriber.cs` langage hardcodé `"fr"` via `.WithLanguage("fr")`.
+- **Settings** : schéma v2 (`app_settings` avec `preferred_profile_id`, `language`). Aucune notion de langue de transcription.
+- **Rewrite** : règles françaises identifiées (espace avant `,`/`.` et `;!?`). Profil Développeur pass-through.
+- **Dictée** : snapshot du profil au début, pas de snapshot langue. `TranscribeFrenchAsync` seul.
+
+### Implémentation
+
+**Domaine et persistance :**
+
+| Fichier | Rôle |
+|---|---|
+| `TranscriptionLanguage.cs` | Record `TranscriptionLanguage` (French/English, WhisperCode, labels, disponibilité) |
+| `AppPreferences.cs` | +`TranscriptionLanguageId` (défaut `"fr"`) |
+| `AppSettingsLimits.cs` | +`DefaultTranscriptionLanguage`, `NormalizeTranscriptionLanguage` |
+| `IAppSettingsStore.cs` | +`SetTranscriptionLanguageAsync` |
+| `SqliteAppSettingsStore.cs` | Migration v2→v3, colonne `transcription_language TEXT NOT NULL DEFAULT 'fr'` |
+
+**Whisper :**
+
+| Fichier | Changement |
+|---|---|
+| `ISpeechTranscriber.cs` | `TranscribeFrenchAsync` → `TranscribeAsync(string languageCode)` |
+| `WhisperFrenchTranscriber.cs` | Langage dynamique, rebuild processeur si langue change, cache par langue |
+
+**Réécriture :**
+
+| Fichier | Changement |
+|---|---|
+| `RewriteRequest.cs` | +`TranscriptionLanguage` (défaut `"fr"`) |
+| `ProfessionalFrenchRuleBasedRewriter.cs` | Règles FR (`SpaceBeforeTightPunctuation`, `FrenchPunctuationSpacing`) inactives si `!isFrench` |
+| `SafeProfileRewriteService.cs`, `LocalRewriteProvider.cs`, `ProviderRewriteRequest.cs`, `RewriteOrchestrator.cs`, `OrchestrationRewriteRequest.cs` | Threading de la langue de transcription |
+
+**UI :**
+
+| Fichier | Changement |
+|---|---|
+| `SettingsPage.xaml` | Nouvelle section « Langue de transcription » (Français/English) |
+| `SettingsPage.xaml.cs` | +`TranscriptionLanguageChangeRequested`, boutons FR/EN |
+| `LocalizedStrings.cs` | +`settings.transcriptionLanguage.title`, `settings.transcriptionLanguage.desc` (en/fr) |
+
+**Dictée :**
+
+| Fichier | Changement |
+|---|---|
+| `MainWindow.xaml.cs` | Snapshot `_activeTranscriptionLanguage` au début, `_currentTranscriptionLanguage` persisté et restauré, événement `OnTranscriptionLanguageChangeRequested` |
+
+**Tests :**
+
+- `TranscriptionLanguageTests.cs` : 16 tests (domaine, normalisation, codes Whisper, parsing, disponibilité)
+- `WhisperFrenchTranscriberTests.cs` : +1 test anglais (`TranscribeAsync_accepts_english_language_code`)
+- `SqliteAppSettingsStoreTests.cs` : +2 tests (persistance transcription language, migration v2→v3)
+
+### Vérification
+
+- Build Release : 0 avertissement, 0 erreur.
+- Suite complète : **420/420** (Core 40, Speech 10, Persistence 44, Rewrite 172, Integration 88, Backend 54, Windows 6, Audio 6).
+- Aucune régression française.
+
+### Propriétés clés
+
+- Modèle multilingue existant réutilisé (aucun téléchargement).
+- Français = défaut historique, rétrocompatible.
+- Changement appliqué à la dictée suivante (snapshot immuable).
+- Choix indépendant de la langue d'interface.
+- 100 % local, 0 % Cloud.
+- Règles françaises inactives sur les transcriptions anglaises.
+
+### État
+
+- **Non commité** dans l'arbre de travail.
+- **Branche** : `chore/fluent-v1-consolidation`.
+
+---
+
+## Lot produit — détection automatique français/anglais — 2026-07-26
+
+Sous spécification complète de 32 sections (mission, principe produit, périmètre, audit, domaine, détection, confiance, fallback, snapshot, transcriber, modèle, paramètres, UI, réécriture, dictionnaire, historique, journalisation, performance, erreurs, tests unitaires/integration, smoke, build, Git, preuves), le PROJECT_DIRECTOR a audité, implémenté et testé le mode de détection automatique fr/en.
+
+### Architecture
+
+**Deux passages** : détection bornée puis transcription avec langue résolue.
+- **Whisper.net 1.9.1** expose `DetectLanguageWithProbability(samples, "fr", "en")` → `(language, probability)`
+- Détection sur les 5 premières secondes d'audio (ou total si plus court)
+- Seuils centralisés : `MinimumConfidence=0.65`, `MinimumMargin=0.15`
+
+**Fallback déterministe :**
+1. Mode manuel → bypass complet
+2. Mode Auto → détection fr/en
+3. Si confiance OK et langue fr/en → utilisé
+4. Sinon → dernière langue détectée en session → Français
+
+### Domaine
+
+| Fichier | Rôle |
+|---|---|
+| `TranscriptionLanguage.cs` | Record remplacé par enums `TranscriptionLanguageMode` (Auto/French/English) + `TranscriptionLanguage` (French/English) |
+| `TranscriptionLanguageCatalog.cs` | Conversions : mode↔langue↔WhisperCode↔ID persisté |
+| `LanguageDetectionResult.cs` | Résultat (ResolvedLanguage, Confidence, Margin, UsedFallback, FallbackReason) |
+| `DetectionThresholds.cs` | Seuils centralisés |
+
+### Persistance
+
+- `transcription_language` étendu pour accepter `"auto"` en plus de `"fr"`/`"en"`
+- Nouvelle installation : `"auto"` (mode recommandé)
+- Migration v2→v3 existante : conserve `"fr"` pour les bases pré-Auto
+- `AppSettingsLimits.DefaultTranscriptionLanguage` = `"auto"`
+
+### Whisper
+
+| Méthode | Signature |
+|---|---|
+| `ISpeechTranscriber.DetectLanguageAsync` | `Task<(string?, float)> DetectLanguageAsync(float[] samples, CancellationToken)` |
+| `WhisperFrenchTranscriber.DetectLanguageAsync` | Appelle `processor.DetectLanguageWithProbability(samples, "fr", "en")` |
+
+### Flux de dictée
+
+```
+StartRecording → snapshot mode
+    ↓
+StopRecording → audio capturé
+    ↓
+ResolveTranscriptionLanguageAsync:
+  - Mode manuel → langue directe
+  - Mode Auto → DetectLanguageWithProbability("fr","en")
+  - Confiance ≥ 0.65 → langue détectée
+  - Sinon → lastDetectedLanguage → Français
+    ↓
+TranscribeAsync(langue_résolue)
+    ↓
+RewriteAsync(langue_résolue) — règles FR gated
+    ↓
+InsertTranscript
+```
+
+### UI
+
+- `SettingsPage.xaml` : bouton **Auto** ajouté (3 options : Auto / Français / English)
+- `SettingsPage.xaml.cs` : `TranscriptionAutoButton_Click` → `"auto"`
+- `SetTranscriptionLanguageSelection` : gère les 3 modes (✓ sur le sélecteur actif)
+- Description localisée : « Fluent détecte automatiquement si vous parlez français ou anglais. »
+
+### Tests
+
+- `TranscriptionLanguageTests.cs` : mis à jour (48 tests Core, dont tests Auto, ParseModeOrDefault, IsSupportedDetectionResult, PersistMode, etc.)
+- `SqliteAppSettingsStoreTests.cs` : test `_defaults_to_auto_and_persists` mis à jour, migration v2→v3 vérifiée
+- Existing : Speech (10), Rewrite (172), Persistence (44), Integration (88), Backend (54), Windows (6), Audio (6)
+
+### Vérification
+
+- Build Release : 0 avertissement, 0 erreur.
+- Suite complète : **428/428** (Core 48, Speech 10, Persistence 44, Rewrite 172, Integration 88, Backend 54, Windows 6, Audio 6).
+- +8 tests vs baseline 420.
+- Aucune régression.
+
+### Propriétés clés
+
+- Mode Auto = défaut pour les nouvelles installations.
+- Détection 100 % locale, limitée à fr/en.
+- Deux passages Whisper (détection rapide + transcription).
+- Snapshot immuable : changer le mode pendant une dictée n'affecte pas la dictée en cours.
+- Règles françaises inactives sur transcriptions anglaises.
+- Aucun appel réseau, aucune dépendance Cloud.
+- Fallback déterministe explicable.
+
+### Smoke manuel préparé
+
+Scénarios : français automatique, anglais automatique, alternance fr/en/en, phrase courte, technique mixte, silence/bruit, override manuel, persistance après redémarrage.
+
+### État
+
+- **Non commité** dans l'arbre de travail (cumulatif avec le lot transcription anglaise et le lot UI).
+- **Branche** : `chore/fluent-v1-consolidation`.

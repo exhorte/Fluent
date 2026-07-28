@@ -16,6 +16,7 @@ public sealed class WhisperFrenchTranscriber : ISpeechTranscriber
     private readonly string _modelPath;
     private WhisperFactory? _factory;
     private WhisperProcessor? _processor;
+    private string _processorLanguage = "fr";
     private int _activeOperations;
     private bool _disposeRequested;
 
@@ -36,7 +37,8 @@ public sealed class WhisperFrenchTranscriber : ISpeechTranscriber
         EnterOperation();
         try
         {
-            _ = await GetProcessorAsync(progress, cancellationToken).ConfigureAwait(false);
+            // Warm up with the default language — the factory is language-agnostic.
+            _ = await GetProcessorAsync("fr", progress, cancellationToken).ConfigureAwait(false);
         }
         finally
         {
@@ -44,12 +46,14 @@ public sealed class WhisperFrenchTranscriber : ISpeechTranscriber
         }
     }
 
-    public async Task<string> TranscribeFrenchAsync(
+    public async Task<string> TranscribeAsync(
         float[] samples,
+        string languageCode,
         IProgress<SpeechTranscriptionStage>? progress = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(samples);
+        ArgumentNullException.ThrowIfNull(languageCode);
         ThrowIfDisposalRequested();
 
         if (samples.Length == 0)
@@ -62,13 +66,20 @@ public sealed class WhisperFrenchTranscriber : ISpeechTranscriber
             return string.Empty;
         }
 
+        string normalizedLanguage = languageCode.Trim().ToLowerInvariant() switch
+        {
+            "en" => "en",
+            _ => "fr"
+        };
+
         EnterOperation();
         bool gateAcquired = false;
         try
         {
             await _transcriptionGate.WaitAsync(cancellationToken).ConfigureAwait(false);
             gateAcquired = true;
-            WhisperProcessor processor = await GetProcessorAsync(progress, cancellationToken).ConfigureAwait(false);
+            WhisperProcessor processor = await GetProcessorAsync(
+                normalizedLanguage, progress, cancellationToken).ConfigureAwait(false);
             progress?.Report(SpeechTranscriptionStage.Transcribing);
 
             List<string> segments = [];
@@ -86,6 +97,37 @@ public sealed class WhisperFrenchTranscriber : ISpeechTranscriber
                 _transcriptionGate.Release();
             }
 
+            ExitOperation();
+        }
+    }
+
+    public async Task<(string? LanguageCode, float Probability)> DetectLanguageAsync(
+        float[] samples,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(samples);
+        ThrowIfDisposalRequested();
+
+        if (samples.Length == 0)
+        {
+            return (null, 0f);
+        }
+
+        EnterOperation();
+        try
+        {
+            WhisperProcessor processor = await GetProcessorAsync(
+                "auto", null, cancellationToken).ConfigureAwait(false);
+
+            (string? language, float probability) = await Task.Run(
+                () => processor.DetectLanguageWithProbability(
+                    samples, "fr", "en"),
+                cancellationToken).ConfigureAwait(false);
+
+            return (language, probability);
+        }
+        finally
+        {
             ExitOperation();
         }
     }
@@ -115,10 +157,12 @@ public sealed class WhisperFrenchTranscriber : ISpeechTranscriber
     }
 
     private async Task<WhisperProcessor> GetProcessorAsync(
+        string languageCode,
         IProgress<SpeechTranscriptionStage>? progress,
         CancellationToken cancellationToken)
     {
-        if (_processor is not null)
+        // Return cached processor if the language matches.
+        if (_processor is not null && _processorLanguage == languageCode)
         {
             return _processor;
         }
@@ -126,7 +170,7 @@ public sealed class WhisperFrenchTranscriber : ISpeechTranscriber
         await _modelGate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            if (_processor is not null)
+            if (_processor is not null && _processorLanguage == languageCode)
             {
                 return _processor;
             }
@@ -141,8 +185,12 @@ public sealed class WhisperFrenchTranscriber : ISpeechTranscriber
                     cancellationToken).ConfigureAwait(false);
             }
 
+            // Dispose the old processor if the language changed.
+            WhisperProcessor? oldProcessor = _processor;
+            _processor = null;
+
             WhisperProcessor processor = _factory.CreateBuilder()
-                .WithLanguage("fr")
+                .WithLanguage(languageCode)
                 .WithThreads(TranscriptionThreadCount)
                 .Build();
 
@@ -153,12 +201,17 @@ public sealed class WhisperFrenchTranscriber : ISpeechTranscriber
                     () => processor.DetectLanguage(WarmupSamples),
                     cancellationToken).ConfigureAwait(false);
                 _processor = processor;
+                _processorLanguage = languageCode;
                 return _processor;
             }
             catch
             {
                 processor.Dispose();
                 throw;
+            }
+            finally
+            {
+                oldProcessor?.Dispose();
             }
         }
         finally

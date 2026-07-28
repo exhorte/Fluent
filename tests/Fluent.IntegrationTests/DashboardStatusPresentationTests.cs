@@ -131,7 +131,7 @@ public sealed class DashboardStatusPresentationTests
         Assert.Contains("DashboardStatusPresenter.Create", codeBehind, StringComparison.Ordinal);
         Assert.Contains("AuthenticationSummaryText", markup, StringComparison.Ordinal);
         Assert.Contains("CloudSummaryText", markup, StringComparison.Ordinal);
-        Assert.Contains("Historique · à venir", markup, StringComparison.Ordinal);
+        Assert.Contains("Historique · local opt-in", markup, StringComparison.Ordinal);
     }
 
     private static DashboardStatusInput CreateInput(

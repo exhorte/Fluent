@@ -20,6 +20,7 @@ public sealed class SafeProfileRewriteService
     public async Task<RewriteResult> RewriteAsync(
         string transcript,
         RewriteProfile profile,
+        string transcriptionLanguage = "fr",
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(transcript);
@@ -29,7 +30,7 @@ public sealed class SafeProfileRewriteService
         try
         {
             string candidate = await _rewriter.RewriteAsync(
-                new RewriteRequest(transcript, profile),
+                new RewriteRequest(transcript, profile, transcriptionLanguage),
                 cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
 

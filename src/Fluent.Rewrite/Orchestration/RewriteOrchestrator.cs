@@ -39,7 +39,8 @@ public sealed class RewriteOrchestrator
         Stopwatch timer = Stopwatch.StartNew();
 
         ProviderRewriteResult local = await _local.RewriteAsync(
-            new ProviderRewriteRequest(request.Text, request.Profile),
+            new ProviderRewriteRequest(
+                request.Text, request.Profile, request.TranscriptionLanguage),
             cancellationToken);
         cancellationToken.ThrowIfCancellationRequested();
         string localText = local.Text;

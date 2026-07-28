@@ -17,10 +17,28 @@ public sealed partial class ProfessionalFrenchRuleBasedRewriter : ILocalTextRewr
             return Task.FromResult(string.Empty);
         }
 
+        // Language-independent: collapse horizontal whitespace.
         rewritten = HorizontalWhitespace().Replace(rewritten, " ");
-        rewritten = SpaceBeforeTightPunctuation().Replace(rewritten, "$1");
+
+        bool isFrench = string.Equals(
+            request.TranscriptionLanguage, "fr", StringComparison.OrdinalIgnoreCase);
+
+        // French-only: remove space before comma/period.
+        if (isFrench)
+        {
+            rewritten = SpaceBeforeTightPunctuation().Replace(rewritten, "$1");
+        }
+
+        // Language-independent: ensure space after comma.
         rewritten = MissingSpaceAfterComma().Replace(rewritten, "$1 ");
-        rewritten = FrenchPunctuationSpacing().Replace(rewritten, " $1 ");
+
+        // French-only: normalize spacing around ; ! ?
+        if (isFrench)
+        {
+            rewritten = FrenchPunctuationSpacing().Replace(rewritten, " $1 ");
+        }
+
+        // Language-independent: final whitespace cleanup.
         rewritten = HorizontalWhitespace().Replace(rewritten, " ").Trim();
 
         if (!TerminalPunctuation().IsMatch(rewritten))

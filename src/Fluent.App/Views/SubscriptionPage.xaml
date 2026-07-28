@@ -1,0 +1,137 @@
+<UserControl x:Class="Fluent.App.Views.SubscriptionPage"
+             x:Name="Root"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="720"
+             d:DesignWidth="840"
+             mc:Ignorable="d"
+             Background="{StaticResource Nyx.WindowBrush}"
+             Foreground="{StaticResource Nyx.PrimaryTextBrush}"
+             FontFamily="Segoe UI Variable Text"
+             UseLayoutRounding="True"
+             TextOptions.TextFormattingMode="Display">
+    <UserControl.Resources>
+        <Style x:Key="Subscription.PrimaryButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="MinHeight" Value="36" />
+            <Setter Property="Padding" Value="16,8" />
+            <Setter Property="Background" Value="{StaticResource Nyx.PrimaryTextBrush}" />
+            <Setter Property="Foreground" Value="#0A0A0A" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="ButtonBorder"
+                                Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="8">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.88" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonBorder" Property="Opacity" Value="0.72" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="28,26,28,30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="20" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="18" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="18" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel>
+                <TextBlock Text="{Binding [subscription.title], Source={StaticResource Loc}}"
+                           Style="{StaticResource Nyx.PageTitleTextStyle}" />
+                <TextBlock Text="{Binding [subscription.subtitle], Source={StaticResource Loc}}"
+                           Margin="0,6,0,0"
+                           Style="{StaticResource Nyx.BodyTextStyle}" />
+            </StackPanel>
+
+            <Border Grid.Row="2" Style="{StaticResource Nyx.DashboardCardStyle}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="18" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="{Binding [subscription.currentPlan], Source={StaticResource Loc}}" Style="{StaticResource Nyx.LabelTextStyle}" />
+                        <TextBlock Text="{Binding [subscription.plan.local], Source={StaticResource Loc}}"
+                                   Margin="0,8,0,0"
+                                   Style="{StaticResource Nyx.MetricTextStyle}" />
+                        <TextBlock Text="{Binding [subscription.plan.desc], Source={StaticResource Loc}}"
+                                   Margin="0,6,0,0"
+                                   TextWrapping="Wrap"
+                                   Style="{StaticResource Nyx.BodyTextStyle}"
+                                   FontSize="11" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                        <Button Content="{Binding [subscription.upgrade], Source={StaticResource Loc}}"
+                                Click="UpgradeButton_Click"
+                                Style="{StaticResource Subscription.PrimaryButtonStyle}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="4" Style="{StaticResource Nyx.DashboardCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="{Binding [subscription.account], Source={StaticResource Loc}}" Style="{StaticResource Nyx.SectionTitleTextStyle}" />
+                    <TextBlock x:Name="AccountText"
+                               Text="{Binding [subscription.account.local], Source={StaticResource Loc}}"
+                               Margin="0,8,0,0"
+                               TextWrapping="Wrap"
+                               Style="{StaticResource Nyx.BodyTextStyle}" />
+                    <TextBlock x:Name="UpgradeStatusText"
+                               Margin="0,12,0,0"
+                               TextWrapping="Wrap"
+                               Visibility="Collapsed"
+                               FontSize="11"
+                               Foreground="{StaticResource Nyx.SecondaryTextBrush}" />
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Row="6" Style="{StaticResource Nyx.DashboardCardStyle}">
+                <StackPanel>
+                    <TextBlock Text="{Binding [subscription.pro.title], Source={StaticResource Loc}}" Style="{StaticResource Nyx.SectionTitleTextStyle}" />
+                    <TextBlock Text="{Binding [subscription.pro.item1], Source={StaticResource Loc}}"
+                               Margin="0,10,0,0"
+                               Style="{StaticResource Nyx.BodyTextStyle}"
+                               FontSize="12" />
+                    <TextBlock Text="{Binding [subscription.pro.item2], Source={StaticResource Loc}}"
+                               Margin="0,6,0,0"
+                               Style="{StaticResource Nyx.BodyTextStyle}"
+                               FontSize="12" />
+                    <TextBlock Text="{Binding [subscription.pro.item3], Source={StaticResource Loc}}"
+                               Margin="0,6,0,0"
+                               Style="{StaticResource Nyx.BodyTextStyle}"
+                               FontSize="12" />
+                    <TextBlock Text="{Binding [subscription.pro.note], Source={StaticResource Loc}}"
+                               Margin="0,12,0,0"
+                               TextWrapping="Wrap"
+                               Style="{StaticResource Nyx.BodyTextStyle}"
+                               FontSize="11" />
+                </StackPanel>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>
