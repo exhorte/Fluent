@@ -2376,3 +2376,185 @@ Le build et la suite exécutés par la session précédente **valident rétroact
 - **Non commité** : l'arbre de travail contient également le lot borderless + icônes Segoe de la session précédente, toujours **en attente de validation visuelle utilisateur**. Un commit maintenant l'embarquerait sans revue visuelle préalable.
 - **Branche** : `chore/fluent-v1-consolidation` ; `main` intacte ; PR #1 (brouillon) non mise à jour.
 - **Reste** : validation visuelle des icônes (en-tête + 3 états de la capsule, absence de rognage), puis commit du lot UI complet.
+
+---
+
+## Lot produit — transcription locale anglaise — 2026-07-26
+
+Sous spécification complète (mission, périmètre, domaine, persistance, snapshot, intégration Whisper, paramètres, réécriture, dictionnaire, historique, localisation, tests, smoke), le PROJECT_DIRECTOR a audité, implémenté, testé et documenté l'ajout de la transcription locale en anglais.
+
+### Audit initial
+
+- **Modèle** : `ggml-base-q8_0.bin` — multilingue, sans suffixe `.en`. Aucun téléchargement nécessaire.
+- **Whisper** : `WhisperFrenchTranscriber.cs` langage hardcodé `"fr"` via `.WithLanguage("fr")`.
+- **Settings** : schéma v2 (`app_settings` avec `preferred_profile_id`, `language`). Aucune notion de langue de transcription.
+- **Rewrite** : règles françaises identifiées (espace avant `,`/`.` et `;!?`). Profil Développeur pass-through.
+- **Dictée** : snapshot du profil au début, pas de snapshot langue. `TranscribeFrenchAsync` seul.
+
+### Implémentation
+
+**Domaine et persistance :**
+
+| Fichier | Rôle |
+|---|---|
+| `TranscriptionLanguage.cs` | Record `TranscriptionLanguage` (French/English, WhisperCode, labels, disponibilité) |
+| `AppPreferences.cs` | +`TranscriptionLanguageId` (défaut `"fr"`) |
+| `AppSettingsLimits.cs` | +`DefaultTranscriptionLanguage`, `NormalizeTranscriptionLanguage` |
+| `IAppSettingsStore.cs` | +`SetTranscriptionLanguageAsync` |
+| `SqliteAppSettingsStore.cs` | Migration v2→v3, colonne `transcription_language TEXT NOT NULL DEFAULT 'fr'` |
+
+**Whisper :**
+
+| Fichier | Changement |
+|---|---|
+| `ISpeechTranscriber.cs` | `TranscribeFrenchAsync` → `TranscribeAsync(string languageCode)` |
+| `WhisperFrenchTranscriber.cs` | Langage dynamique, rebuild processeur si langue change, cache par langue |
+
+**Réécriture :**
+
+| Fichier | Changement |
+|---|---|
+| `RewriteRequest.cs` | +`TranscriptionLanguage` (défaut `"fr"`) |
+| `ProfessionalFrenchRuleBasedRewriter.cs` | Règles FR (`SpaceBeforeTightPunctuation`, `FrenchPunctuationSpacing`) inactives si `!isFrench` |
+| `SafeProfileRewriteService.cs`, `LocalRewriteProvider.cs`, `ProviderRewriteRequest.cs`, `RewriteOrchestrator.cs`, `OrchestrationRewriteRequest.cs` | Threading de la langue de transcription |
+
+**UI :**
+
+| Fichier | Changement |
+|---|---|
+| `SettingsPage.xaml` | Nouvelle section « Langue de transcription » (Français/English) |
+| `SettingsPage.xaml.cs` | +`TranscriptionLanguageChangeRequested`, boutons FR/EN |
+| `LocalizedStrings.cs` | +`settings.transcriptionLanguage.title`, `settings.transcriptionLanguage.desc` (en/fr) |
+
+**Dictée :**
+
+| Fichier | Changement |
+|---|---|
+| `MainWindow.xaml.cs` | Snapshot `_activeTranscriptionLanguage` au début, `_currentTranscriptionLanguage` persisté et restauré, événement `OnTranscriptionLanguageChangeRequested` |
+
+**Tests :**
+
+- `TranscriptionLanguageTests.cs` : 16 tests (domaine, normalisation, codes Whisper, parsing, disponibilité)
+- `WhisperFrenchTranscriberTests.cs` : +1 test anglais (`TranscribeAsync_accepts_english_language_code`)
+- `SqliteAppSettingsStoreTests.cs` : +2 tests (persistance transcription language, migration v2→v3)
+
+### Vérification
+
+- Build Release : 0 avertissement, 0 erreur.
+- Suite complète : **420/420** (Core 40, Speech 10, Persistence 44, Rewrite 172, Integration 88, Backend 54, Windows 6, Audio 6).
+- Aucune régression française.
+
+### Propriétés clés
+
+- Modèle multilingue existant réutilisé (aucun téléchargement).
+- Français = défaut historique, rétrocompatible.
+- Changement appliqué à la dictée suivante (snapshot immuable).
+- Choix indépendant de la langue d'interface.
+- 100 % local, 0 % Cloud.
+- Règles françaises inactives sur les transcriptions anglaises.
+
+### État
+
+- **Non commité** dans l'arbre de travail.
+- **Branche** : `chore/fluent-v1-consolidation`.
+
+---
+
+## Lot produit — détection automatique français/anglais — 2026-07-26
+
+Sous spécification complète de 32 sections (mission, principe produit, périmètre, audit, domaine, détection, confiance, fallback, snapshot, transcriber, modèle, paramètres, UI, réécriture, dictionnaire, historique, journalisation, performance, erreurs, tests unitaires/integration, smoke, build, Git, preuves), le PROJECT_DIRECTOR a audité, implémenté et testé le mode de détection automatique fr/en.
+
+### Architecture
+
+**Deux passages** : détection bornée puis transcription avec langue résolue.
+- **Whisper.net 1.9.1** expose `DetectLanguageWithProbability(samples, "fr", "en")` → `(language, probability)`
+- Détection sur les 5 premières secondes d'audio (ou total si plus court)
+- Seuils centralisés : `MinimumConfidence=0.65`, `MinimumMargin=0.15`
+
+**Fallback déterministe :**
+1. Mode manuel → bypass complet
+2. Mode Auto → détection fr/en
+3. Si confiance OK et langue fr/en → utilisé
+4. Sinon → dernière langue détectée en session → Français
+
+### Domaine
+
+| Fichier | Rôle |
+|---|---|
+| `TranscriptionLanguage.cs` | Record remplacé par enums `TranscriptionLanguageMode` (Auto/French/English) + `TranscriptionLanguage` (French/English) |
+| `TranscriptionLanguageCatalog.cs` | Conversions : mode↔langue↔WhisperCode↔ID persisté |
+| `LanguageDetectionResult.cs` | Résultat (ResolvedLanguage, Confidence, Margin, UsedFallback, FallbackReason) |
+| `DetectionThresholds.cs` | Seuils centralisés |
+
+### Persistance
+
+- `transcription_language` étendu pour accepter `"auto"` en plus de `"fr"`/`"en"`
+- Nouvelle installation : `"auto"` (mode recommandé)
+- Migration v2→v3 existante : conserve `"fr"` pour les bases pré-Auto
+- `AppSettingsLimits.DefaultTranscriptionLanguage` = `"auto"`
+
+### Whisper
+
+| Méthode | Signature |
+|---|---|
+| `ISpeechTranscriber.DetectLanguageAsync` | `Task<(string?, float)> DetectLanguageAsync(float[] samples, CancellationToken)` |
+| `WhisperFrenchTranscriber.DetectLanguageAsync` | Appelle `processor.DetectLanguageWithProbability(samples, "fr", "en")` |
+
+### Flux de dictée
+
+```
+StartRecording → snapshot mode
+    ↓
+StopRecording → audio capturé
+    ↓
+ResolveTranscriptionLanguageAsync:
+  - Mode manuel → langue directe
+  - Mode Auto → DetectLanguageWithProbability("fr","en")
+  - Confiance ≥ 0.65 → langue détectée
+  - Sinon → lastDetectedLanguage → Français
+    ↓
+TranscribeAsync(langue_résolue)
+    ↓
+RewriteAsync(langue_résolue) — règles FR gated
+    ↓
+InsertTranscript
+```
+
+### UI
+
+- `SettingsPage.xaml` : bouton **Auto** ajouté (3 options : Auto / Français / English)
+- `SettingsPage.xaml.cs` : `TranscriptionAutoButton_Click` → `"auto"`
+- `SetTranscriptionLanguageSelection` : gère les 3 modes (✓ sur le sélecteur actif)
+- Description localisée : « Fluent détecte automatiquement si vous parlez français ou anglais. »
+
+### Tests
+
+- `TranscriptionLanguageTests.cs` : mis à jour (48 tests Core, dont tests Auto, ParseModeOrDefault, IsSupportedDetectionResult, PersistMode, etc.)
+- `SqliteAppSettingsStoreTests.cs` : test `_defaults_to_auto_and_persists` mis à jour, migration v2→v3 vérifiée
+- Existing : Speech (10), Rewrite (172), Persistence (44), Integration (88), Backend (54), Windows (6), Audio (6)
+
+### Vérification
+
+- Build Release : 0 avertissement, 0 erreur.
+- Suite complète : **428/428** (Core 48, Speech 10, Persistence 44, Rewrite 172, Integration 88, Backend 54, Windows 6, Audio 6).
+- +8 tests vs baseline 420.
+- Aucune régression.
+
+### Propriétés clés
+
+- Mode Auto = défaut pour les nouvelles installations.
+- Détection 100 % locale, limitée à fr/en.
+- Deux passages Whisper (détection rapide + transcription).
+- Snapshot immuable : changer le mode pendant une dictée n'affecte pas la dictée en cours.
+- Règles françaises inactives sur transcriptions anglaises.
+- Aucun appel réseau, aucune dépendance Cloud.
+- Fallback déterministe explicable.
+
+### Smoke manuel préparé
+
+Scénarios : français automatique, anglais automatique, alternance fr/en/en, phrase courte, technique mixte, silence/bruit, override manuel, persistance après redémarrage.
+
+### État
+
+- **Non commité** dans l'arbre de travail (cumulatif avec le lot transcription anglaise et le lot UI).
+- **Branche** : `chore/fluent-v1-consolidation`.

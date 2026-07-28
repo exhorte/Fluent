@@ -24,7 +24,7 @@ internal static class LocalizedStrings
             ["home.card.state"] = ("STATE", "ÉTAT"),
             ["home.state.desc"] = ("Current dictation", "Dictée courante"),
             ["home.card.shortcut"] = ("SHORTCUT", "RACCOURCI"),
-            ["home.shortcut.value"] = ("Ctrl + Space", "Ctrl + Espace"),
+            ["home.shortcut.value"] = ("Ctrl + Win — hold to talk", "Ctrl + Win — maintenir pour parler"),
             ["home.card.engine"] = ("ENGINE", "MOTEUR"),
             ["home.engine.desc"] = ("Local Whisper · CPU", "Whisper local · CPU"),
             ["home.card.privacy"] = ("PRIVACY", "CONFIDENTIALITÉ"),
@@ -32,8 +32,8 @@ internal static class LocalizedStrings
             ["home.privacy.desc"] = ("No audio file", "Aucun fichier audio"),
             ["home.lastActivity"] = ("Last activity", "Dernière activité"),
             ["home.lastResult.default"] = (
-                "Place the caret in a text field, then use Ctrl+Space to start and stop dictation.",
-                "Placez le curseur dans un champ texte, puis utilisez Ctrl+Espace pour démarrer et arrêter la dictée."),
+                "Place the caret in a text field, then hold Ctrl+Win to dictate. Release to transcribe and insert automatically.",
+                "Placez le curseur dans un champ texte, puis maintenez Ctrl+Win pour dicter. Relâchez pour transcrire et insérer automatiquement."),
             ["home.insertion.note"] = (
                 "Insertion only if the initial target stays valid; otherwise, explicit copy to the clipboard. Local history is off by default (opt-in).",
                 "Insertion seulement si la cible initiale reste valide ; sinon, copie explicite dans le presse-papiers. L'historique local est désactivé par défaut (opt-in)."),
@@ -278,6 +278,20 @@ internal static class LocalizedStrings
                 "Recording in memory. Press Ctrl+Space again to transcribe and insert.",
                 "Enregistrement en mémoire. Appuyez sur Ctrl+Espace à nouveau pour transcrire et insérer."),
 
+            // Dictation flow — Push-to-Talk states
+            ["dictation.status.pushToTalk.arming"] = (
+                "Hold…",
+                "Maintenez…"),
+            ["dictation.recording.pushToTalk"] = (
+                "Recording… Release Ctrl+Win to finish.",
+                "Enregistrement… Relâchez Ctrl+Win pour terminer."),
+            ["dictation.pushToTalk.cancelled"] = (
+                "Hold too short. Nothing was recorded.",
+                "Maintien trop court. Rien n'a été enregistré."),
+            ["dictation.pushToTalk.maxDuration"] = (
+                "Maximum recording duration reached. Processing…",
+                "Durée maximale d'enregistrement atteinte. Traitement…"),
+
             // Dictation flow — audio preparation
             ["dictation.audio.preparing"] = ("Preparing audio…", "Préparation audio…"),
 
@@ -300,6 +314,10 @@ internal static class LocalizedStrings
                 "{0} dictionary corrections applied before the {1} profile.",
                 "{0} corrections du dictionnaire appliquées avant le profil {1}."),
             ["dictation.rewriting.capsule"] = ("Rewriting…", "Réécriture…"),
+
+            // Capsule accessibility
+            ["capsule.cancel.name"] = ("Cancel dictation", "Annuler la dictée"),
+            ["capsule.paste.name"] = ("Paste transcription", "Coller la transcription"),
 
             // Dictation flow — InsertTranscript status labels
             ["dictation.insert.profileVia"] = (
@@ -359,8 +377,8 @@ internal static class LocalizedStrings
                 "Processing locally. Audio is held in memory only.",
                 "Traitement local. L'audio est conservé en mémoire uniquement."),
             ["dictation.model.ready"] = (
-                "Recording in memory. The local transcription model is ready; press Ctrl+Space to finish.",
-                "Enregistrement en mémoire. Le modèle de transcription local est prêt ; appuyez sur Ctrl+Espace pour terminer."),
+                "Recording in memory. The local transcription model is ready; release Ctrl+Win to finish.",
+                "Enregistrement en mémoire. Le modèle de transcription local est prêt ; relâchez Ctrl+Win pour terminer."),
             ["dictation.model.retryAfterStop"] = (
                 "Recording continues. Model preparation will retry after stop: {0}",
                 "L'enregistrement continue. La préparation du modèle réessaiera après l'arrêt : {0}"),

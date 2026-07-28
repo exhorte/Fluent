@@ -11,6 +11,7 @@ using Fluent.App.Auth;
 using Fluent.App.Cloud;
 using Fluent.App.Dashboard;
 using Fluent.App.Phase01;
+using Fluent.App.Services;
 using Fluent.Audio.Capture;
 using Fluent.App.Localization;
 using Fluent.Core.Transcription;
@@ -31,6 +32,7 @@ using Fluent.Rewrite.Rewriting;
 using Fluent.Rewrite.Validation;
 using Fluent.Speech.Transcription;
 using Fluent.Windows.ActiveTarget;
+using Fluent.Windows.Clipboard;
 using Fluent.Windows.Hotkeys;
 using Fluent.Windows.Input;
 
@@ -38,7 +40,6 @@ namespace Fluent.App;
 
 public partial class MainWindow : Window
 {
-    private const int WmHotKey = 0x0312;
     private static readonly TimeSpan MinimumRecordingDuration = TimeSpan.FromMilliseconds(250);
 
     private readonly ActiveTargetDetector _targetDetector = new();
@@ -65,10 +66,13 @@ public partial class MainWindow : Window
     private readonly PersonalDictionaryProcessor _dictionaryProcessor = new();
     private readonly Localizer _localizer =
         (Localizer)Application.Current.Resources["Loc"];
+    private readonly IClipboardManager _clipboardManager = new WindowsClipboardManager();
+    private readonly PushToTalkKeyStateMachine _keyStateMachine = new();
     private int _historyEntryCount;
     private readonly CancellationTokenSource _shutdown = new();
-    private GlobalHotKey? _hotKey;
+    private IGlobalPushToTalkHook? _pushToTalkHook;
     private HwndSource? _source;
+    private readonly ICapsulePositionService _capsulePositionService = new CapsulePositionService();
     private RecordingCapsuleWindow? _capsule;
     private TargetSnapshot? _lockedTarget;
     private RewriteProfile? _activeDictationProfile;
@@ -79,10 +83,10 @@ public partial class MainWindow : Window
     private TranscriptionLanguage? _lastDetectedLanguage;
     private TranscriptionLanguage _resolvedDictationLanguage =
         TranscriptionLanguage.French;
-    private DictationState _state;
-    private DictationFailureStage _dictationStage = DictationFailureStage.Unknown;
     private bool _isBusy;
     private bool _isClosing;
+    private DictationFailureStage _dictationStage = DictationFailureStage.Unknown;
+    private ClipboardToken? _previousClipboardToken;
 
     public MainWindow()
     {
@@ -182,8 +186,10 @@ public partial class MainWindow : Window
 
         try
         {
-            _hotKey = new GlobalHotKey(handle);
-            _hotKey.RegisterCtrlSpace();
+            _pushToTalkHook = new GlobalPushToTalkHook();
+            _pushToTalkHook.StartRequested += OnPushToTalkStartRequested;
+            _pushToTalkHook.StopRequested += OnPushToTalkStopRequested;
+            _pushToTalkHook.Install();
             HotkeyStatusText.Text = _localizer["dictation.status.active"];
             DictationStateText.Text = _localizer["dictation.status.ready"];
             ShowIdleCapsule();
@@ -212,7 +218,12 @@ public partial class MainWindow : Window
         ProfilesPage.SelectionChanged -= OnProfileSelectionChanged;
         ProfilesPage.CloudStateChanged -= OnCloudStateChanged;
         _authenticationState.Changed -= OnAuthenticationStateChanged;
-        _hotKey?.Dispose();
+        if (_pushToTalkHook is not null)
+        {
+            _pushToTalkHook.StartRequested -= OnPushToTalkStartRequested;
+            _pushToTalkHook.StopRequested -= OnPushToTalkStopRequested;
+            _pushToTalkHook.Dispose();
+        }
         _capsule?.Close();
         _audioRecorder.Dispose();
         _speechTranscriber.Dispose();
@@ -220,37 +231,154 @@ public partial class MainWindow : Window
         _cloudHttpClient.Dispose();
     }
 
-    private nint WndProc(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
+    private static nint WndProc(nint hwnd, int msg, nint wParam, nint lParam, ref bool handled)
     {
-        if (msg == WmHotKey && _hotKey is not null && wParam.ToInt32() == _hotKey.Id)
-        {
-            handled = true;
-            HandleHotKey();
-        }
-
         return 0;
     }
 
-    private async void HandleHotKey()
+    // ────────────────────────────────────────────────────────────────
+    //  Push-to-Talk event handlers (called from the hook callback)
+    // ────────────────────────────────────────────────────────────────
+
+    private void OnPushToTalkStartRequested(object? sender, EventArgs e)
     {
-        if (_isBusy)
+        // Marshal to the UI thread: the hook callback runs on the UI
+        // thread's message pump, but we double-check for safety.
+        if (!Dispatcher.CheckAccess())
         {
-            LastResultText.Text = _localizer["dictation.busy"];
+            _ = Dispatcher.InvokeAsync(() => OnPushToTalkStartRequested(sender, e));
             return;
         }
 
-        try
+        if (_isBusy || _isClosing)
         {
-            if (_state == DictationState.Idle)
+            return;
+        }
+
+        if (!_keyStateMachine.TryTransition(PushToTalkEvent.StartRequested))
+        {
+            return;
+        }
+
+        _ = StartPushToTalkRecordingAsync();
+    }
+
+    private void OnPushToTalkStopRequested(object? sender, EventArgs e)
+    {
+        if (!Dispatcher.CheckAccess())
+        {
+            _ = Dispatcher.InvokeAsync(() => OnPushToTalkStopRequested(sender, e));
+            return;
+        }
+
+        if (_keyStateMachine.State == PushToTalkState.Arming)
+        {
+            // Released before minimum hold — cancel.
+            _keyStateMachine.TryTransition(PushToTalkEvent.Cancelled);
+            CancelPushToTalk();
+            return;
+        }
+
+        if (_keyStateMachine.State == PushToTalkState.Recording)
+        {
+            if (!_keyStateMachine.TryTransition(PushToTalkEvent.StopRequested))
             {
-                StartRecording();
                 return;
             }
 
-            if (_state == DictationState.Recording)
+            _ = CompletePushToTalkCycleAsync();
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    //  Push-to-Talk recording start
+    // ────────────────────────────────────────────────────────────────
+
+    private async Task StartPushToTalkRecordingAsync()
+    {
+        // Phase 1: Arming — wait for minimum hold duration.
+        _capsule?.ShowIdleState();
+        DictationStateText.Text = _localizer["dictation.status.pushToTalk.arming"];
+
+        try
+        {
+            await Task.Delay(PushToTalkConfiguration.MinimumHoldDuration, _shutdown.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            return;
+        }
+
+        // If the state machine is no longer Arming, the user released early.
+        if (_keyStateMachine.State != PushToTalkState.Arming)
+        {
+            // Cancel was already handled in OnPushToTalkStopRequested.
+            return;
+        }
+
+        if (!_keyStateMachine.TryTransition(PushToTalkEvent.MinimumHoldReached))
+        {
+            return;
+        }
+
+        // Phase 2: Start actual recording.
+        StartRecording();
+
+        // Phase 3: Arm the maximum duration timer.
+        _ = EnforceMaximumRecordingDurationAsync();
+    }
+
+    private async Task EnforceMaximumRecordingDurationAsync()
+    {
+        try
+        {
+            await Task.Delay(
+                PushToTalkConfiguration.MaximumRecordingDuration,
+                _shutdown.Token);
+
+            if (!Dispatcher.CheckAccess())
             {
-                await CompleteDictationAsync();
+                _ = Dispatcher.InvokeAsync(() =>
+                {
+                    if (_keyStateMachine.State == PushToTalkState.Recording
+                        && _keyStateMachine.TryTransition(PushToTalkEvent.MaximumDurationReached))
+                    {
+                        _ = CompletePushToTalkCycleAsync();
+                    }
+                });
+                return;
             }
+
+            if (_keyStateMachine.State == PushToTalkState.Recording
+                && _keyStateMachine.TryTransition(PushToTalkEvent.MaximumDurationReached))
+            {
+                await CompletePushToTalkCycleAsync();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected on shutdown.
+        }
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    //  Push-to-Talk: complete cycle (stop → transcribe → rewrite → insert)
+    // ────────────────────────────────────────────────────────────────
+
+    private async Task CompletePushToTalkCycleAsync()
+    {
+        try
+        {
+            if (!_keyStateMachine.TryTransition(PushToTalkEvent.StopRequested)
+                && _keyStateMachine.State != PushToTalkState.Stopping)
+            {
+                if (_keyStateMachine.State == PushToTalkState.Recording)
+                {
+                    _keyStateMachine.TryTransition(PushToTalkEvent.StopRequested);
+                }
+            }
+
+            await CompleteDictationAsync();
         }
         catch (OperationCanceledException) when (_shutdown.IsCancellationRequested)
         {
@@ -268,9 +396,14 @@ public partial class MainWindow : Window
             UserFacingMessage message = DictationErrorPresenter.Describe(stage);
             DictationStateText.Text = _localizer["dictation.status.failed"];
             LastResultText.Text = message.Combined;
-            // Technical detail stays in the debug log only, never in the UI.
-            Debug.WriteLine($"Dictation failure ({stage}): {ex}");
+            Debug.WriteLine($"Push-to-Talk failure ({stage}): {ex}");
         }
+    }
+
+    private void CancelPushToTalk()
+    {
+        _keyStateMachine.ResetToIdle();
+        ResetToIdle();
     }
 
     private void StartRecording()
@@ -305,10 +438,9 @@ public partial class MainWindow : Window
         _activeTranscriptionLanguageMode = _currentTranscriptionLanguageMode;
         _dictationStage = DictationFailureStage.Microphone;
         _audioRecorder.Start();
-        _state = DictationState.Recording;
         DictationStateText.Text = _localizer["dictation.status.recording"];
         TargetStatusText.Text = DescribeTarget(_lockedTarget);
-        LastResultText.Text = _localizer["dictation.recording.started"];
+        LastResultText.Text = _localizer["dictation.recording.pushToTalk"];
         ShowCapsule();
         _capsule?.ShowRecordingState();
         _ = PrepareModelForRecordingAsync();
@@ -317,7 +449,7 @@ public partial class MainWindow : Window
     private async Task CompleteDictationAsync()
     {
         _isBusy = true;
-        _state = DictationState.Transcribing;
+        _keyStateMachine.TryTransition(PushToTalkEvent.AudioCaptured);
         DictationStateText.Text = _localizer["dictation.status.stoppingMic"];
 
         try
@@ -330,7 +462,7 @@ public partial class MainWindow : Window
                 return;
             }
 
-            _capsule?.ShowProcessingState(_localizer["dictation.audio.preparing"]);
+            _capsule?.ShowProcessingState();
             if (audio.Duration < MinimumRecordingDuration)
             {
                 DictationStateText.Text = _localizer["dictation.status.noSpeech"];
@@ -375,7 +507,7 @@ public partial class MainWindow : Window
             _shutdown.Token.ThrowIfCancellationRequested();
 
             RewriteProfile dictationProfile = _activeDictationProfile ?? RewriteProfiles.Default;
-            _state = DictationState.Rewriting;
+            _keyStateMachine.TryTransition(PushToTalkEvent.TranscriptionCompleted);
             DictationStateText.Text = _localizer["dictation.status.rewriting"];
             LastResultText.Text = dictionaryResult.ReplacementCount switch
             {
@@ -383,7 +515,7 @@ public partial class MainWindow : Window
                 1 => string.Format(_localizer["dictation.rewriting.profileApplied.one"], dictationProfile.DisplayName),
                 _ => string.Format(_localizer["dictation.rewriting.profileApplied.many"], dictionaryResult.ReplacementCount, dictationProfile.DisplayName)
             };
-            _capsule?.ShowProcessingState(_localizer["dictation.rewriting.capsule"]);
+            _capsule?.ShowProcessingState();
 
             _dictationStage = DictationFailureStage.Rewriting;
             OrchestrationRewriteResult rewriteResult = await _rewriteOrchestrator.RewriteAsync(
@@ -415,8 +547,8 @@ public partial class MainWindow : Window
         }
         finally
         {
+            _keyStateMachine.TryTransition(PushToTalkEvent.InsertionCompleted);
             _isBusy = false;
-            _state = DictationState.Idle;
             _lockedTarget = null;
             _activeDictationProfile = null;
             ShowIdleCapsule();
@@ -457,8 +589,9 @@ public partial class MainWindow : Window
         {
             case InsertionDecisionKind.PasteIntoOriginalTarget:
                 delivered = true;
-                Clipboard.SetText(rewriteResult.Text);
+                _previousClipboardToken = _clipboardManager.SetText(rewriteResult.Text);
                 KeyboardInputSendResult sendResult = _keyboardInputSender.SendCtrlV();
+                RestoreClipboardAfterPaste();
                 if (sendResult.Succeeded)
                 {
                     string timing = FinishTiming(stopToTextTimer, audioDuration);
@@ -484,7 +617,8 @@ public partial class MainWindow : Window
                 break;
             case InsertionDecisionKind.ClipboardFallbackTargetChanged:
                 delivered = true;
-                Clipboard.SetText(rewriteResult.Text);
+                _previousClipboardToken = _clipboardManager.SetText(rewriteResult.Text);
+                RestoreClipboardAfterPaste();
                 string changedTargetTiming = FinishTiming(stopToTextTimer, audioDuration);
                 DictationStateText.Text = _localizer["dictation.status.clipboardFallback"];
                 LastResultText.Text =
@@ -515,6 +649,27 @@ public partial class MainWindow : Window
 
         TargetStatusText.Text = currentTarget is null ? _localizer["dictation.paste.noTarget"] : DescribeTarget(currentTarget);
         return delivered;
+    }
+
+    private void RestoreClipboardAfterPaste()
+    {
+        if (_previousClipboardToken is null)
+        {
+            return;
+        }
+
+        try
+        {
+            _clipboardManager.TryRestore(_previousClipboardToken);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Clipboard restore failed: {ex.GetBaseException().Message}");
+        }
+        finally
+        {
+            _previousClipboardToken = null;
+        }
     }
 
     private string FinishTiming(Stopwatch stopToTextTimer, TimeSpan audioDuration)
@@ -932,12 +1087,12 @@ public partial class MainWindow : Window
 
     private void UpdateTranscriptionStage(SpeechTranscriptionStage stage)
     {
-        if (_state != DictationState.Transcribing || _isClosing)
+        if (_isClosing)
         {
             return;
         }
 
-        (string state, string capsuleText) = stage switch
+        (string state, string _) = stage switch
         {
             SpeechTranscriptionStage.PreparingModel => (_localizer["dictation.status.preparing"], _localizer["dictation.status.preparing"] + "…"),
             SpeechTranscriptionStage.DownloadingModel => (_localizer["dictation.status.downloading"], _localizer["dictation.model.downloading"]),
@@ -948,7 +1103,7 @@ public partial class MainWindow : Window
         };
 
         DictationStateText.Text = state;
-        _capsule?.ShowProcessingState(capsuleText);
+        _capsule?.ShowProcessingState();
         LastResultText.Text = stage == SpeechTranscriptionStage.DownloadingModel
             ? _localizer["dictation.model.firstUse"]
             : _localizer["dictation.model.processing"];
@@ -961,7 +1116,7 @@ public partial class MainWindow : Window
             Progress<SpeechTranscriptionStage> progress = new(UpdateRecordingPreparationStage);
             await _speechTranscriber.PrepareAsync(progress, _shutdown.Token);
 
-            if (!_isClosing && _state == DictationState.Recording)
+            if (!_isClosing && _keyStateMachine.IsRecording)
             {
                 DictationStateText.Text = _localizer["dictation.status.recording"];
                 LastResultText.Text = _localizer["dictation.model.ready"];
@@ -973,7 +1128,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            if (!_isClosing && _state == DictationState.Recording)
+            if (!_isClosing && _keyStateMachine.IsRecording)
             {
                 DictationStateText.Text = _localizer["dictation.status.recording"];
                 LastResultText.Text =
@@ -985,7 +1140,7 @@ public partial class MainWindow : Window
 
     private void UpdateRecordingPreparationStage(SpeechTranscriptionStage stage)
     {
-        if (_state != DictationState.Recording || _isClosing)
+        if (!_keyStateMachine.IsRecording || _isClosing)
         {
             return;
         }
@@ -1000,7 +1155,7 @@ public partial class MainWindow : Window
     private void ResetToIdle()
     {
         _isBusy = false;
-        _state = DictationState.Idle;
+        _keyStateMachine.ResetToIdle();
         _lockedTarget = null;
         _activeDictationProfile = null;
         ShowIdleCapsule();
@@ -1011,9 +1166,8 @@ public partial class MainWindow : Window
         if (_capsule is null)
         {
             _capsule = new RecordingCapsuleWindow { Owner = this };
-            _capsule.Left = (SystemParameters.WorkArea.Width - _capsule.Width) / 2
-                + SystemParameters.WorkArea.Left;
-            _capsule.Top = SystemParameters.WorkArea.Bottom - _capsule.Height - 24;
+            _capsule.Loaded += OnCapsuleLoaded;
+            _capsule.SizeChanged += OnCapsuleSizeChanged;
         }
 
         if (!_capsule.IsVisible)
@@ -1022,9 +1176,34 @@ public partial class MainWindow : Window
         }
     }
 
+    private void OnCapsuleLoaded(object sender, RoutedEventArgs e)
+    {
+        PositionCapsule();
+    }
+
+    private void OnCapsuleSizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        PositionCapsule();
+    }
+
+    private void PositionCapsule()
+    {
+        if (_capsule is null || !_capsule.IsLoaded)
+        {
+            return;
+        }
+
+        CapsulePosition position = _capsulePositionService.GetPosition(
+            _capsule.ActualWidth > 0 ? _capsule.ActualWidth : _capsule.Width,
+            _capsule.ActualHeight > 0 ? _capsule.ActualHeight : _capsule.Height);
+
+        _capsule.Left = position.Left;
+        _capsule.Top = position.Top;
+    }
+
     private void ShowIdleCapsule()
     {
-        if (_isClosing || _hotKey is null)
+        if (_isClosing || _pushToTalkHook is null)
         {
             return;
         }
@@ -1040,14 +1219,6 @@ public partial class MainWindow : Window
             : target.FocusedElementControlType;
 
         return $"{target.WindowTitle} [{target.WindowClassName}], pid {target.ProcessId}, {element}";
-    }
-
-    private enum DictationState
-    {
-        Idle,
-        Recording,
-        Transcribing,
-        Rewriting
     }
 
     private enum DashboardPage
